@@ -1,0 +1,22 @@
+**/node_modules/
+.env
+.env.*
+!.env.example
+
+# SvelteKit and Vite output
+.svelte-kit/
+build/
+dist/
+
+# Test output
+coverage/
+test-results/
+playwright-report/
+
+# OS and editor
+.DS_Store
+Thumbs.db
+
+# Claude Code personal overrides
+.claude/settings.local.json
+CLAUDE.local.md
