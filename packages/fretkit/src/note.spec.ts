@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-    enharmonics,
     noteAlteration,
     noteLabel,
     noteMidi,
@@ -83,29 +82,14 @@ describe('noteSlug', () => {
 
 describe('what is not a note', () => {
     it('throws rather than giving an empty answer', () => {
-        for (const read of [
-            noteLabel,
-            noteSlug,
-            notePitchClass,
-            noteMidi,
-            noteAlteration,
-            notePitchName,
-            enharmonics
-        ]) {
+        for (const read of [noteLabel, noteSlug, notePitchClass, noteMidi, noteAlteration, notePitchName]) {
             expect(() => read('Fs'), read.name).toThrow();
             expect(() => read(''), read.name).toThrow();
         }
     });
 });
 
-describe('enharmonics', () => {
-    it('THY-2.4 lists the other spellings, fewest accidentals first', () => {
-        expect(enharmonics('F#')).toEqual(['Gb', 'E##']);
-        expect(enharmonics('B#')).toEqual(['C', 'Dbb']);
-        expect(enharmonics('E##')).toEqual(['F#', 'Gb']);
-        expect(enharmonics('Gb4')).toEqual(['F#', 'E##']);
-    });
-
+describe('spellingsOf', () => {
     it('gives every pitch class two or three spellings', () => {
         expect(spellingsOf(8)).toEqual(['G#', 'Ab']);
         expect(spellingsOf(0)).toEqual(['C', 'B#', 'Dbb']);

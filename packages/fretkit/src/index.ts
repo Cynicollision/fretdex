@@ -1,6 +1,5 @@
 export { pitchClass } from './pitch';
 export {
-    enharmonics,
     noteAlteration,
     noteLabel,
     noteMidi,
@@ -12,17 +11,7 @@ export {
     spellMidi,
     type NoteName
 } from './note';
-export {
-    INTERVALS,
-    intervalLabel,
-    intervalName,
-    intervalSemitones,
-    intervalSlug,
-    parseIntervalSlug,
-    type IntervalCode,
-    type IntervalType
-} from './interval';
-export { ARPEGGIO_TYPES, arpeggioType, type ArpeggioType } from './arpeggio';
+export { intervalLabel, intervalName, intervalSemitones, type IntervalCode } from './interval';
 export {
     SCALE_TYPES,
     noteSet,

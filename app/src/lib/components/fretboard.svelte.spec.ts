@@ -312,10 +312,10 @@ describe('FretboardMini', () => {
             set: noteSet('A', ['1P', '3m', '5P']),
             range: { from: 5, to: 8 },
             handedness: 'right',
-            title: 'A minor arpeggio'
+            title: 'A minor triad'
         });
 
-        const svg = page.getByRole('img', { name: 'A minor arpeggio' });
+        const svg = page.getByRole('img', { name: 'A minor triad' });
         await expect.element(svg).toBeVisible();
         expect(svg.element().getBoundingClientRect().width).toBe(150);
         expect(svg.element().querySelectorAll('text')).toHaveLength(0);

@@ -1,15 +1,9 @@
 import {
-    arpeggioType,
-    intervalLabel,
-    intervalSlug,
     noteLabel,
     notePitchName,
     noteSlug,
-    parseIntervalSlug,
     parseNote,
     scaleType,
-    type ArpeggioType,
-    type IntervalType,
     type NoteName,
     type ScaleType
 } from '@fretdex/fretkit';
@@ -17,7 +11,7 @@ import type { Labels, Settings } from '#lib/settings/settings.ts';
 import { readOverride, writeOverride, type ContextOverride, type QueryParams } from './context';
 
 /** A module's list, so far. */
-export type ListPath = '/scales' | '/modes' | '/arpeggios' | '/intervals';
+export type ListPath = '/scales' | '/modes';
 
 /** A screen a back control can fall back to: Home, Modules or a module's list. */
 export type ScreenPath = '/' | '/modules' | ListPath;
@@ -29,16 +23,14 @@ export interface ModuleEntry {
     readonly path?: ListPath;
 }
 
-/** The eight modules (APP-1.1), in the grid's order. */
+/** The six modules (APP-1.1), in the grid's order. */
 export const MODULES: readonly ModuleEntry[] = [
     { name: 'Chords' },
     { name: 'Scales', path: '/scales' },
-    { name: 'Arpeggios', path: '/arpeggios' },
     { name: 'Triads' },
     { name: 'Modes', path: '/modes' },
     { name: 'Keys' },
-    { name: 'Progressions' },
-    { name: 'Intervals', path: '/intervals' }
+    { name: 'Progressions' }
 ];
 
 /** The tools (APP-1.1): Identify in M02, the tuner and metronome after version 1. */
@@ -47,20 +39,14 @@ export const TOOLS: readonly ModuleEntry[] = [{ name: 'Identify' }, { name: 'Tun
 /** What a card's path names (APP-3.1). */
 export type Card =
     | { readonly kind: 'scale'; readonly root: NoteName; readonly scale: ScaleType }
-    | { readonly kind: 'mode'; readonly root: NoteName; readonly mode: ScaleType }
-    | { readonly kind: 'arpeggio'; readonly root: NoteName; readonly quality: ArpeggioType }
-    | { readonly kind: 'interval'; readonly interval: IntervalType }
-    | { readonly kind: 'note'; readonly note: NoteName };
+    | { readonly kind: 'mode'; readonly root: NoteName; readonly mode: ScaleType };
 
 export type CardKind = Card['kind'];
 
 /** Each card's route, as SvelteKit names it. */
 export const CARD_ROUTES: Readonly<Record<string, CardKind>> = {
     '/scales/[root]/[scale]': 'scale',
-    '/modes/[root]/[mode]': 'mode',
-    '/arpeggios/[root]/[quality]': 'arpeggio',
-    '/intervals/[interval]': 'interval',
-    '/notes/[note]': 'note'
+    '/modes/[root]/[mode]': 'mode'
 };
 
 /**
@@ -90,35 +76,13 @@ export function readModeCard(root: string, mode: string): Card | undefined {
     return { kind: 'mode', root: note, mode: type };
 }
 
-export function readArpeggioCard(root: string, quality: string): Card | undefined {
-    const note = readRoot(root);
-    const type = arpeggioType(quality);
-    return note === undefined || type === undefined ? undefined : { kind: 'arpeggio', root: note, quality: type };
-}
-
-export function readIntervalCard(interval: string): Card | undefined {
-    const type = parseIntervalSlug(interval);
-    return type === undefined ? undefined : { kind: 'interval', interval: type };
-}
-
-export function readNoteCard(note: string): Card | undefined {
-    const name = readRoot(note);
-    return name === undefined ? undefined : { kind: 'note', note: name };
-}
-
-/** A card's path, as the app writes it (APP-3.4): `/scales/Fs/major`, `/intervals/s4`. */
+/** A card's path, as the app writes it (APP-3.4): `/scales/Fs/major`, `/modes/Fs/dorian`. */
 export function cardPath(card: Card): string {
     switch (card.kind) {
         case 'scale':
             return `/scales/${noteSlug(card.root)}/${card.scale.id}`;
         case 'mode':
             return `/modes/${noteSlug(card.root)}/${card.mode.id}`;
-        case 'arpeggio':
-            return `/arpeggios/${noteSlug(card.root)}/${card.quality.id}`;
-        case 'interval':
-            return `/intervals/${intervalSlug(card.interval.code)}`;
-        case 'note':
-            return `/notes/${noteSlug(card.note)}`;
     }
 }
 
@@ -129,19 +93,13 @@ export function cardModule(kind: CardKind): ListPath {
             return '/scales';
         case 'mode':
             return '/modes';
-        case 'arpeggio':
-            return '/arpeggios';
-        case 'interval':
-        case 'note':
-            return '/intervals';
     }
 }
 
 /** The list for a path the app can't read, from its first segment, for Not found's link (APP-3.5). */
 export function moduleOfPath(pathname: string): ModuleEntry | undefined {
     const first = '/' + (pathname.split('/')[1] ?? '');
-    const path = first === '/notes' ? '/intervals' : first;
-    return MODULES.find(module => module.path === path);
+    return MODULES.find(module => module.path === first);
 }
 
 /** Mode names are proper nouns, so they keep their capital in a card's name: "G Dorian", "G harmonic minor". */
@@ -151,30 +109,24 @@ function lowerName(name: string): string {
     return PROPER.test(name) ? name : name.charAt(0).toLowerCase() + name.slice(1);
 }
 
-/** A card's name, as its heading and title show it (APP-3.6): "G major", "A m7♭5", "♭3 minor third", "F♯". */
+/** A card's name, as its heading and title show it (APP-3.6): "G major", "D Dorian". */
 export function cardTitle(card: Card): string {
     switch (card.kind) {
         case 'scale':
             return `${noteLabel(card.root)} ${lowerName(card.scale.name)}`;
         case 'mode':
             return `${noteLabel(card.root)} ${card.mode.name}`;
-        case 'arpeggio':
-            return `${noteLabel(card.root)} ${card.quality.symbol}`;
-        case 'interval':
-            return `${intervalLabel(card.interval.code)} ${lowerName(card.interval.name)}`;
-        case 'note':
-            return noteLabel(card.note);
     }
 }
 
-/** A page's `<title>` (APP-3.6): "A m7♭5 · Fretdex". */
+/** A page's `<title>` (APP-3.6): "D Dorian · Fretdex". */
 export function pageTitle(name: string): string {
     return `${name} · Fretdex`;
 }
 
 /** How a card is shown, from its URL's query (APP-3.1). Absent options take their defaults. */
 export interface ViewOptions {
-    /** A CAGED position, 1–5 (SCL-3.1, ARP-1.3). */
+    /** A CAGED position, 1–5 (SCL-3.1). */
     readonly pos?: number;
     /** A 3-notes-per-string pattern, 1–7 (SCL-3.3); never with `pos`. */
     readonly nps?: number;
@@ -187,10 +139,7 @@ export interface ViewOptions {
 /** The options each card takes, in the order its URL writes them. */
 const CARD_OPTIONS: Readonly<Record<CardKind, readonly (keyof ViewOptions)[]>> = {
     scale: ['pos', 'nps', 'labels'],
-    mode: ['pos', 'nps', 'labels', 'compare'],
-    arpeggio: ['pos', 'labels'],
-    interval: [],
-    note: []
+    mode: ['pos', 'nps', 'labels', 'compare']
 };
 
 const LABELS: readonly Labels[] = ['notes', 'intervals', 'degrees', 'none'];

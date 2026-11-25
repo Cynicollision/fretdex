@@ -1,19 +1,10 @@
 <!--
-    A card until its own arrives (scales M01 T9, modes and arpeggios T10, intervals and notes T11): its name, notes and
-    intervals, its notes on a fretboard and keyboard (all but intervals), the instrument and tuning it's shown for, and
-    its labels option where it takes one, so every route opens from its URL with its full state (APP-3.1).
+    A card until its own arrives (scales M01 T9, modes T10): its name, notes and intervals, its notes on a fretboard and
+    keyboard, the instrument and tuning it's shown for, and its labels option, so every route opens from its URL with
+    its full state (APP-3.1).
 -->
 <script lang="ts">
-    import {
-        enharmonics,
-        intervalLabel,
-        intervalSemitones,
-        noteLabel,
-        noteSet,
-        spell,
-        spellScale,
-        type NoteSet
-    } from '@fretdex/fretkit';
+    import { intervalLabel, noteLabel, spellScale } from '@fretdex/fretkit';
     import Choice from '#lib/components/Choice.svelte';
     import Fretboard from '#lib/components/Fretboard.svelte';
     import Keyboard from '#lib/components/Keyboard.svelte';
@@ -36,52 +27,8 @@
     const options = $derived(readViewOptions(card.kind, page.url.searchParams));
     const view = $derived(viewContext(settings.current, readOverride(page.url.searchParams, settings.current)));
 
-    interface Facts {
-        readonly notes?: readonly string[];
-        readonly intervals?: readonly string[];
-        readonly other?: string;
-    }
-
-    const facts: Facts = $derived.by(() => {
-        switch (card.kind) {
-            case 'scale':
-            case 'mode': {
-                const spelled = spellScale(card.root, card.kind === 'scale' ? card.scale : card.mode);
-                return { notes: spelled.notes.map(noteLabel), intervals: spelled.type.intervals.map(intervalLabel) };
-            }
-            case 'arpeggio':
-                return {
-                    notes: spell(card.root, card.quality.intervals).map(noteLabel),
-                    intervals: card.quality.intervals.map(intervalLabel)
-                };
-            case 'interval': {
-                const semitones = intervalSemitones(card.interval.code);
-                return { other: `${String(semitones)} ${semitones === 1 ? 'semitone' : 'semitones'}` };
-            }
-            case 'note':
-                return { other: `Also written ${enharmonics(card.note).map(noteLabel).join(', ')}` };
-        }
-    });
-
-    const takesLabels = $derived(card.kind === 'scale' || card.kind === 'mode' || card.kind === 'arpeggio');
-
-    /** What the diagrams draw: none for an interval until T11. */
-    const set: NoteSet | undefined = $derived.by(() => {
-        switch (card.kind) {
-            case 'scale':
-                return spellScale(card.root, card.scale);
-            case 'mode':
-                return spellScale(card.root, card.mode);
-            case 'arpeggio':
-                return noteSet(card.root, card.quality.intervals);
-            case 'note':
-                return noteSet(card.note, ['1P']);
-            case 'interval':
-                return undefined;
-        }
-    });
-    // A note card names its notes, as every dot would read 1 (INT-2.1).
-    const labels: Labels = $derived(card.kind === 'note' ? 'notes' : (options.labels ?? settings.current.labels));
+    const set = $derived(spellScale(card.root, card.kind === 'scale' ? card.scale : card.mode));
+    const labels: Labels = $derived(options.labels ?? settings.current.labels);
     const tuningText = $derived(tuningName(view.instrument, view.tuning, customTunings.current));
     const diagramTitle = $derived(
         `${cardTitle(card)} on ${view.instrument === 'guitar' ? 'guitar' : 'bass'}, ${tuningText} tuning`
@@ -89,22 +36,19 @@
 </script>
 
 <Screen title={cardTitle(card)} back={cardModule(card.kind)} wide>
-    {#if facts.notes}<p>Notes: {facts.notes.join(' ')}</p>{/if}
-    {#if facts.intervals}<p>Intervals: {facts.intervals.join(' ')}</p>{/if}
-    {#if facts.other}<p>{facts.other}</p>{/if}
-    {#if set}
-        <Fretboard
-            tuning={view.tuning}
-            {set}
-            range={settings.current.fretRange}
-            capo={view.capo}
-            {labels}
-            handedness={settings.current.handedness}
-            accidentals={settings.current.accidentals}
-            title={diagramTitle}
-        />
-        <Keyboard {set} {labels} title={cardTitle(card)} />
-    {/if}
+    <p>Notes: {set.notes.map(noteLabel).join(' ')}</p>
+    <p>Intervals: {set.type.intervals.map(intervalLabel).join(' ')}</p>
+    <Fretboard
+        tuning={view.tuning}
+        {set}
+        range={settings.current.fretRange}
+        capo={view.capo}
+        {labels}
+        handedness={settings.current.handedness}
+        accidentals={settings.current.accidentals}
+        title={diagramTitle}
+    />
+    <Keyboard {set} {labels} title={cardTitle(card)} />
     <p class="muted">
         For {view.instrument === 'guitar' ? 'guitar' : 'bass'}, {tuningText} tuning{view.capo === 0
             ? ''
@@ -112,27 +56,25 @@
         {#if options.pos !== undefined}Position {options.pos}.{/if}
         {#if options.nps !== undefined}3-notes-per-string pattern {options.nps}.{/if}
     </p>
-    {#if takesLabels}
-        <Choice
-            legend="Labels on this card"
-            name="card-labels"
-            options={[
-                { value: 'notes', label: 'Note names' },
-                { value: 'intervals', label: 'Intervals' },
-                { value: 'degrees', label: 'Scale degrees' },
-                { value: 'none', label: 'None' }
-            ]}
-            value={options.labels ?? settings.current.labels}
-            onchange={(labels: Labels) =>
-                setViewOption(
-                    page.url,
-                    card.kind,
-                    settings.current,
-                    'labels',
-                    labels === settings.current.labels ? undefined : labels
-                )}
-        />
-    {/if}
+    <Choice
+        legend="Labels on this card"
+        name="card-labels"
+        options={[
+            { value: 'notes', label: 'Note names' },
+            { value: 'intervals', label: 'Intervals' },
+            { value: 'degrees', label: 'Scale degrees' },
+            { value: 'none', label: 'None' }
+        ]}
+        value={options.labels ?? settings.current.labels}
+        onchange={(labels: Labels) =>
+            setViewOption(
+                page.url,
+                card.kind,
+                settings.current,
+                'labels',
+                labels === settings.current.labels ? undefined : labels
+            )}
+    />
     <p class="muted">The full card, with positions and sound, is coming.</p>
 </Screen>
 

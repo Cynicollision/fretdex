@@ -11,7 +11,7 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 | DIAG-1.3 | A card can highlight a subset (a position, a degree, the playing note) with the rest dimmed, not hidden. | Implemented |
 | DIAG-1.4 | Fret numbers shall be shown below the neck at inlay frets, and at the first fret of a position when it's not 0. | Implemented |
 | DIAG-1.5 | Left-handed mode shall mirror the neck so the nut is on the right, keeping labels upright. | Implemented |
-| DIAG-1.6 | Tapping a dot shall play its note (AUD-4.1); tapping an empty fret shall show and play that note too (INT-2). | Partial |
+| DIAG-1.6 | Tapping a dot shall play its note (AUD-4.1); tapping an empty fret shall name and play that note too. | Partial |
 | DIAG-1.7 | The root shall be a square and other notes circles; where a card highlights chord tones within a scale, chord tones shall be filled and other notes outlined. Color adds to these and never replaces them. The design task may refine the look, not these distinctions. | Implemented |
 | DIAG-1.8 | Frets shall narrow gently up the neck, each 0.98 the width of the one below it rather than a real guitar's 0.944, so the neck reads as a neck while the highest frets stay readable and easy to tap. Where that would make a fret narrower than the tap target (APP-5.1), the narrowing eases toward even. Decided 2026-11-25, replacing evenly spaced frets. | Implemented |
 | DIAG-1.9 | With a capo (CTX-3), the fretboard shall draw it as a bar across the strings at its fret, with the frets below it dimmed and empty. | Implemented |
@@ -51,7 +51,7 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 
 ## Known gaps
 
-- **DIAG-1.6, DIAG-3.2:** a tapped fret or enlarged key is reported with its note, spelled as a lone note where the set has none, but nothing plays it until the audio engine (M01 T8) and nothing names it until the note card (INT-2.2, T11).
+- **DIAG-1.6, DIAG-3.2:** a tapped fret or enlarged key is reported with its note, spelled as a lone note where the set has none, but nothing plays it until the audio engine (M01 T8), and nothing names it on screen until the scale card (M01 T9).
 - **DIAG-1.10:** upright, the fretboard shows a stretch with Lower and Higher over the strip, and in landscape the whole range; showing the chosen position comes with positions (M01 T9).
-- **DIAG-3.1:** the keyboard marks the notes and enlarges when tapped, on the scale, mode, arpeggio and note cards; it plays with T8.
+- **DIAG-3.1:** the keyboard marks the notes and enlarges when tapped, on the scale and mode cards; it plays with T8.
 - **DIAG-5.1:** the fretboard has its compact form (`FretboardMini.svelte`); the chord box's comes in M02, and the pin tiles that show them in M01 T12.

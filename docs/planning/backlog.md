@@ -5,7 +5,7 @@ Work outside the milestone being built. The milestones in order are in the [road
 Each section says what happens to its items next:
 
 - **Inbox**: found but not sorted yet. Follow-up work noticed during other work, and anything a review turns up, lands here. Only the owner moves an item out.
-- **A milestone not planned yet** (M02 ...): what's known so far about it, until a planning session writes its file. None has a section yet.
+- **A milestone not planned yet** (M02 ...): what's known so far about it, until a planning session writes its file.
 - **Anytime**: self-contained work with a clear end that needs no decision first, small enough for a PR of its own between milestone tasks.
 - **Parked**: waiting on something. Each item says what, as **Revisit when**.
 - **Ideas**: not committed to.
@@ -20,6 +20,12 @@ An item is one bullet: a bold title, what's wrong or wanted, and where (file and
 
 ---
 
+## M02 Chords and triads
+
+- **Triads as a module, or part of the chord card.** Triads stays a module for now (TRI), but may not earn its place once chords exist: its shapes could be a view on the chord card for the four triad qualities, next to inversions (CHD-5). Decide in M02's planning, from how the chord card turns out. (owner, 2026-11-25, when Intervals and Arpeggios were retired)
+
+---
+
 ## Anytime
 
 Nothing yet.
@@ -29,7 +35,6 @@ Nothing yet.
 ## Parked
 
 - **Sampled instruments**, if the synth voices aren't good enough: a few MB added to the offline cache. **Revisit when** M01's audio task (T8) has judged the voices.
-- **Arpeggio positions in alternate tunings**: ARP-1.7 shows the full neck only. **Revisit when** M01 has shipped arpeggios.
 - **Curated voicings for alternate tunings**, starting with the tunings the owner plays most (CHD-3.5). **Revisit when** M02's voicing dataset exists.
 - **More instruments.** 5-string bass (B E A D G) and 7-string guitar: tunings with more strings (THY-3.2), and positions and voicings that use them. **Revisit when** planning the milestones after version 1.
 - **Your own progressions**, saved like pins. **Revisit when** planning the milestones after version 1.

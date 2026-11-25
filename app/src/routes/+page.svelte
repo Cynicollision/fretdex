@@ -16,7 +16,7 @@
 
 <main>
     <h1>Fretdex</h1>
-    <p>A reference for guitar and bass: scales, modes and arpeggios in every key, from C to F♯ and B♭.</p>
+    <p>A reference for guitar and bass: scales and modes in every key, from C to F♯ and B♭.</p>
     <p class="muted">Under construction.</p>
     <ModuleGrid />
     <a class="settings" href={resolve('/settings')}>Settings ›</a>
