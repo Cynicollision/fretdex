@@ -44,7 +44,12 @@ export async function loadRecord<T>(store: KeyValueStore, format: RecordFormat<T
     while (version < format.version) {
         const step = format.migrations?.[version];
         if (step === undefined) return { data: format.read(undefined), newer: false };
-        data = step(data);
+        try {
+            data = step(data);
+        } catch {
+            // Data a migration can't make sense of is as good as none.
+            return { data: format.read(undefined), newer: false };
+        }
         version++;
     }
     return { data: format.read(data), newer: version > format.version };

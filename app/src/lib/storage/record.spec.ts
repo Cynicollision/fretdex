@@ -43,6 +43,12 @@ describe('versioned records (PIN-6.1)', () => {
         expect(await loadRecord(store, format)).toEqual({ data: { total: 5 }, newer: false });
     });
 
+    it('gives the defaults when a migration step fails on damaged data', async () => {
+        const store = memoryStore({ thing: { version: 1, data: null } });
+
+        expect(await loadRecord(store, format)).toEqual({ data: { total: 0 }, newer: false });
+    });
+
     it('reads a newer version as far as it can, and says it is newer', async () => {
         const store = memoryStore({ thing: { version: 3, data: { total: 7, extra: true } } });
 

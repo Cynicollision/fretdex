@@ -44,6 +44,25 @@ describe('the settings store', () => {
         expect(store.current.tempo).toBe(DEFAULT_SETTINGS.tempo);
     });
 
+    it('keeps a change when saving it fails', async () => {
+        const failing = {
+            get: () => Promise.resolve(undefined),
+            set: () => Promise.reject(new Error('quota exceeded'))
+        };
+        const store = new SettingsStore(failing);
+
+        await expect(store.update({ theme: 'light' })).resolves.toBeUndefined();
+        expect(store.current.theme).toBe('light');
+    });
+
+    it('with nowhere to store them, is loaded on the defaults at once', async () => {
+        const store = new SettingsStore(undefined);
+
+        expect(store.loaded).toBe(true);
+        await store.update({ theme: 'light' });
+        expect(store.current.theme).toBe('light');
+    });
+
     it('does not save over settings written by a newer version', async () => {
         const database = freshDatabase();
         await database.set('settings', { version: 99, data: { theme: 'light', future: true } });

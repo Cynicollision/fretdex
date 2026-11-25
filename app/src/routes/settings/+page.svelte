@@ -9,7 +9,7 @@
     import Switch from '#lib/components/Switch.svelte';
     import { MAX_TEMPO, MIN_TEMPO, type Handedness, type Labels, type Theme } from '#lib/settings/settings.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
-    import { persistence, type Persistence } from '#lib/storage/persist.ts';
+    import { shownPersistence, type Persistence } from '#lib/storage/persist.ts';
     import { resolve } from '$app/paths';
     import { onMount } from 'svelte';
 
@@ -17,7 +17,7 @@
 
     let stored: Persistence | undefined = $state();
     onMount(async () => {
-        stored = await persistence();
+        stored = await shownPersistence();
     });
 
     const STORAGE_TEXT: Record<Persistence, string> = {
@@ -78,14 +78,14 @@
                 min={0}
                 max={current.fretRange.to - 1}
                 value={current.fretRange.from}
-                onchange={(from: number) => settings.update({ fretRange: { ...current.fretRange, from } })}
+                onchange={(from: number) => settings.update(s => ({ ...s, fretRange: { ...s.fretRange, from } }))}
             />
             <Stepper
                 label="Last fret"
                 min={current.fretRange.from + 1}
                 max={MAX_FRET}
                 value={current.fretRange.to}
-                onchange={(to: number) => settings.update({ fretRange: { ...current.fretRange, to } })}
+                onchange={(to: number) => settings.update(s => ({ ...s, fretRange: { ...s.fretRange, to } }))}
             />
         </fieldset>
     </section>

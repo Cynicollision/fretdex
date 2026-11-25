@@ -17,8 +17,28 @@ export async function persistence(): Promise<Persistence> {
     }
 }
 
-/** Asks for persistent storage unless it's already granted. */
-export async function requestPersistence(): Promise<Persistence> {
+let asking: Promise<Persistence> | undefined;
+
+/**
+ * Asks for persistent storage unless it's already granted. Calls made while a request is under way share it, so the
+ * browser is asked once and every caller gets its answer.
+ */
+export function requestPersistence(): Promise<Persistence> {
+    asking ??= ask().finally(() => {
+        asking = undefined;
+    });
+    return asking;
+}
+
+/**
+ * The persistence to show: running installed, the app asks for it (PIN-6.2), so this is the answer to that request,
+ * whichever of the root layout and a screen asks first; in a browser tab, whatever the browser has granted.
+ */
+export function shownPersistence(): Promise<Persistence> {
+    return isInstalled() ? requestPersistence() : persistence();
+}
+
+async function ask(): Promise<Persistence> {
     const now = await persistence();
     if (now !== 'not-granted' || !('persist' in navigator.storage)) return now;
     try {
