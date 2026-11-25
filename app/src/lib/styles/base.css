@@ -1,0 +1,43 @@
+/* Page-wide defaults, from the tokens. */
+
+html {
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: var(--text-s);
+    line-height: var(--leading);
+    /* The accidentals font has one weight; a faux bold of it would look smeared. */
+    font-synthesis: none;
+}
+
+h1,
+h2,
+h3 {
+    margin: 0;
+    line-height: var(--leading-tight);
+    text-wrap: balance;
+}
+
+h1 {
+    font-size: var(--text-xl);
+}
+
+h2 {
+    font-size: var(--text-l);
+}
+
+h3 {
+    font-size: var(--text-m);
+}
+
+:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}

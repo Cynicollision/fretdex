@@ -28,6 +28,12 @@ Rules that apply across the codebase. Match the surrounding code for anything no
 - Svelte 5 runes everywhere: `$props()`, `$state`, `$derived` and `$effect`, and snippets with `{@render}` rather than slots. `app/vite.config.ts` turns runes mode on for every component, so the old syntax is a compile error.
 - A route's `<title>` is set in its `<svelte:head>`.
 
+## Styling
+
+- Colours, fonts, type sizes, the corner radius and the tap target come from the tokens in `app/src/lib/styles/tokens.css` (`var(--text)`, `var(--text-m)`), never literal values, so every theme works ([architecture.md](architecture.md#styling)). A new colour is a token with a value in all three themes, and if it carries text, a pair in `tokens.spec.ts`.
+- Font sizes are in `rem` (through the tokens), so the system's text size applies (APP-6.5). Nothing a user taps is smaller than `var(--tap)`.
+- Write accidentals as the characters ♯ ♭ ♮ 𝄪 𝄫 in anything shown, never `#` or `b`; the font stack draws them.
+
 ## Tests
 
 - Unit tests are `*.spec.ts` next to the code they test; component tests are `*.svelte.spec.ts`; Playwright smoke tests are `app/e2e/*.e2e.ts`. See [testing.md](testing.md).

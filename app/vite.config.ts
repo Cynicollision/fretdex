@@ -28,9 +28,9 @@ export default defineConfig({
                     start_url: '/',
                     scope: '/',
                     display: 'standalone',
-                    // Placeholder colours and icons until the design pass (M01 T3).
-                    theme_color: '#16181d',
-                    background_color: '#16181d',
+                    // The Dark theme's page colour (src/lib/styles/tokens.css); icons drawn from static/icon.svg.
+                    theme_color: '#14161b',
+                    background_color: '#14161b',
                     icons: [
                         { src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
                         { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png' },

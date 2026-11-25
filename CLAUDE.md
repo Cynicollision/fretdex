@@ -1,6 +1,6 @@
 # Fretdex
 
-Offline, installable reference app for guitar and bass: a SvelteKit static site with a framework-free theory package (`fretkit`) and audio package. No backend. npm workspaces: the app in `app/`, the packages in `packages/fretkit/` and `packages/audio/`. M01 is in progress; so far there's the repository, CI, and a placeholder page deployed to https://fretdex.seannormoyle.net that installs and works offline.
+Offline, installable reference app for guitar and bass: a SvelteKit static site with a framework-free theory package (`fretkit`) and audio package. No backend. npm workspaces: the app in `app/`, the packages in `packages/fretkit/` and `packages/audio/`. M01 is in progress; so far there's the repository, CI, the design tokens, fonts and icon, and a placeholder page deployed to https://fretdex.seannormoyle.net that installs and works offline.
 
 Read the doc that fits the task before starting:
 

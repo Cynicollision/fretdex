@@ -34,7 +34,7 @@ Every requirement and design decision is checked against these. When two pull ag
 2. **One context, everywhere.** A global "current key" and display settings carry across every view, so the whole app re-centers on the song being played.
 3. **Every view is a URL.** Each card's full state lives in its route and query string. Pins, back navigation and deep links all fall out of that.
 4. **Guitar first, piano second.** Fretboard and chord boxes are the hero visuals; piano is a small companion that taps to enlarge.
-5. **Phone first, stand-friendly.** Large tap targets, landscape fretboard, no hover-only interactions, readable at arm's length, dark by default.
+5. **Phone first, stand-friendly, upright.** Every screen works with the phone held upright; turning it may show more, such as the whole neck, but is never needed. A screen that would need turning is discussed with the owner before it's built. Large tap targets, no hover-only interactions, readable at arm's length, dark by default.
 6. **Offline and private.** Installable PWA, no network after first load, no analytics, no accounts. The microphone is used only by the tuner, and nothing it hears leaves the phone.
 
 ## What "version 1" means

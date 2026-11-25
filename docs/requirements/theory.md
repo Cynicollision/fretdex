@@ -10,7 +10,7 @@ What every module relies on from the theory engine (`fretkit`): notes spelled co
 | THY-1.2 | Chords shall be spelled from their root by interval (C#7 is C# E# G# B; Gb7 is Gb Bb Db Fb). | Planned |
 | THY-1.3 | Double sharps and double flats shall be shown where the spelling needs them (G# harmonic minor has F𝄪), written `##`/`bb` in URLs and search. | Planned |
 | THY-1.4 | Intervals shall be named by their spelling (an augmented 2nd is `#2`, not `b3`) in scales where both can occur (harmonic minor). | Planned |
-| THY-1.5 | Accidentals shall be shown on screen as ♯ ♭ 𝄪 𝄫, in a bundled font that has them; `#`, `s` and `b` shall be accepted wherever the user types a note. | Planned |
+| THY-1.5 | Accidentals shall be shown on screen as ♯ ♭ 𝄪 𝄫, in a bundled font that has them; `#`, `s` and `b` shall be accepted wherever the user types a note. | Partial |
 
 ## THY-2 Roots pick sensible accidentals
 
@@ -37,6 +37,10 @@ What every module relies on from the theory engine (`fretkit`): notes spelled co
 | ID | Requirement | Status |
 |---|---|---|
 | THY-4.1 | Notes shall sound at concert pitch with A4 = 440 Hz, guitar and bass at their written octave's real pitch (guitar sounds an octave below written; the app shows and plays the real pitch). | Planned |
+
+## Known gaps
+
+- **THY-1.5:** the app bundles a font with ♯ ♭ 𝄪 𝄫, but nothing spells notes yet (M01 T4), and nothing takes typed notes until search (SRCH, M03).
 
 ## Notes
 

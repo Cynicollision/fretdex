@@ -1,0 +1,100 @@
+/*
+ * Design tokens: every colour, font and size the app uses. Components take them from here and never use literal
+ * colours, so each theme (APP-6.1) is only a set of values. Dark is the default; `data-theme` on <html> picks
+ * another (CTX-1.8). tokens.spec.ts checks the text pairs' contrast (APP-6.2).
+ */
+
+:root {
+    /* Dark */
+    --bg: #14161b; /* the page */
+    --surface: #1d2027; /* bars, cards, tiles */
+    --surface-2: #272b34; /* controls on a surface */
+    --line: #363a45; /* borders and dividers */
+    --text: #ebe8e1;
+    --muted: #a6a29a; /* secondary text, fret numbers */
+    --accent: #f0a43a; /* the current choice, the current key, focus */
+    --accent-ink: #1a1206; /* text on the accent */
+
+    /* Diagrams: a rosewood neck, nickel frets, a bone nut and dots, an amber root (DIAG-1.7) */
+    --neck: #221c18;
+    --fret: #7d8089;
+    --nut: #d9d2c3;
+    --string: #a8a296;
+    --inlay: #40372f;
+    --note: #e8e2d4; /* a note's dot; an outlined note's ring and label */
+    --note-ink: #17181c; /* the label on a filled dot */
+    --root: #f0a43a;
+    --root-ink: #1a1206;
+    --key-white: #e8e2d4;
+    --key-black: #1d2027;
+    --key-edge: #14161b;
+
+    /* Type: Atkinson Hyperlegible Next, with ♭ ♮ ♯ 𝄪 𝄫 from Fretdex Accidentals (fonts.css, THY-1.5) */
+    --font: 'Fretdex Accidentals', 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+    --text-xs: 0.875rem; /* 14px: captions and diagram labels, the smallest text (APP-5.3) */
+    --text-s: 1rem; /* 16px: body */
+    --text-m: 1.125rem; /* 18px: list items and buttons */
+    --text-l: 1.375rem; /* 22px: card titles */
+    --text-xl: 1.75rem; /* 28px: screen titles */
+    --leading: 1.45;
+    --leading-tight: 1.2;
+
+    /* Shape */
+    --radius: 10px;
+    --tap: 44px; /* the smallest tap target (APP-5.1) */
+
+    color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+    --bg: #f6f6f3;
+    --surface: #ffffff;
+    --surface-2: #ebebe6;
+    --line: #d4d4cd;
+    --text: #1a1c21;
+    --muted: #555961;
+    --accent: #9a4c00;
+    --accent-ink: #ffffff;
+
+    /* A maple neck, dark dots */
+    --neck: #eadcc3;
+    --fret: #8b8a84;
+    --nut: #fbf8f1;
+    --string: #6d675d;
+    --inlay: #cdb991;
+    --note: #23262c;
+    --note-ink: #ffffff;
+    --root: #a65100;
+    --root-ink: #ffffff;
+    --key-white: #ffffff;
+    --key-black: #2a2d33;
+    --key-edge: #8b8a84;
+
+    color-scheme: light;
+}
+
+:root[data-theme='contrast'] {
+    --bg: #000000;
+    --surface: #000000;
+    --surface-2: #161616;
+    --line: #ffffff;
+    --text: #ffffff;
+    --muted: #e6e6e6;
+    --accent: #ffd60a;
+    --accent-ink: #000000;
+
+    --neck: #000000;
+    --fret: #ffffff;
+    --nut: #ffffff;
+    --string: #ffffff;
+    --inlay: #5a5a5a;
+    --note: #ffffff;
+    --note-ink: #000000;
+    --root: #ffd60a;
+    --root-ink: #000000;
+    --key-white: #ffffff;
+    --key-black: #000000;
+    --key-edge: #000000;
+
+    color-scheme: dark;
+}

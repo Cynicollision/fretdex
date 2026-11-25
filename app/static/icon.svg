@@ -1,22 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-    <!-- Placeholder icon until the design pass (M01 T3). Drawn inside the middle 80% so it also works as a maskable icon. -->
-    <rect width="512" height="512" fill="#16181d" />
-    <g stroke="#e8e6e1" stroke-linecap="round">
-        <g stroke-width="10">
-            <line x1="156" y1="136" x2="356" y2="136" />
-            <line x1="156" y1="216" x2="356" y2="216" />
-            <line x1="156" y1="296" x2="356" y2="296" />
-            <line x1="156" y1="376" x2="356" y2="376" />
-        </g>
-        <g stroke-width="6">
-            <line x1="156" y1="136" x2="156" y2="376" />
-            <line x1="196" y1="136" x2="196" y2="376" />
-            <line x1="236" y1="136" x2="236" y2="376" />
-            <line x1="276" y1="136" x2="276" y2="376" />
-            <line x1="316" y1="136" x2="316" y2="376" />
-            <line x1="356" y1="136" x2="356" y2="376" />
-        </g>
+    <!-- A chord box: four strings, a heavy nut, the root a square and two notes as circles (DIAG-1.7), in the Dark
+         theme's colours (src/lib/styles/tokens.css). Drawn inside the middle 80% so it also works as a maskable icon. -->
+    <rect width="512" height="512" fill="#14161b" />
+    <g stroke="#a8a296" stroke-width="7">
+        <line x1="136" y1="128" x2="136" y2="400" />
+        <line x1="216" y1="128" x2="216" y2="400" />
+        <line x1="296" y1="128" x2="296" y2="400" />
+        <line x1="376" y1="128" x2="376" y2="400" />
     </g>
-    <circle cx="236" cy="256" r="24" fill="#f0a030" />
-    <circle cx="316" cy="176" r="24" fill="#f0a030" />
+    <g stroke="#7d8089" stroke-width="7">
+        <line x1="136" y1="219" x2="376" y2="219" />
+        <line x1="136" y1="310" x2="376" y2="310" />
+        <line x1="136" y1="400" x2="376" y2="400" />
+    </g>
+    <rect x="124" y="112" width="264" height="22" rx="4" fill="#d9d2c3" />
+    <rect x="186" y="234" width="60" height="60" rx="9" fill="#f0a43a" />
+    <circle cx="296" cy="174" r="31" fill="#e8e2d4" />
+    <circle cx="376" cy="264" r="31" fill="#e8e2d4" />
 </svg>

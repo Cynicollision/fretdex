@@ -17,4 +17,5 @@ Development-only tools (test runners, linters, build plugins) that don't ship in
 
 | What | Author | Source | Licence | Where |
 |---|---|---|---|---|
-| *(none yet)* | | | | |
+| Atkinson Hyperlegible Next, variable weight, Latin and Latin Extended (`@fontsource-variable/atkinson-hyperlegible-next` 5.3.0) | The Atkinson Hyperlegible Next Project Authors, for the Braille Institute | https://github.com/googlefonts/atkinson-hyperlegible-next | SIL Open Font License 1.1 (`node_modules/@fontsource-variable/atkinson-hyperlegible-next/LICENSE`); the copyright and licence URL are in the font files' metadata | The app's text font, `_app/immutable/assets/atkinson-hyperlegible-next-*.woff2` |
+| Fretdex Accidentals: ♭ ♮ ♯ 𝄪 𝄫 cut from Noto Music 2.003, resized, moved and renamed by `app/scripts/make-accidentals-font.py` | The Noto Project Authors | https://github.com/notofonts/music | SIL Open Font License 1.1; the copyright, licence and licence URL are in the font file's metadata | Inlined into the app's CSS in `_app/` (it's under 4 KB), from `app/src/lib/styles/fonts/fretdex-accidentals.woff2` |

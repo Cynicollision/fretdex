@@ -6,14 +6,26 @@
 
 <main>
     <h1>Fretdex</h1>
-    <p>A reference for guitar and bass. Under construction.</p>
+    <p>A reference for guitar and bass: scales, modes and arpeggios in every key, from C to F♯ and B♭.</p>
+    <p class="muted">Under construction.</p>
 </main>
 
 <style>
     main {
-        font-family: system-ui, sans-serif;
+        display: grid;
+        gap: 12px;
         max-width: 40rem;
         margin: 0 auto;
-        padding: 1rem;
+        padding-block: 24px;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+
+    p {
+        margin: 0;
+    }
+
+    .muted {
+        color: var(--muted);
     }
 </style>

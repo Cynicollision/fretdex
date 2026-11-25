@@ -37,6 +37,13 @@ TypeScript stays on 6.x until `svelte-check` and `typescript-eslint` support 7 (
 
 For anything the screen shows, try the change in the running app as well as its tests, on a phone-sized viewport. Claude uses the desktop app's built-in browser: `preview_start` with the `app` configuration in `.claude/launch.json` starts the dev server. Once it's merged and deployed ([deployment.md](deployment.md)), try it on the owner's phone too.
 
+## Fonts and icons
+
+Both are generated once and committed; rerun the script only to change them.
+
+- **The accidentals font** (`app/src/lib/styles/fonts/fretdex-accidentals.woff2`): `python app/scripts/make-accidentals-font.py <NotoMusic-Regular.ttf> app/src/lib/styles/fonts/fretdex-accidentals.woff2`, with Python 3 and `pip install fonttools brotli`. The script says where to get Noto Music and how it moves each sign.
+- **The app icons** (`app/static/*.png`): edit `app/static/icon.svg`, then `node app/scripts/draw-icons.ts`, which draws them in Playwright's Chromium.
+
 ## Before opening a PR
 
 - `npm run format`
