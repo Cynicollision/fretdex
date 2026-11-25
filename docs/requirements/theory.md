@@ -41,7 +41,7 @@ What every module relies on from the theory engine (`fretkit`): notes spelled co
 ## Known gaps
 
 - **THY-1.2:** `fretkit` spells any chord formula from its root, but its chord qualities come with chords in M02.
-- **THY-1.5:** `fretkit` reads typed notes and writes them with ♯ ♭ 𝄪 𝄫, and the app bundles a font that has them, but nothing shows notes or takes typed ones yet: cards from M01 T9, search in M03.
+- **THY-1.5:** `fretkit` reads typed notes and writes them with ♯ ♭ 𝄪 𝄫, and the app bundles a font that has them, and the context bar shows keys and tunings with them, but nothing takes typed notes yet: cards come in M01 T9, search in M03.
 - **THY-2.2 and THY-2.5:** the context bar's key picker offers roots this way; the cards' root pickers come with the cards (M01 T9).
 - **THY-2.4:** `fretkit` lists every note's enharmonic spellings, but nothing shows them until the note card (INT-3, M01 T11).
 - **THY-4.1:** `fretkit` gives every fret's real pitch and the audio package tunes A4 to 440 Hz, but nothing plays yet (M01 T8).
