@@ -1,6 +1,6 @@
 # Golden table: every scale on every root
 
-Every scale in the Scales list (SCL-1.1) on each of the root picker's 12 buttons (THY-2.2): the root **Auto** opens and its notes, and the button's other spelling, marked *not offered* where its key would need a double sharp or flat and the root's other spelling wouldn't (THY-2.5). Signatures count a double sharp or flat as two. Auto takes the spelling with fewer accidentals in its signature, and at a tie, sharps for a scale read in a key with a major 3rd and flats for one with a minor 3rd (THY-2.1).
+Every scale in the Scales list (SCL-1.1) on each of the root picker's 12 buttons (THY-2.2): the root **Auto** opens and its notes, and the button's other spelling, marked *not offered* where its key would need a double sharp or flat and Auto's wouldn't, or where both would (THY-2.5). A root marked *doubles either way* needs a double sharp or flat however it's spelled, so its card says why (SCL-2.6). Signatures count a double sharp or flat as two. Auto takes the spelling with fewer accidentals in its signature, and at a tie, sharps for a scale read in a key with a major 3rd and flats for one with a minor 3rd (THY-2.1).
 
 Written by `src/golden.spec.ts` from `fretkit`'s answers, which fail the test if they change. To change one on purpose, run `npx vitest run -u` in `packages/fretkit` and check the diff by hand.
 
@@ -334,17 +334,17 @@ Intervals: 1 b2 #2 3 #4 b6 b7. Signature: its own notes (no key).
 | Root | Auto | Notes | Signature | Other | Notes | Signature |
 |---|---|---|---|---|---|---|
 | C | C | C Db D# E F# Ab Bb | 3 flats, 2 sharps |  |  |  |
-| C#/Db | C# | C# D D## E# F## A B | 6 sharps | Db | Db Ebb E F G Bbb Cb | 6 flats |
+| C#/Db | C# (doubles either way) | C# D D## E# F## A B | 6 sharps | Db (not offered) | Db Ebb E F G Bbb Cb | 6 flats |
 | D | D | D Eb E# F# G# Bb C | 2 flats, 3 sharps |  |  |  |
 | Eb | Eb | Eb Fb F# G A Cb Db | 4 flats, 1 sharp | D# (not offered) | D# E E## F## G## B C# | 8 sharps |
-| E | E | E F F## G# A# C D | 4 sharps |  |  |  |
+| E | E (doubles either way) | E F F## G# A# C D | 4 sharps |  |  |  |
 | F | F | F Gb G# A B Db Eb | 3 flats, 1 sharp |  |  |  |
-| F#/Gb | F# | F# G G## A# B# D E | 5 sharps | Gb | Gb Abb A Bb C Ebb Fb | 7 flats |
+| F#/Gb | F# (doubles either way) | F# G G## A# B# D E | 5 sharps | Gb (not offered) | Gb Abb A Bb C Ebb Fb | 7 flats |
 | G | G | G Ab A# B C# Eb F | 2 flats, 2 sharps |  |  |  |
-| Ab | Ab | Ab Bbb B C D Fb Gb | 5 flats | G# | G# A A## B# C## E F# | 7 sharps |
+| Ab | Ab (doubles either way) | Ab Bbb B C D Fb Gb | 5 flats | G# (not offered) | G# A A## B# C## E F# | 7 sharps |
 | A | A | A Bb B# C# D# F G | 1 flat, 3 sharps |  |  |  |
 | Bb | Bb | Bb Cb C# D E Gb Ab | 4 flats, 1 sharp | A# (not offered) | A# B B## C## D## F# G# | 9 sharps |
-| B | B | B C C## D# E# G A | 4 sharps |  |  |  |
+| B | B (doubles either way) | B C C## D# E# G A | 4 sharps |  |  |  |
 
 ## Whole tone
 
@@ -363,7 +363,7 @@ Intervals: 1 2 3 #4 #5 b7. Signature: its own notes (no key).
 | Ab | Ab | Ab Bb C D E Gb | 3 flats | G# (not offered) | G# A# B# C## D## F# | 8 sharps |
 | A | A | A B C# D# E# G | 3 sharps |  |  |  |
 | Bb | Bb | Bb C D E F# Ab | 2 flats, 1 sharp | A# (not offered) | A# B# C## D## E## G# | 9 sharps |
-| B | B | B C# D# E# F## A | 5 sharps |  |  |  |
+| B | B (doubles either way) | B C# D# E# F## A | 5 sharps |  |  |  |
 
 ## Half-whole diminished
 
@@ -372,14 +372,14 @@ Intervals: 1 b2 b3 3 #4 5 6 b7. Signature: its own notes (no key).
 | Root | Auto | Notes | Signature | Other | Notes | Signature |
 |---|---|---|---|---|---|---|
 | C | C | C Db Eb E F# G A Bb | 3 flats, 1 sharp |  |  |  |
-| C#/Db | C# | C# D E E# F## G# A# B | 6 sharps | Db | Db Ebb Fb F G Ab Bb Cb | 7 flats |
+| C#/Db | C# (doubles either way) | C# D E E# F## G# A# B | 6 sharps | Db (not offered) | Db Ebb Fb F G Ab Bb Cb | 7 flats |
 | D | D | D Eb F F# G# A B C | 1 flat, 2 sharps |  |  |  |
 | Eb | Eb | Eb Fb Gb G A Bb C Db | 5 flats | D# (not offered) | D# E F# F## G## A# B# C# | 9 sharps |
 | E | E | E F G G# A# B C# D | 3 sharps |  |  |  |
 | F | F | F Gb Ab A B C D Eb | 3 flats |  |  |  |
 | F#/Gb | F# | F# G A A# B# C# D# E | 5 sharps | Gb (not offered) | Gb Abb Bbb Bb C Db Eb Fb | 9 flats |
 | G | G | G Ab Bb B C# D E F | 2 flats, 1 sharp |  |  |  |
-| Ab | Ab | Ab Bbb Cb C D Eb F Gb | 6 flats | G# | G# A B B# C## D# E# F# | 7 sharps |
+| Ab | Ab (doubles either way) | Ab Bbb Cb C D Eb F Gb | 6 flats | G# (not offered) | G# A B B# C## D# E# F# | 7 sharps |
 | A | A | A Bb C C# D# E F# G | 1 flat, 3 sharps |  |  |  |
 | Bb | Bb | Bb Cb Db D E F G Ab | 4 flats | A# (not offered) | A# B C# C## D## E# F## G# | 10 sharps |
 | B | B | B C D D# E# F# G# A | 4 sharps |  |  |  |
@@ -393,12 +393,12 @@ Intervals: 1 2 b3 4 b5 b6 6 7. Signature: its own notes (no key).
 | C | C | C D Eb F Gb Ab A B | 3 flats |  |  |  |
 | C#/Db | C# | C# D# E F# G A A# B# | 5 sharps | Db (not offered) | Db Eb Fb Gb Abb Bbb Bb C | 9 flats |
 | D | D | D E F G Ab Bb B C# | 2 flats, 1 sharp |  |  |  |
-| Eb | Eb | Eb F Gb Ab Bbb Cb C D | 6 flats | D# | D# E# F# G# A B B# C## | 7 sharps |
+| Eb | Eb (doubles either way) | Eb F Gb Ab Bbb Cb C D | 6 flats | D# (not offered) | D# E# F# G# A B B# C## | 7 sharps |
 | E | E | E F# G A Bb C C# D# | 1 flat, 3 sharps |  |  |  |
 | F | F | F G Ab Bb Cb Db D E | 4 flats |  |  |  |
 | F#/Gb | F# | F# G# A B C D D# E# | 4 sharps | Gb (not offered) | Gb Ab Bbb Cb Dbb Ebb Eb F | 10 flats |
 | G | G | G A Bb C Db Eb E F# | 3 flats, 1 sharp |  |  |  |
-| Ab | G# | G# A# B C# D E E# F## | 6 sharps | Ab | Ab Bb Cb Db Ebb Fb F G | 7 flats |
+| Ab | G# (doubles either way) | G# A# B C# D E E# F## | 6 sharps | Ab (not offered) | Ab Bb Cb Db Ebb Fb F G | 7 flats |
 | A | A | A B C D Eb F F# G# | 1 flat, 2 sharps |  |  |  |
 | Bb | Bb | Bb C Db Eb Fb Gb G A | 5 flats | A# (not offered) | A# B# C# D# E F# F## G## | 9 sharps |
 | B | B | B C# D E F G G# A# | 3 sharps |  |  |  |

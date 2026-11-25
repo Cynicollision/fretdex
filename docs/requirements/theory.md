@@ -20,7 +20,7 @@ What every module relies on from the theory engine (`fretkit`): notes spelled co
 | THY-2.2 | Root pickers shall offer the 12 roots as C, C#/Db, D, Eb, E, F, F#/Gb, G, Ab, A, Bb, B, each opening the spelling **Auto** prefers, with the other spelling one tap away. | Partial |
 | THY-2.3 | **Prefer sharps** and **Prefer flats** shall decide the spelling of roots and of lone notes (fretboard note names with no key), never respelling a key's own notes. | Implemented |
 | THY-2.4 | Every note shall show its enharmonic equivalent where asked (INT-3). | Partial |
-| THY-2.5 | A root whose key would need double sharps or flats (A# Dorian, whose parent is G# major) shall never be offered in a root picker when its other spelling's key wouldn't. Reached by a link or search, its card shall show as asked, with a note offering the enharmonic (Bb Dorian). Where no spelling of a root avoids them, every one is offered: a white key's letter (E altered has F𝄪, B altered C𝄪, B whole tone F𝄪), and both spellings of a black key where both need them (C# and Db altered). | Partial |
+| THY-2.5 | A root whose key would need double sharps or flats (A# Dorian, whose parent is G# major) shall never be offered in a root picker when its other spelling's key wouldn't. Reached by a link or search, its card shall show as asked, with a note offering the enharmonic (Bb Dorian). Where both spellings of a black key need them (C# or Db altered), only the one **Auto** prefers is offered, whatever the accidentals setting, and its card says why (SCL-2.6); a white key's letter is always offered, as its button's only spelling. | Partial |
 
 ## THY-3 Tunings are lists of strings
 

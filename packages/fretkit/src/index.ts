@@ -22,6 +22,7 @@ export {
     signature,
     simplerRoot,
     spellPitchClass,
+    unavoidableDoubles,
     type Accidentals,
     type PickerRoot,
     type RootChoice,

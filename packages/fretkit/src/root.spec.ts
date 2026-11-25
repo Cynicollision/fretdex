@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SCALE_TYPES, scaleType, type ScaleType } from './scale';
+import { SCALE_TYPES, scaleType, spellScale, type ScaleType } from './scale';
 import {
     PICKER_ROOTS,
     isOfferedRoot,
@@ -8,6 +8,7 @@ import {
     signature,
     simplerRoot,
     spellPitchClass,
+    unavoidableDoubles,
     type Accidentals
 } from './root';
 
@@ -107,10 +108,14 @@ describe('rootChoices', () => {
         expect(rootChoices(8, type('major'), 'auto')).toEqual({ root: 'Ab' });
     });
 
-    it('THY-2.5 offers both spellings where both keys need double sharps or flats', () => {
+    it("THY-2.5 offers only Auto's spelling where both keys need double sharps or flats, whatever the setting", () => {
         // C# altered has D## and F##; Db altered has Ebb and Bbb.
-        expect(rootChoices(1, type('altered'), 'auto')).toEqual({ root: 'C#', alternative: 'Db' });
-        expect(rootChoices(1, type('altered'), 'flats')).toEqual({ root: 'Db', alternative: 'C#' });
+        for (const accidentals of ['auto', 'sharps', 'flats'] as const) {
+            expect(rootChoices(1, type('altered'), accidentals)).toEqual({ root: 'C#' });
+            expect(rootChoices(6, type('altered'), accidentals)).toEqual({ root: 'F#' });
+            expect(rootChoices(8, type('altered'), accidentals)).toEqual({ root: 'Ab' });
+            expect(rootChoices(3, type('whole-half-diminished'), accidentals)).toEqual({ root: 'Eb' });
+        }
     });
 
     it('THY-2.5 agrees with isOfferedRoot on every button of every scale, whatever the accidentals', () => {
@@ -162,15 +167,44 @@ describe('isOfferedRoot and simplerRoot', () => {
         expect(isOfferedRoot('B', type('altered'))).toBe(true);
     });
 
-    it('THY-2.5 offers nothing simpler where every spelling needs a double sharp or flat', () => {
-        expect(isOfferedRoot('Gb', type('altered'))).toBe(true);
+    it("THY-2.5 offers only Auto's spelling, and nothing simpler, where every spelling needs doubles", () => {
         expect(isOfferedRoot('F#', type('altered'))).toBe(true);
+        expect(isOfferedRoot('Gb', type('altered'))).toBe(false);
         expect(simplerRoot('Gb', type('altered'))).toBeUndefined();
     });
 
     it('THY-2.5 offers a simpler root for a linked root with doubles in the note itself', () => {
         expect(simplerRoot('G##', type('major'))).toBe('A');
         expect(isOfferedRoot('G##', type('major'))).toBe(false);
+    });
+});
+
+describe('unavoidableDoubles', () => {
+    it('SCL-2.6 finds the roots whose scale needs doubles however the root is spelled', () => {
+        expect(unavoidableDoubles('C#', type('altered'))).toBe(true);
+        expect(unavoidableDoubles('Db', type('altered'))).toBe(true);
+        expect(unavoidableDoubles('E', type('altered'))).toBe(true);
+        expect(unavoidableDoubles('B', type('whole-tone'))).toBe(true);
+        expect(unavoidableDoubles('C', type('altered'))).toBe(false);
+    });
+
+    it('SCL-2.6 leaves out doubles another spelling avoids', () => {
+        // G# harmonic minor's F## is the raised 7th of G# minor; Ab harmonic minor has none.
+        expect(unavoidableDoubles('G#', type('harmonic-minor'))).toBe(false);
+        expect(unavoidableDoubles('A#', type('dorian'))).toBe(false);
+    });
+
+    it("SCL-2.6 holds for every root a picker opens with doubles that simplerRoot can't replace", () => {
+        for (const t of SCALE_TYPES) {
+            for (const { pitchClass } of PICKER_ROOTS) {
+                const root = rootFor(pitchClass, t, 'auto');
+                const doubles = spellScale(root, t).notes.some(note => /##|bb/.test(note));
+                if (doubles && !unavoidableDoubles(root, t)) {
+                    // The doubles come from the scale itself on a clean key, as in G# harmonic minor.
+                    expect(signature(root, t).doubles, `${root} ${t.id}`).toBe(false);
+                }
+            }
+        }
     });
 });
 

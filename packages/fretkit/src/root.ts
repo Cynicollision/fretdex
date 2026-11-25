@@ -1,6 +1,6 @@
 import { noteAlteration, notePitchClass, spellingsOf, type NoteName } from './note';
 import { pitchClass } from './pitch';
-import { scaleType, spell, type ScaleType } from './scale';
+import { scaleType, spell, spellScale, type ScaleType } from './scale';
 
 /** The accidentals setting (CTX-1.6). */
 export type Accidentals = 'auto' | 'sharps' | 'flats';
@@ -71,11 +71,13 @@ export function signature(root: NoteName, type: ScaleType): Signature {
 /**
  * The root a picker opens for a pitch class in a scale (THY-2.1 to THY-2.3, THY-2.5).
  *
- * A white-key pitch class is always its letter. For a black key, a spelling that `isOfferedRoot` refuses is never
- * opened. Otherwise **Auto** takes the spelling with fewer accidentals in its key signature (D♭ major, not C♯). At a
- * tie (six each: F♯ or G♭ major, D♯ or E♭ minor) it takes sharps for a scale read in a key with a major 3rd and flats
- * for one with a minor 3rd, so F♯ major, E♭ minor, A♭ Dorian and C♯ Mixolydian. **Prefer sharps** and **Prefer flats**
- * take their spelling, unless it's refused (A♯ Dorian, whose key would need F𝄪), when they take the other.
+ * A white-key pitch class is always its letter. For a black key, if only one spelling's key needs no double sharp or
+ * flat, that one, whatever the setting (B♭ Dorian, since A♯ Dorian's key would need F𝄪). Otherwise **Auto** takes the
+ * spelling with fewer accidentals in its key signature (D♭ major, not C♯). At a tie (six each: F♯ or G♭ major, D♯ or
+ * E♭ minor) it takes sharps for a scale read in a key with a major 3rd and flats for one with a minor 3rd, so F♯ major,
+ * E♭ minor, A♭ Dorian and C♯ Mixolydian. **Prefer sharps** and **Prefer flats** take their spelling where both keys
+ * are clean. Where both need doubles (C♯ or D♭ altered), neither reads better, so the button opens Auto's whatever the
+ * setting, and the card says why (SCL-2.6, `unavoidableDoubles`).
  */
 export function rootFor(pc: number, type: ScaleType, accidentals: Accidentals): NoteName {
     return rootChoices(pc, type, accidentals).root;
@@ -88,8 +90,8 @@ export interface RootChoice {
 }
 
 /**
- * The root a picker button opens in a scale (`rootFor`), and its other spelling if `isOfferedRoot` offers it
- * (THY-2.2, THY-2.5). The root is always one `isOfferedRoot` offers.
+ * The root a picker button opens in a scale (`rootFor`), and its other spelling one tap away when that's a key as
+ * clean as the root's: neither needs a double sharp or flat (THY-2.2, THY-2.5). `isOfferedRoot` offers exactly these.
  */
 export function rootChoices(pc: number, type: ScaleType, accidentals: Accidentals): RootChoice {
     const [sharp = 'C', flat] = PICKER_ROOTS[pitchClass(pc)]?.spellings ?? [];
@@ -100,37 +102,48 @@ export function rootChoices(pc: number, type: ScaleType, accidentals: Accidental
         // Only the spelling whose key needs no double sharp or flat is offered.
         return { root: sharpSignature.doubles ? flat : sharp };
     }
-    let root: NoteName;
-    if (accidentals === 'sharps') {
-        root = sharp;
-    } else if (accidentals === 'flats') {
-        root = flat;
-    } else {
-        const sharpCount = sharpSignature.sharps + sharpSignature.flats;
-        const flatCount = flatSignature.sharps + flatSignature.flats;
-        if (sharpCount !== flatCount) root = sharpCount < flatCount ? sharp : flat;
-        else root = signatureScale(type).intervals.includes('3M') ? sharp : flat;
-    }
+    const sharpCount = sharpSignature.sharps + sharpSignature.flats;
+    const flatCount = flatSignature.sharps + flatSignature.flats;
+    let auto: NoteName;
+    if (sharpCount !== flatCount) auto = sharpCount < flatCount ? sharp : flat;
+    else auto = signatureScale(type).intervals.includes('3M') ? sharp : flat;
+    // Both need doubles: the other spelling reads no better, so only Auto's is offered.
+    if (sharpSignature.doubles) return { root: auto };
+    const root = accidentals === 'sharps' ? sharp : accidentals === 'flats' ? flat : auto;
     return { root, alternative: root === sharp ? flat : sharp };
 }
 
 /**
- * Whether a root is offered in a scale's root pickers (THY-2.2, THY-2.5): it's one of the pickers' spellings (never
- * E♯, B♯, F♭ or C♭), and its key needs no double sharp or flat, unless its button has no spelling that does better.
- * So a white key's letter always is, as its button's only spelling, even where the scale needs a double sharp (E
- * altered's F𝄪), and so are both of a black key's spellings where both need one (C♯ and D♭ altered).
+ * Whether a root is offered in a scale's root pickers (THY-2.2, THY-2.5): it's a spelling `rootChoices` opens or puts
+ * one tap away on its button. So a white key's letter always is, as its button's only spelling, even where the scale
+ * needs a double sharp (E altered's F𝄪); a black key's spelling is unless its key needs a double sharp or flat and
+ * the other spelling's doesn't, or both need them and it isn't Auto's (D♭ altered, beside C♯); and E♯, B♯, F♭ and
+ * C♭ never are.
  */
 export function isOfferedRoot(root: NoteName, type: ScaleType): boolean {
+    const pc = notePitchClass(root);
+    if (!(PICKER_ROOTS[pc]?.spellings ?? []).includes(root)) return false;
+    const { root: auto, alternative } = rootChoices(pc, type, 'auto');
+    return root === auto || root === alternative;
+}
+
+/**
+ * Whether a scale's notes on a root need a double sharp or flat however the root is spelled among the pickers'
+ * spellings, so the card should say why (SCL-2.6): C♯ altered needs D𝄪 and F𝄪, and D♭ altered E𝄫 and B𝄫; E altered
+ * needs F𝄪, and E is its button's only spelling. Not G♯ harmonic minor, whose F𝄪 A♭ harmonic minor avoids.
+ */
+export function unavoidableDoubles(root: NoteName, type: ScaleType): boolean {
+    const hasDoubles = (spelling: NoteName) =>
+        spellScale(spelling, type).notes.some(note => Math.abs(noteAlteration(note)) > 1);
     const spellings = PICKER_ROOTS[notePitchClass(root)]?.spellings ?? [];
-    if (!spellings.includes(root)) return false;
-    if (!signature(root, type).doubles) return true;
-    return spellings.every(spelling => signature(spelling, type).doubles);
+    return hasDoubles(root) && spellings.every(hasDoubles);
 }
 
 /**
  * For a root reached by a link or search whose key would need a double sharp or flat, the enharmonic root to offer
  * instead (A♯ Dorian offers B♭ Dorian, THY-2.5); `undefined` when the root's key needs none, when the root is a
- * natural (E altered keeps its F𝄪), or when no spelling does better (C♯ altered, whose D♭ needs E𝄫).
+ * natural (E altered keeps its F𝄪), or when no spelling does better (D♭ altered, whose C♯ needs D𝄪; the card says
+ * why instead, `unavoidableDoubles`).
  */
 export function simplerRoot(root: NoteName, type: ScaleType): NoteName | undefined {
     if (!signature(root, type).doubles || noteAlteration(root) === 0) return undefined;
