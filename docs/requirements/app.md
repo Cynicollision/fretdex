@@ -48,8 +48,8 @@ Behavior that applies across the whole app: how the user moves around, the conte
 |---|---|---|
 | APP-5.1 | Every tap target shall be at least 44 by 44 CSS pixels. | Planned |
 | APP-5.2 | No action shall need hover, a right-click or a keyboard; every gesture (swipe between voicings) shall also have a visible button. | Planned |
-| APP-5.3 | Text and note labels on diagrams shall be readable at arm's length: body text at least 16px and diagram labels at least 14px at the default size. | Planned |
-| APP-5.4 | The full-neck fretboard shall use the whole width in landscape. | Planned |
+| APP-5.3 | Text and note labels on diagrams shall be readable at arm's length: body text at least 16px and diagram labels at least 14px at the default size. | Partial |
+| APP-5.4 | Every screen and feature shall be usable with the phone held upright. Turning the phone may show more, never less: in landscape the fretboard shows the whole fret range across the full width (DIAG-1.10). Decided 2026-11-25 (APP-Q2). | Planned |
 | APP-5.5 | While **Keep screen awake** is on (CTX-1.10, on by default), the screen shall not dim or lock while the app is open, where the browser supports a wake lock. | Planned |
 | APP-5.6 | No screen shall scroll sideways at any width from 320px. | Planned |
 
@@ -57,8 +57,8 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 | ID | Requirement | Status |
 |---|---|---|
-| APP-6.1 | The app shall offer **Dark** (default), **Light** and **High contrast** themes (CTX-1.8). | Planned |
-| APP-6.2 | Text shall meet WCAG AA contrast in Dark and Light, and AAA in High contrast. | Planned |
+| APP-6.1 | The app shall offer **Dark** (default), **Light** and **High contrast** themes (CTX-1.8). | Partial |
+| APP-6.2 | Text shall meet WCAG AA contrast in Dark and Light, and AAA in High contrast. | Partial |
 | APP-6.3 | Meaning shall never rest on color alone: a root or highlighted degree also differs in shape or label. | Planned |
 | APP-6.4 | Every diagram shall have a text alternative listing what it shows ("A minor seven flat five: A, C, Eb, G; frets x 0 1 0 1 x"). | Planned |
 | APP-6.5 | The app shall work with the system's text size and reduced-motion settings. | Planned |
@@ -79,8 +79,5 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 ## Known gaps
 
-- **APP-4.1:** the icon and theme colours are placeholders until the design pass (M01 T3), and the app opens at a placeholder page until the home board (PIN-2, M01 T12).
-
-## Open questions
-
-- **APP-Q2 Portrait fretboard.** A 15-fret neck across a phone held upright is tiny. *Default:* in portrait the full neck is drawn vertically (nut at the top) and scrolls; positions and chord boxes fit without scrolling. Decided in M01's design task from static mockups on the owner's phone; the alternative is asking the user to turn the phone for the full neck.
+- **APP-4.1:** the app opens at a placeholder page until the home board (PIN-2, M01 T12).
+- **APP-5.3, APP-6.1, APP-6.2:** the three themes' colours and the type scale exist as design tokens, and a unit test checks every text pair's contrast, but nothing switches theme yet (CTX-1.8, M01 T5), and the screens and diagrams that use the tokens come with M01's later tasks.

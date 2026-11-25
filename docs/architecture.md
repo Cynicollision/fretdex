@@ -2,7 +2,7 @@
 
 Fretdex is a static web app with no backend: a SvelteKit site built with `adapter-static`, TypeScript throughout, with the music theory and the audio in framework-free packages so they can be reused (the owner's synth-toy projects) and tested on their own. Everything runs in the browser; only settings, pins and recents are stored, and only on the device.
 
-The repository layout, tech stack and tooling below are built (M01 T1); the rest describes the intended design. When code proves part of it wrong, fix this file in the same PR.
+The repository layout, tech stack, tooling, hosting and styling below are built (M01 T1 to T3); the rest describes the intended design. When code proves part of it wrong, fix this file in the same PR.
 
 ## Layers
 
@@ -49,7 +49,7 @@ The packages have no build step: each exports its TypeScript source (`"exports":
 | State | Svelte stores (runes) for the context and settings; the URL for view state | Nothing global except settings and pins |
 | Storage | IndexedDB through `idb-keyval` | Settings, pins, recents |
 | Offline and install | `@vite-pwa/sveltekit` (Workbox), wrapping SvelteKit's Vite plugin (`withPwa` in `app/vite.config.ts`) | Precaches the whole app; manifest, icons, shortcuts |
-| Styling | Plain CSS with custom properties as design tokens, no UI kit; fonts self-hosted, one with ♯ ♭ 𝄪 𝄫 | Small surface, themeable (dark, light, high contrast); no font requests to other sites |
+| Styling | Plain CSS with custom properties as design tokens, no UI kit; Atkinson Hyperlegible Next, with ♯ ♭ 𝄪 𝄫 from a small cut of Noto Music, both self-hosted ([Styling](#styling)) | Small surface, themeable (dark, light, high contrast); no font requests to other sites; letters and digits that stay distinct at arm's length |
 | Testing | Vitest for the packages and app logic, and for components in a real Chromium (browser mode); Playwright for a few smoke tests on Android and iPhone viewports | The theory engine is the part that must be right; diagrams need real layout to test |
 | Tooling | npm workspaces, Node 24, Prettier (4 spaces, 120 columns, single quotes), ESLint with type-checked `typescript-eslint` and the Svelte plugin, GitHub Actions | As in Moped Finance |
 | Hosting | GitHub Pages at `fretdex.seannormoyle.net`, deployed by the CI workflow's `deploy` job on each merge to `main` ([deployment.md](deployment.md)) | No server to run; the personal site is on GitHub Pages too |
@@ -94,6 +94,13 @@ IndexedDB, through `idb-keyval`, holds five things: settings, custom tunings, pi
 ## Offline and install
 
 The service worker precaches the whole build (app, voicing dataset, icons, fonts), so after the first load the app needs no network. When the app opens with a network and a new version has been deployed, the new service worker installs in the background, takes over and reloads the app (`registerType: 'autoUpdate'`), so a launch picks up the new version within seconds. The root layout (`src/routes/+layout.svelte`) registers the service worker and adds the manifest's link. A navigation the service worker hasn't precached gets the home page's HTML. The manifest gives the app its name, icon, theme colors and, on Android, shortcuts to the top three pins. The app is served from the root of its own subdomain, so it needs no base path and the service worker's scope is the whole origin.
+
+## Styling
+
+- **Tokens.** `app/src/lib/styles/tokens.css` holds every colour, the font stack, the type scale (14, 16, 18, 22 and 28px, as `rem` so the system text size applies) and the 44px tap target. `:root` is the Dark theme; `data-theme="light"` or `"contrast"` on `<html>` swaps the colours (CTX-1.8 sets it). The diagram colours are tokens too (`--neck`, `--fret`, `--note`, `--root` and so on), so a theme repaints the diagrams. `tokens.spec.ts` checks every text pair's contrast against APP-6.2.
+- **Fonts.** Atkinson Hyperlegible Next comes from its Fontsource package, imported in the root layout. It has no musical signs, and no text font checked had 𝄪 and 𝄫, so `fonts.css` adds Fretdex Accidentals: Noto Music's ♭ ♮ ♯ 𝄪 𝄫, raised to sit beside capitals and given Atkinson's line metrics, with a `unicode-range` of just those five. It's made by `app/scripts/make-accidentals-font.py` and committed. Both are bundled into `_app/` (the accidentals inlined in the CSS) and precached.
+- **The look.** A charcoal page, a rosewood neck with nickel frets, bone dots and an amber root in Dark; a maple neck with dark dots in Light; black, white and yellow in High contrast. The root is a square and other notes circles (DIAG-1.7), frets are evenly spaced (DIAG-1.8), and with the phone upright a fretboard shows one position at a time over a strip of the whole neck (DIAG-1.10). The diagrams' sizes are in [M01-design.md](planning/milestones/M01-design.md) until T7 builds them.
+- **The icon** is `app/static/icon.svg`, a chord box in the Dark theme's colours; `app/scripts/draw-icons.ts` draws the PNGs from it.
 
 ## Audio
 

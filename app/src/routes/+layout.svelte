@@ -1,4 +1,8 @@
 <script lang="ts">
+    import '@fontsource-variable/atkinson-hyperlegible-next/wght.css';
+    import '#lib/styles/fonts.css';
+    import '#lib/styles/tokens.css';
+    import '#lib/styles/base.css';
     import { onMount } from 'svelte';
     import { pwaInfo } from 'virtual:pwa-info';
     import type { LayoutProps } from './$types';

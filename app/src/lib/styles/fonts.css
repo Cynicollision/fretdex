@@ -1,0 +1,14 @@
+/*
+ * Self-hosted fonts (no font requests to other sites). Atkinson Hyperlegible Next comes from its Fontsource package,
+ * imported in src/routes/+layout.svelte. It has no ♭ ♮ ♯ 𝄪 𝄫, so Fretdex Accidentals supplies only those five
+ * (THY-1.5): Noto Music's signs, raised to sit beside capitals and given Atkinson's line metrics, made by
+ * scripts/make-accidentals-font.py. Its unicode-range keeps it to those code points, so it can come first in --font.
+ */
+
+@font-face {
+    font-family: 'Fretdex Accidentals';
+    src: url('./fonts/fretdex-accidentals.woff2') format('woff2');
+    font-weight: 200 800;
+    font-display: swap;
+    unicode-range: U+266D-266F, U+1D12A-1D12B;
+}
