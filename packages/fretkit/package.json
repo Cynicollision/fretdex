@@ -1,0 +1,15 @@
+{
+    "name": "@fretdex/fretkit",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Theory engine: notes, intervals, scales, chords, tunings and fretboard mapping. Framework-free.",
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "check": "tsc -p tsconfig.json",
+        "test": "vitest run",
+        "test:watch": "vitest"
+    }
+}

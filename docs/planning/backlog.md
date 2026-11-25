@@ -16,7 +16,7 @@ An item is one bullet: a bold title, what's wrong or wanted, and where (file and
 
 ## Inbox
 
-Nothing yet.
+- **Licence notices in the built app.** The production build minifies Svelte's and SvelteKit's code into `app/build/_app/` without their MIT copyright notices, which the licence asks to travel with the code, and the same will go for Tonal.js and the chord dataset. Something should ship them, such as a generated third-party licences file in the build or a credits screen that shows `CREDITS.md`'s notices. (noticed in M01 T1)
 
 ---
 

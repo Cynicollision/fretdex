@@ -1,0 +1,37 @@
+{
+    "name": "fretdex-workspace",
+    "private": true,
+    "description": "Repository-wide tooling. The app is app/; the theory and audio packages are in packages/.",
+    "type": "module",
+    "workspaces": [
+        "packages/fretkit",
+        "packages/audio",
+        "app"
+    ],
+    "engines": {
+        "node": ">=24"
+    },
+    "scripts": {
+        "dev": "npm run dev -w app",
+        "build": "npm run build -w app",
+        "preview": "npm run preview -w app",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "lint": "eslint .",
+        "check": "npm run check --workspaces",
+        "test": "npm test --workspaces",
+        "test:e2e": "npm run test:e2e -w app"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.15.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-svelte": "^3.24.1",
+        "globals": "^17.14.0",
+        "prettier": "^3.10.1",
+        "prettier-plugin-svelte": "^4.1.1",
+        "typescript": "~6.0.3",
+        "typescript-eslint": "^8.74.0",
+        "vitest": "^5.1.1"
+    }
+}

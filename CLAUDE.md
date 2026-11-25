@@ -1,17 +1,20 @@
 # Fretdex
 
-Offline, installable reference app for guitar and bass: a SvelteKit static site with a framework-free theory package (`fretkit`) and audio package. No backend. There's no code yet: the first milestone is planned, and its first task sets up the repository.
+Offline, installable reference app for guitar and bass: a SvelteKit static site with a framework-free theory package (`fretkit`) and audio package. No backend. npm workspaces: the app in `app/`, the packages in `packages/fretkit/` and `packages/audio/`. M01 is in progress; so far there's the repository, CI and a placeholder page.
 
 Read the doc that fits the task before starting:
 
 - [docs/vision.md](docs/vision.md): what Fretdex is and isn't, and the design principles every decision is checked against
 - [docs/architecture.md](docs/architecture.md): packages, layers, tech stack, routes and the URL scheme, storage, offline
+- [docs/conventions.md](docs/conventions.md): code conventions: formatting, layers, TypeScript, Svelte, tests
+- [docs/development.md](docs/development.md): setup, day-to-day commands, adding dependencies, trying a change, the checks before a PR, releases
+- [docs/testing.md](docs/testing.md): how the unit, component and smoke tests are set up
 - [docs/requirements/](docs/requirements/README.md): requirements by domain, with stable IDs and each domain's open questions
 - [docs/planning/](docs/planning/roadmap.md): the roadmap (one line per milestone), the backlog, and one file per milestone in `milestones/`: the plan, its tasks in order, decisions, progress notes and the outcome. The current one is [M01](docs/planning/milestones/M01-foundation-and-scales.md)
 - [docs/concept-brief.md](docs/concept-brief.md): the brief Fretdex was planned from (2026-11-23), a dated record; the docs above win where they differ
 - [CREDITS.md](CREDITS.md): every third-party library, dataset, font and image that ships, with its licence
 
-`docs/conventions.md`, `docs/development.md`, `docs/testing.md` and `docs/deployment.md` are written by M01's first tasks, when there's code for them to describe.
+`docs/deployment.md` is written by M01's T2, with the deploy it describes.
 
 ## Workflow
 
@@ -20,9 +23,9 @@ Where the workflow's pieces live:
 - **Backlog**: [docs/planning/backlog.md](docs/planning/backlog.md)
 - **Milestones**: [docs/planning/milestones/](docs/planning/milestones/); the current one is the one [the roadmap](docs/planning/roadmap.md) marks planned or in progress
 - **Specs**: [docs/requirements/](docs/requirements/README.md), with each domain's open questions, checked against [docs/vision.md](docs/vision.md)'s principles
-- **Checks**: none yet; M01's T1 writes them into `docs/development.md`
+- **Checks**: [docs/development.md](docs/development.md#before-opening-a-pr), "Before opening a PR": format, lint, type check, unit tests and smoke tests, all from the root; CI runs the same
 - **Upkeep**: none yet
-- **Try it**: none yet; there's no app until M01's T1
+- **Try it**: [docs/development.md](docs/development.md#trying-a-change-in-the-app): `preview_start` with the `app` configuration in `.claude/launch.json` (`npm run dev`, http://localhost:5173), on a phone-sized viewport
 
 Rules for every change:
 
