@@ -2,7 +2,6 @@ import { expect, test, type Page } from '@playwright/test';
 
 /** Every route of M01, as a fresh install would open it from a link or a pin, with its heading. */
 const ROUTES: readonly [path: string, heading: string][] = [
-    ['/modules', 'Modules'],
     ['/scales', 'Scales'],
     ['/scales/G/harmonic-minor', 'G harmonic minor'],
     ['/modes', 'Modes'],
@@ -59,30 +58,37 @@ test("APP-3.5 shows Not found, with a link to the module's list, for a URL it ca
     await expect(page.getByRole('link', { name: 'Home' }).first()).toBeVisible();
 });
 
-test('APP-1.1 and APP-1.2 reach a card in two taps from Home, and the bottom bar reaches Modules', async ({ page }) => {
+test('APP-1.1 and APP-1.2 reach a card in two taps from Home, and the context bar goes Home and to Settings', async ({
+    page
+}) => {
     await page.goto('/');
+    await expect(page.getByRole('main').getByText('Chords')).toBeVisible();
+    await expect(page.getByRole('main').getByRole('link', { name: 'Chords' })).toHaveCount(0);
     await page.getByRole('main').getByRole('link', { name: 'Modes' }).click();
     await page.getByRole('link', { name: 'C Lydian' }).click();
     await expect(heading(page)).toHaveText('C Lydian');
 
-    await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Modules' }).click();
-    await expect(heading(page)).toHaveText('Modules');
-    await expect(page.getByText('Chords')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Chords' })).toHaveCount(0);
-    await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Home' }).click();
+    const banner = page.getByRole('banner');
+    await banner.getByRole('link', { name: 'Home' }).click();
     await expect(heading(page)).toHaveText('Fretdex');
+    await expect(banner.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
+
+    await banner.getByRole('button', { name: /No key/u }).click();
+    await page.getByRole('dialog').getByRole('link', { name: 'All settings ›' }).click();
+    await expect(heading(page)).toHaveText('Settings');
+    await expect(page.getByRole('dialog')).toBeHidden();
 });
 
 test('APP-1.3 goes back where the user came from, by the back control and the browser', async ({ page }) => {
-    await page.goto('/modules');
-    await page.getByRole('link', { name: 'Modes' }).click();
+    await page.goto('/');
+    await page.getByRole('main').getByRole('link', { name: 'Modes' }).click();
     await page.getByRole('link', { name: 'C Dorian' }).click();
     await expect(heading(page)).toHaveText('C Dorian');
 
     await page.getByRole('link', { name: '‹ Back' }).click();
     await expect(heading(page)).toHaveText('Modes');
     await page.goBack();
-    await expect(heading(page)).toHaveText('Modules');
+    await expect(heading(page)).toHaveText('Fretdex');
 });
 
 test("APP-1.3 goes to the card's list from a card opened with nothing to go back to", async ({ page }) => {

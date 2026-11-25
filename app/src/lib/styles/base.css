@@ -42,7 +42,7 @@ h3 {
     outline-offset: 2px;
 }
 
-/* Read by screen readers, not shown: a diagram's text alternative (APP-6.4). */
+/* Read by screen readers, not shown: a diagram's text alternative (APP-6.4), or a label the screen shows another way. */
 .visually-hidden {
     position: absolute;
     width: 1px;

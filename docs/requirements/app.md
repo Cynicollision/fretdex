@@ -6,7 +6,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 | ID | Requirement | Status |
 |---|---|---|
-| APP-1.1 | The app shall have a bottom bar with **Home** (the pin board at `/`, PIN-2), **Search** (SRCH) and **Modules**: a grid of the six modules (**Chords**, **Scales**, **Triads**, **Modes**, **Keys** and **Progressions**) and the tools (**Identify**, CHD-6, and later **Tuner**, TUN, and **Metronome**, MET). **Settings** opens from Home. | Partial |
+| APP-1.1 | The context bar (APP-2) shall start with **Home**, the pin board at `/` (PIN-2), which lists the six modules (**Chords**, **Scales**, **Triads**, **Modes**, **Keys** and **Progressions**) and the tools (**Identify**, CHD-6, and later **Tuner**, TUN, and **Metronome**, MET) under the pins, and end with **Search** (SRCH). **Settings** opens from the context bar's sheet. There's no bottom bar, so the rest of the screen is the card's (owner, 2026-11-25). | Partial |
 | APP-1.2 | Any card shall be reachable in at most two taps from the home board: a pin opens its card in one, and a module's list plus one of its items is two, as Home shows the modules under its pins (owner, 2026-11-25). | Partial |
 | APP-1.3 | Every card shall have a back control that returns to where the user came from (the browser's history), and the browser's and phone's own back shall do the same. A card opened with nothing in the app to go back to (from a link or a shortcut) goes back to its module's list. | Implemented |
 | APP-1.4 | The context bar (APP-2) shall be at the top of every screen, and search one tap away on every screen (SRCH-1.1). | Partial |
@@ -79,7 +79,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 ## Known gaps
 
-- **APP-1.1:** the bottom bar has Home and Modules; Search joins it in M03. The modules and tools later milestones build are in the grid, marked as coming later.
+- **APP-1.1:** the context bar has Home; Search joins it in M03. The modules and tools later milestones build are in Home's grid, marked as coming later.
 - **APP-1.2:** Home shows the modules, so any card is two taps away through its list; pins arrive with the home board (M01 T12).
 - **APP-1.4:** the context bar is at the top of every screen; search comes in M03.
 - **APP-3.1:** every route of M01 opens from its URL with its options and override, but the cards are sketches until their tasks build them (scales T9, modes T10), which show `pos`, `nps` and `compare`; the lists take no filters yet.

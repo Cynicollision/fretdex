@@ -1,6 +1,6 @@
 <!--
     The context bar's sheet (APP-2.1): the current key, instrument, tuning and capo (CTX-1), each applied as it's
-    chosen so the screen behind updates in place (APP-2.2). A new custom tuning is entered here (THY-3.3, CTX-2.7).
+    chosen so the screen behind updates in place (APP-2.2), and the way to the rest of the settings (APP-1.1). A new custom tuning is entered here (THY-3.3, CTX-2.7).
     On a card whose URL overrides the instrument, tuning or capo, changing one of them here also clears the override,
     so the card follows the choice (APP-2.3).
 -->
@@ -14,6 +14,7 @@
     import { settings } from '#lib/settings/store.svelte.ts';
     import { MAX_CUSTOM_TUNINGS } from '#lib/settings/tunings.ts';
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
+    import { resolve } from '$app/paths';
 
     interface Props {
         open: boolean;
@@ -190,6 +191,8 @@
                 <section aria-label="Capo">
                     <Stepper label="Capo" min={0} max={MAX_CAPO} value={current.capo} onchange={chooseCapo} />
                 </section>
+
+                <a class="all-settings" href={resolve('/settings')} onclick={() => dialog?.close()}>All settings ›</a>
             {/if}
         </div>
     {/if}
@@ -328,6 +331,16 @@
 
     .new {
         justify-self: start;
+    }
+
+    .all-settings {
+        justify-self: start;
+        display: inline-flex;
+        align-items: center;
+        min-height: var(--tap);
+        color: var(--accent);
+        font-size: var(--text-m);
+        text-decoration: none;
     }
 
     p {

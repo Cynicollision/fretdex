@@ -6,4 +6,4 @@ How M01's diagrams are drawn, settled in T3 from mockups checked on the owner's 
 
 - Two tiles across a phone, each about 170 wide: a `--surface` tile with a 10 radius and a `--line` border, the mini render, then the label (16, bold) and a sub-label (14, `--muted`).
 - The mini fretboard is 150 by 72: hairline frets and strings, the nut when fret 0 is in range, dots 8 across without labels and the root a 9 square.
-- A tile without a diagram (an interval) shows its symbol at 40 in `--accent`.
+- A tile without a diagram (a pinned list, PIN-2.6) shows its title and filter as text in the label and sub-label.

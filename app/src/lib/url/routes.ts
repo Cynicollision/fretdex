@@ -13,10 +13,10 @@ import { readOverride, writeOverride, type ContextOverride, type QueryParams } f
 /** A module's list, so far. */
 export type ListPath = '/scales' | '/modes';
 
-/** A screen a back control can fall back to: Home, Modules or a module's list. */
-export type ScreenPath = '/' | '/modules' | ListPath;
+/** A screen a back control can fall back to: Home or a module's list. */
+export type ScreenPath = '/' | ListPath;
 
-/** A module or tool in the Modules grid (APP-1.1), with its list's path once it's built. */
+/** A module or tool in Home's grid (APP-1.1), with its list's path once it's built. */
 export interface ModuleEntry {
     readonly name: string;
     /** Absent for a module a later milestone builds. */

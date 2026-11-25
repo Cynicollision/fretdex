@@ -15,7 +15,7 @@
     );
 </script>
 
-<Screen title="Modes" back="/modules">
+<Screen title="Modes" back="/">
     <p>Brightest first.</p>
     <CardList {items} />
 </Screen>
