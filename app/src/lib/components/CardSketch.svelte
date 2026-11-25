@@ -80,7 +80,13 @@
             ]}
             value={options.labels ?? settings.current.labels}
             onchange={(labels: Labels) =>
-                setViewOption(page.url, 'labels', labels === settings.current.labels ? undefined : labels)}
+                setViewOption(
+                    page.url,
+                    card.kind,
+                    settings.current,
+                    'labels',
+                    labels === settings.current.labels ? undefined : labels
+                )}
         />
     {/if}
     <p class="muted">The full card, with its diagrams, is coming.</p>

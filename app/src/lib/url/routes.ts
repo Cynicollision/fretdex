@@ -233,6 +233,26 @@ export function writeQuery(kind: CardKind | undefined, options: ViewOptions, ove
 }
 
 /**
+ * A card's query with one option changed, or removed with `undefined`, written as the app writes it. Choosing a
+ * position clears the 3-notes-per-string pattern and the other way round, as a card shows one or the other.
+ */
+export function withViewOption<K extends keyof ViewOptions>(
+    kind: CardKind,
+    params: QueryParams,
+    settings: Settings,
+    name: K,
+    value: ViewOptions[K] | undefined
+): string {
+    const options: ViewOptions = { ...readViewOptions(kind, params), [name]: value };
+    const { pos, nps, ...others } = options;
+    // One of the two: the one just chosen, else the one already there.
+    const position =
+        name === 'nps' && nps !== undefined ? { nps } : pos !== undefined ? { pos } : nps !== undefined ? { nps } : {};
+    // `writeQuery` leaves out an option that's undefined.
+    return writeQuery(kind, { ...others, ...position }, readOverride(params, settings));
+}
+
+/**
  * A URL's query as the app would write it: what it can read, in order, and nothing else, so a bad or unknown
  * option falls back to its default and leaves the URL. Lists (no card) take only the override so far.
  */

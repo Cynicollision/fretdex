@@ -13,6 +13,7 @@ import {
     readNoteCard,
     readScaleCard,
     readViewOptions,
+    withViewOption,
     type Card
 } from './routes';
 
@@ -134,5 +135,26 @@ describe('canonicalQuery', () => {
         for (const query of ['?pos=2&labels=degrees&inst=bass&tuning=drop-d&capo=0', '?compare=dorian', '']) {
             expect(canonical('mode', query)).toBe(query);
         }
+    });
+});
+
+describe('withViewOption', () => {
+    const query = (text: string) => new URLSearchParams(text);
+
+    it('APP-3.2 changes one option and writes the query in order, before the override', () => {
+        expect(withViewOption('scale', query('inst=bass&capo=2'), DEFAULT_SETTINGS, 'labels', 'notes')).toBe(
+            '?labels=notes&inst=bass&capo=2'
+        );
+        expect(withViewOption('scale', query('labels=notes&pos=1'), DEFAULT_SETTINGS, 'labels', undefined)).toBe(
+            '?pos=1'
+        );
+    });
+
+    it('keeps one of a position and a 3-notes-per-string pattern, the one just chosen', () => {
+        expect(withViewOption('scale', query('pos=2&labels=notes'), DEFAULT_SETTINGS, 'nps', 3)).toBe(
+            '?nps=3&labels=notes'
+        );
+        expect(withViewOption('scale', query('nps=3'), DEFAULT_SETTINGS, 'pos', 1)).toBe('?pos=1');
+        expect(withViewOption('scale', query('nps=3'), DEFAULT_SETTINGS, 'pos', undefined)).toBe('?nps=3');
     });
 });

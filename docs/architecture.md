@@ -40,7 +40,7 @@ The packages have no build step: each exports its TypeScript source (`"exports":
 
 | Layer | Choice | Why |
 |---|---|---|
-| App framework | SvelteKit 3 + `adapter-static`, Svelte 5 in runes mode, Vite 8; every route prerendered | Small bundles; fine-grained reactivity suits SVG diagrams; file-based routes map to the URL-as-state design |
+| App framework | SvelteKit 3 + `adapter-static`, Svelte 5 in runes mode, Vite 8; screens and lists prerendered, cards drawn in the browser from the fallback page ([Routes](#routes-and-the-url-scheme)) | Small bundles; fine-grained reactivity suits SVG diagrams; file-based routes map to the URL-as-state design |
 | Language | TypeScript 6 (strict, with `noUncheckedIndexedAccess`) | Theory code is small pure functions; types catch interval and enharmonic bugs. Not TypeScript 7 yet: `svelte-check` and `typescript-eslint` support up to 6 |
 | Theory | Tonal.js, wrapped by `fretkit` | Notes, intervals, chords, scales, keys, modes and roman numerals. `fretkit` adds what Tonal.js doesn't have: fretboard mapping, CAGED and 3-notes-per-string positions, triad string sets, voicing search |
 | Chord voicings | Seeded from an open-source chord dataset (for example chords-db, MIT), trimmed and extended by hand, shipped inside `fretkit` as JSON | Good voicings are taste, not math; computed shapes cover the long tail and alternate tunings |
@@ -75,9 +75,9 @@ Paths name the thing; query parameters hold view options. Global settings stay o
 | `/chords`, `/chords/[root]/[quality]` | `/chords/A/m7b5` | `v` voicing, `inv` inversion |
 | `/chords/identify` | `/chords/identify?f=x32010` | `f` frets, lowest string first |
 | `/scales`, `/scales/[root]/[scale]` | `/scales/G/major` | `pos` 1–5 (CAGED) or `nps` 1–7, `labels` |
-| `/arpeggios`, `/arpeggios/[root]/[quality]` | `/arpeggios/D/maj7` | `pos` |
+| `/arpeggios`, `/arpeggios/[root]/[quality]` | `/arpeggios/D/maj7` | `pos`, `labels` |
 | `/triads`, `/triads/[root]/[quality]` | `/triads/C/major` | `set` 1–4 (all four when absent), `inv` |
-| `/modes`, `/modes/[root]/[mode]` | `/modes/Fs/dorian` | `compare` |
+| `/modes`, `/modes/[root]/[mode]` | `/modes/Fs/dorian` | `pos` or `nps`, `labels`, `compare` |
 | `/keys/[key]` (`/keys` redirects to `/circle`) | `/keys/Bb-major` | `sevenths` |
 | `/circle` | Circle of fifths | `key` |
 | `/progressions`, `/progressions/[slug]` | `/progressions/ii-v-i` | `key`, `bpm` |
@@ -106,7 +106,7 @@ IndexedDB, through `idb-keyval` (`idbStore` in `app/src/lib/storage/idb.ts`: a `
 - **Versioned records.** Each thing is one record, stored with its format's version (`loadRecord` and `saveRecord` in `storage/record.ts`). Loading migrates an older record forward a step at a time, then reads it field by field, so anything missing or invalid takes its default rather than stopping the app. A record written by a newer version (a tab not yet updated) is read as far as this version understands it and never saved over. If IndexedDB is unavailable, or a migration can't read a record, the app runs on its defaults; if a save fails, the change still applies until the app closes.
 - **Settings.** `Settings` and its record format, `SETTINGS_FORMAT`, are in `settings/settings.ts`, which also switches instrument (CTX-2.1) and matches a tuning to a built-in one by its pitches, however they're spelled (`builtInTuning`). The selected tuning is stored as its pitches, not a name. `SettingsStore` (`settings/store.svelte.ts`) holds them as runes state: the `settings` it exports loads them once asked (`ready`) and saves every change, and a change made before they've loaded waits for them (a change that depends on another setting is given as a function of the settings, so it reads them as loaded). Views read `settings.current`, which holds the defaults until the stored settings arrive.
 - **Custom tunings** are a second record, `customTunings` (`CUSTOM_TUNINGS_FORMAT` in `settings/tunings.ts`): each instrument's saved tunings, up to 10, each with an id that outlasts renames, a name and its pitches. `CustomTuningsStore` (`settings/tunings.svelte.ts`) works as `SettingsStore` does. A tuning's name is a built-in one's, else a saved one's with the same pitches, else "Custom" (`tuningName`), so deleting the tuning in use leaves it in use as "Custom".
-- **Loading after hydration.** Every route is prerendered with the defaults, and Svelte keeps a prerendered page's text as it was when it hydrates it, so stored values that arrived before hydration would never show. So the stores load nothing until asked: the root layout calls `ready()` on both in `onMount`, once the page has hydrated, and the stored values then arrive as an ordinary change. The context bar stays blank until they have, rather than showing the defaults.
+- **Loading after hydration.** Home, Settings and the lists are prerendered with the defaults, and Svelte keeps a prerendered page's text as it was when it hydrates it, so stored values that arrived before hydration would never show. So the stores load nothing until asked: the root layout calls `ready()` on both in `onMount`, once the page has hydrated, and the stored values then arrive as an ordinary change. The context bar stays blank until they have, rather than showing the defaults.
 - **The theme** is also copied into `localStorage` (`applyTheme` in `settings/theme.ts`), because IndexedDB can't be read before the first paint: a script in `app.html` sets `data-theme` from the copy, so a Light or High contrast theme shows from the first frame. The root layout then applies the stored theme and sets the `theme-color` meta to the theme's `--bg`.
 - **Persistent storage.** Running installed, the app asks the browser to keep its storage (`navigator.storage.persist()`, in `storage/persist.ts`), and Settings says whether it did (PIN-6.2). JSON export and import of pins and settings is the backup (PIN-5).
 

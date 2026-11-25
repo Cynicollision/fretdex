@@ -1,5 +1,7 @@
 import { goto } from '$app/navigation';
+import type { Settings } from '#lib/settings/settings.ts';
 import { OVERRIDE_PARAMS } from './context';
+import { withViewOption, type CardKind, type ViewOptions } from './routes';
 
 /** The parts of a URL these read; `page.url` is a read-only URL. */
 type ViewUrl = Pick<URL, 'pathname' | 'search' | 'hash'>;
@@ -16,13 +18,18 @@ export function replaceQuery(url: ViewUrl, query: string): Promise<void> {
     return goto(next, { replace: true, reset: false });
 }
 
-/** Changes one of a view's options (`pos`, `labels`), or removes it with `undefined`, in place (APP-3.2). */
-export function setViewOption(url: ViewUrl, name: string, value: string | undefined): Promise<void> {
-    const params = new URLSearchParams(url.search);
-    if (value === undefined) params.delete(name);
-    else params.set(name, value);
-    const query = params.toString();
-    return replaceQuery(url, query === '' ? '' : `?${query}`);
+/**
+ * Changes one of a card's options (`pos`, `labels`), or removes it with `undefined`, in place (APP-3.2), writing the
+ * query as the app writes it (`withViewOption`).
+ */
+export function setViewOption<K extends keyof ViewOptions>(
+    url: ViewUrl,
+    kind: CardKind,
+    settings: Settings,
+    name: K,
+    value: ViewOptions[K] | undefined
+): Promise<void> {
+    return replaceQuery(url, withViewOption(kind, new URLSearchParams(url.search), settings, name, value));
 }
 
 /** Drops a URL's instrument, tuning and capo override, so the view follows the settings again (APP-2.3). */
