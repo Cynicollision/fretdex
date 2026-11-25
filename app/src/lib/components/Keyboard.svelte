@@ -151,9 +151,14 @@
         stroke-width: 1.5;
     }
 
-    .key .mark.root,
-    .key.black .mark.root {
+    /* Edged on a white key, where the root's colour alone is too close to the key's. */
+    .key .mark.root {
         fill: var(--root);
+        stroke: var(--key-black);
+        stroke-width: 1.5;
+    }
+
+    .key.black .mark.root {
         stroke: none;
     }
 

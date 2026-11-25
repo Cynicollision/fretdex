@@ -92,6 +92,18 @@ describe('Fretboard', () => {
         }
     });
 
+    it('DIAG-1.1 draws the lowest string thickest, at the bottom', async () => {
+        await show();
+
+        const strings = Array.from(document.querySelectorAll('.string'), line => ({
+            y: Number(line.getAttribute('y1')),
+            width: Number(line.getAttribute('stroke-width'))
+        })).sort((a, b) => a.y - b.y);
+        const widths = strings.map(string => string.width);
+        expect(widths).toEqual([...widths].sort((a, b) => a - b));
+        expect(widths[0]).toBeLessThan(widths[5] ?? 0);
+    });
+
     it('DIAG-1.1 draws the nut and the inlays, with two at 12', async () => {
         await show();
 
@@ -249,6 +261,27 @@ describe('Fretboard', () => {
         const box = strip.getBoundingClientRect();
         await userEvent.click(strip, { position: { x: box.width - 14, y: box.height / 2 } });
         expect(document.querySelector('.fretboard svg')?.getAttribute('data-frets')).toBe('10-15');
+    });
+
+    it('DIAG-1.10 goes back to the capo when the capo changes after moving along the neck', async () => {
+        cleanup();
+        await page.viewport(UPRIGHT, 800);
+        const view = await render(Fretboard, {
+            tuning: STANDARD,
+            set: scale('A', 'major'),
+            range: { from: 0, to: 15 },
+            capo: 0,
+            labels: 'notes',
+            handedness: 'right',
+            title: 'A major'
+        });
+        const frets = () => document.querySelector('.fretboard svg')?.getAttribute('data-frets');
+
+        await page.getByRole('button', { name: /Higher/u }).click();
+        await page.getByRole('button', { name: /Lower/u }).click();
+        expect(frets()).toBe('0-6');
+        await view.rerender({ capo: 9 });
+        await expect.poll(frets).toBe('7-12');
     });
 
     it('DIAG-1.10 starts upright at the capo', async () => {

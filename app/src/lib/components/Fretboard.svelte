@@ -73,15 +73,19 @@
 
     const whole = $derived(layNeck(range.from, range.to, width, stringCount));
     const runs = $derived(stretches(range, stretchLength(width)));
-    /** The stretch chosen with Lower, Higher or the strip; until then, the one with the capo or the bottom of the range. */
-    let chosen: number | undefined = $state();
+    /**
+     * The stretch chosen with Lower, Higher or the strip, for the stretches it was chosen among; until then, or once the
+     * capo, the range or the width changes them, the one with the capo or the bottom of the range.
+     */
+    let chosen: { readonly among: string; readonly index: number } | undefined = $state();
+    const among = $derived(`${String(capo)}:${runs.map(run => `${String(run.from)}-${String(run.to)}`).join(',')}`);
     const start = $derived(
         Math.max(
             0,
             runs.findIndex(run => run.to >= capo)
         )
     );
-    const index = $derived(Math.min(Math.max(chosen ?? start, 0), runs.length - 1));
+    const index = $derived(Math.min(Math.max(chosen?.among === among ? chosen.index : start, 0), runs.length - 1));
     const shown: FretRange = $derived(whole ? range : (runs[index] ?? range));
     const layout = $derived(
         whole ??
@@ -143,7 +147,7 @@
     }
 
     function move(by: number) {
-        chosen = Math.min(Math.max(index + by, 0), runs.length - 1);
+        chosen = { among, index: Math.min(Math.max(index + by, 0), runs.length - 1) };
     }
 
     /** Shows the stretch that best centres a fret tapped on the strip. */
@@ -157,7 +161,7 @@
                 distance = d;
             }
         });
-        chosen = best;
+        chosen = { among, index: best };
     }
 
     const rangeText = $derived(
@@ -243,7 +247,7 @@
                     x2={mx(neckEnd)}
                     y1={stringY(layout, i + 1)}
                     y2={stringY(layout, i + 1)}
-                    stroke-width={gauge(stringCount - i, stringCount)}
+                    stroke-width={gauge(i + 1, stringCount)}
                 />
             {/each}
             {#if belowCapo}
