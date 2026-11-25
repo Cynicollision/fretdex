@@ -8,20 +8,18 @@ export type Accidentals = 'auto' | 'sharps' | 'flats';
 /** One of a root picker's 12 buttons (THY-2.2). */
 export interface PickerRoot {
     readonly pitchClass: number;
-    /** What the button shows (`C`, `C#` and `Db`, `Eb`); `noteLabel` each to show it. */
-    readonly shown: readonly NoteName[];
-    /** A white key's letter, or a black key's sharp then its flat. */
+    /** A white key's letter, or a black key's sharp then its flat. The button shows each, as `noteLabel` writes it. */
     readonly spellings: readonly NoteName[];
 }
 
 /** The 12 roots a picker offers, C to B (THY-2.2). */
-export const PICKER_ROOTS: readonly PickerRoot[] = (
-    [['C'], ['C#', 'Db'], ['D'], ['Eb'], ['E'], ['F'], ['F#', 'Gb'], ['G'], ['Ab'], ['A'], ['Bb'], ['B']] as const
-).map((shown, pc) => ({
+export const PICKER_ROOTS: readonly PickerRoot[] = Array.from({ length: 12 }, (_, pc) => ({
     pitchClass: pc,
-    shown,
     spellings: pickerSpellings(pc)
 }));
+
+/** The black keys' names on Auto where there's no key to spell them (THY-2.3). */
+const LONE_NAMES: Partial<Record<number, NoteName>> = { 1: 'C#', 3: 'Eb', 6: 'F#', 8: 'Ab', 10: 'Bb' };
 
 /** A white key's letter, or a black key's sharp and flat. */
 function pickerSpellings(pc: number): NoteName[] {
@@ -31,15 +29,15 @@ function pickerSpellings(pc: number): NoteName[] {
 }
 
 /**
- * How a note with no key is spelled (THY-2.3), such as a fretboard's note names outside a scale: on Auto as the root
- * pickers name it (C♯ E♭ F♯ A♭ B♭), otherwise all sharps or all flats.
+ * How a note with no key is spelled (THY-2.3), such as a fretboard's note names outside a scale: on Auto the black
+ * keys are C♯ E♭ F♯ A♭ B♭, otherwise all sharps or all flats.
  */
 export function spellPitchClass(pc: number, accidentals: Accidentals): NoteName {
-    const root = PICKER_ROOTS[pitchClass(pc)];
-    const [sharp = 'C', flat = sharp] = root?.spellings ?? [];
+    const normalized = pitchClass(pc);
+    const [sharp = 'C', flat = sharp] = PICKER_ROOTS[normalized]?.spellings ?? [];
     if (accidentals === 'sharps') return sharp;
     if (accidentals === 'flats') return flat;
-    return root?.shown[0] ?? sharp;
+    return LONE_NAMES[normalized] ?? sharp;
 }
 
 /** How a root's key signature reads: how many sharps and flats, counting a double sharp or flat as two. */

@@ -4,8 +4,8 @@ import { SCALE_TYPES, scaleType, spellScale, type ScaleType } from './scale';
 
 /**
  * The golden table (M01 decision 4): every scale on every picker root, as Auto spells it and in the other spelling,
- * written to `golden/scales.md`. The owner checks the file by hand once; after that, any change to an answer fails
- * this test until the file is regenerated (`npx vitest run -u` in this package) and the diff checked again.
+ * written to `golden/scales.md`. The file was checked once (M01 T4); any change to an answer fails this test until
+ * the file is regenerated (`npx vitest run -u` in this package) and the diff checked.
  */
 
 function signatureText(root: string, type: ScaleType): string {
@@ -37,7 +37,7 @@ function table(type: ScaleType): string {
         const { root, alternative } = rootChoices(button.pitchClass, type, 'auto');
         const marked = unavoidableDoubles(root, type) ? `${root} (doubles either way)` : root;
         const cells = [
-            button.shown.join('/'),
+            button.spellings.join('/'),
             marked,
             spellScale(root, type).notes.join(' '),
             signatureText(root, type)
@@ -55,7 +55,7 @@ function table(type: ScaleType): string {
 }
 
 describe('golden table', () => {
-    it('THY-1 and THY-2 spell every scale on all 12 roots as checked by hand', async () => {
+    it('THY-1 and THY-2 spell every scale on all 12 roots as the checked table has them', async () => {
         const intro = [
             '# Golden table: every scale on every root',
             '',

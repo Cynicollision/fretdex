@@ -24,10 +24,7 @@ function autoRoots(id: string, accidentals: Accidentals = 'auto'): string {
 }
 
 describe('PICKER_ROOTS', () => {
-    it('THY-2.2 offers the 12 roots as C, C#/Db, D, Eb, E, F, F#/Gb, G, Ab, A, Bb, B', () => {
-        expect(PICKER_ROOTS.map(root => root.shown.join('/')).join(', ')).toBe(
-            'C, C#/Db, D, Eb, E, F, F#/Gb, G, Ab, A, Bb, B'
-        );
+    it('THY-2.2 offers the 12 roots, each black key by both its names', () => {
         expect(PICKER_ROOTS.map(root => root.spellings.join('/')).join(' ')).toBe(
             'C C#/Db D D#/Eb E F F#/Gb G G#/Ab A A#/Bb B'
         );
@@ -209,7 +206,7 @@ describe('unavoidableDoubles', () => {
 });
 
 describe('spellPitchClass', () => {
-    it('THY-2.3 spells a note with no key as the pickers do on Auto, or all one way', () => {
+    it('THY-2.3 spells a note with no key by its usual name on Auto, or all one way', () => {
         const all = (accidentals: Accidentals) =>
             Array.from({ length: 12 }, (_, pc) => spellPitchClass(pc, accidentals)).join(' ');
         expect(all('auto')).toBe('C C# D Eb E F F# G Ab A Bb B');
