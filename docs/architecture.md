@@ -48,11 +48,11 @@ The packages have no build step: each exports its TypeScript source (`"exports":
 | Audio | Web Audio API in `@fretdex/audio`; Tone.js only if scheduling gets painful | No sample files |
 | State | Svelte stores (runes) for the context and settings; the URL for view state | Nothing global except settings and pins |
 | Storage | IndexedDB through `idb-keyval` | Settings, pins, recents |
-| Offline and install | `@vite-pwa/sveltekit` (Workbox) | Precaches the whole app; manifest, icons, shortcuts |
+| Offline and install | `@vite-pwa/sveltekit` (Workbox), wrapping SvelteKit's Vite plugin (`withPwa` in `app/vite.config.ts`) | Precaches the whole app; manifest, icons, shortcuts |
 | Styling | Plain CSS with custom properties as design tokens, no UI kit; fonts self-hosted, one with ♯ ♭ 𝄪 𝄫 | Small surface, themeable (dark, light, high contrast); no font requests to other sites |
 | Testing | Vitest for the packages and app logic, and for components in a real Chromium (browser mode); Playwright for a few smoke tests on Android and iPhone viewports | The theory engine is the part that must be right; diagrams need real layout to test |
 | Tooling | npm workspaces, Node 24, Prettier (4 spaces, 120 columns, single quotes), ESLint with type-checked `typescript-eslint` and the Svelte plugin, GitHub Actions | As in Moped Finance |
-| Hosting | GitHub Pages at `fretdex.seannormoyle.net`, deployed by a GitHub Action on each merge to `main` | No server to run; the personal site is on GitHub Pages too |
+| Hosting | GitHub Pages at `fretdex.seannormoyle.net`, deployed by the CI workflow's `deploy` job on each merge to `main` ([deployment.md](deployment.md)) | No server to run; the personal site is on GitHub Pages too |
 
 ## The theory engine (`fretkit`)
 
@@ -93,7 +93,7 @@ IndexedDB, through `idb-keyval`, holds five things: settings, custom tunings, pi
 
 ## Offline and install
 
-The service worker precaches the whole build (app, voicing dataset, icons, fonts), so after the first load the app needs no network. A new version is fetched in the background and applied on the next launch. The manifest gives the app its name, icon, theme colors and, on Android, shortcuts to the top three pins. The app is served from the root of its own subdomain, so it needs no base path and the service worker's scope is the whole origin.
+The service worker precaches the whole build (app, voicing dataset, icons, fonts), so after the first load the app needs no network. When the app opens with a network and a new version has been deployed, the new service worker installs in the background, takes over and reloads the app (`registerType: 'autoUpdate'`), so a launch picks up the new version within seconds. The root layout (`src/routes/+layout.svelte`) registers the service worker and adds the manifest's link. A navigation the service worker hasn't precached gets the home page's HTML. The manifest gives the app its name, icon, theme colors and, on Android, shortcuts to the top three pins. The app is served from the root of its own subdomain, so it needs no base path and the service worker's scope is the whole origin.
 
 ## Audio
 
@@ -108,7 +108,7 @@ Assumptions from the brief and from what the libraries are known to offer, not y
 - Tonal.js covers spelling, chord and scale dictionaries, keys, modes and roman numerals as needed, and has no fretboard, position or voicing logic.
 - The chord dataset's voicings are for standard tuning only, so alternate tunings need computed voicings.
 - On iPhones, Web Audio is silenced by the ring/silent switch unless the page plays through a media element; check what an installed PWA does.
-- `@vite-pwa/sveltekit` precaches an `adapter-static` build, and GitHub Pages serves every route on a fresh load (prerendered pages, or a `404.html` fallback to the app).
+- GitHub Pages serves every route on a fresh load (prerendered pages, or a `404.html` fallback to the app), and offline, each route opens from the precache rather than the service worker's home-page fallback. Only `/` exists so far; T6 checks this with the real routes. (T2 confirmed that `@vite-pwa/sveltekit` 2 works with SvelteKit 3 and precaches the `adapter-static` build.)
 - Tonal.js's chord detection names inversions and slash chords well enough for Identify, or `fretkit` adds the ranking.
 - chords-db covers the qualities in CHD-1.1, has fingerings, and its licence and notice are as expected.
 - A phone's microphone and an autocorrelation pitch detector are accurate down to the bass's low E (M04).

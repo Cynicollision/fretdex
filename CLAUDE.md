@@ -1,6 +1,6 @@
 # Fretdex
 
-Offline, installable reference app for guitar and bass: a SvelteKit static site with a framework-free theory package (`fretkit`) and audio package. No backend. npm workspaces: the app in `app/`, the packages in `packages/fretkit/` and `packages/audio/`. M01 is in progress; so far there's the repository, CI and a placeholder page.
+Offline, installable reference app for guitar and bass: a SvelteKit static site with a framework-free theory package (`fretkit`) and audio package. No backend. npm workspaces: the app in `app/`, the packages in `packages/fretkit/` and `packages/audio/`. M01 is in progress; so far there's the repository, CI, and a placeholder page deployed to https://fretdex.seannormoyle.net that installs and works offline.
 
 Read the doc that fits the task before starting:
 
@@ -8,13 +8,12 @@ Read the doc that fits the task before starting:
 - [docs/architecture.md](docs/architecture.md): packages, layers, tech stack, routes and the URL scheme, storage, offline
 - [docs/conventions.md](docs/conventions.md): code conventions: formatting, layers, TypeScript, Svelte, tests
 - [docs/development.md](docs/development.md): setup, day-to-day commands, adding dependencies, trying a change, the checks before a PR, releases
+- [docs/deployment.md](docs/deployment.md): how a merge to `main` reaches GitHub Pages and the phone, installing, and the one-time domain setup
 - [docs/testing.md](docs/testing.md): how the unit, component and smoke tests are set up
 - [docs/requirements/](docs/requirements/README.md): requirements by domain, with stable IDs and each domain's open questions
 - [docs/planning/](docs/planning/roadmap.md): the roadmap (one line per milestone), the backlog, and one file per milestone in `milestones/`: the plan, its tasks in order, decisions, progress notes and the outcome. The current one is [M01](docs/planning/milestones/M01-foundation-and-scales.md)
 - [docs/concept-brief.md](docs/concept-brief.md): the brief Fretdex was planned from (2026-11-23), a dated record; the docs above win where they differ
 - [CREDITS.md](CREDITS.md): every third-party library, dataset, font and image that ships, with its licence
-
-`docs/deployment.md` is written by M01's T2, with the deploy it describes.
 
 ## Workflow
 
