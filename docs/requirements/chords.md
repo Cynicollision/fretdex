@@ -29,7 +29,7 @@ Screens: **Chords** (`/chords`) and the chord card (`/chords/[root]/[quality]`, 
 | CHD-3.2 | The user can move between voicings by swiping the box or with previous and next buttons (APP-5.2), and by a strip of small boxes under it; the chosen voicing is the URL's `v` (APP-3.1). | Planned |
 | CHD-3.3 | Voicings shall be ordered open first, then by position up the neck within each family. | Planned |
 | CHD-3.4 | In standard tuning, voicings shall come from the curated dataset, with computed drop 2, drop 3 and shell voicings for qualities the dataset lacks. | Planned |
-| CHD-3.5 | In any other tuning, voicings shall be computed for that tuning, within the limits of CHD-3.9. Curated sets for alternate tunings are later (TODO.md). | Planned |
+| CHD-3.5 | In any other tuning, voicings shall be computed for that tuning, within the limits of CHD-3.9. Curated sets for alternate tunings are later (the backlog). | Planned |
 | CHD-3.6 | The user can hide a voicing they'd never play; hidden voicings are remembered on the device, left out of the list, and can be shown again from the card's menu. | Planned |
 | CHD-3.7 | Every chord quality the list offers shall have at least one voicing in standard tuning. | Planned |
 | CHD-3.8 | Curated voicings shall show finger numbers under the box where the dataset has them; computed voicings show none. | Planned |

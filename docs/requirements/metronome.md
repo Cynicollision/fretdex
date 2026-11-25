@@ -1,6 +1,6 @@
 # Metronome (`MET`)
 
-A metronome with a click, tap tempo, time signatures and subdivisions, which keeps time under any card. It's built after version 1 (M04 in [TODO.md](../../TODO.md)). It's written down now because the first milestones build what it rests on: the audio package's scheduler, which already times scale runs and progressions, the click and count-in (AUD-1.5), the global tempo (CTX-1.11) and a place in the navigation (APP-1.1).
+A metronome with a click, tap tempo, time signatures and subdivisions, which keeps time under any card. It's built after version 1 (M04 in the [roadmap](../planning/roadmap.md)). It's written down now because the first milestones build what it rests on: the audio package's scheduler, which already times scale runs and progressions, the click and count-in (AUD-1.5), the global tempo (CTX-1.11) and a place in the navigation (APP-1.1).
 
 Screen: **Metronome** (`/metronome`, options `bpm`, `sig` time signature and `sub` subdivision).
 

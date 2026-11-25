@@ -14,7 +14,7 @@ Can Fretdex be the owner's scale, mode and arpeggio reference on their phone, in
 
 In:
 
-- The repository as in [architecture.md](../architecture.md): the app plus the `fretkit` and audio packages, CI, and the docs that describe them (`conventions.md`, `development.md`, `testing.md`, `deployment.md`).
+- The repository as in [architecture.md](../../architecture.md): the app plus the `fretkit` and audio packages, CI, and the docs that describe them (`conventions.md`, `development.md`, `testing.md`, `deployment.md`).
 - Deploying to `fretdex.seannormoyle.net` on every merge to `main`, and installing on the owner's phone.
 - Requirements: THY; CTX, capo included; APP (the shell, URLs, install and offline, stand use, themes, accessibility, speed, browsers); DIAG-1, DIAG-3 and DIAG-5; SCL, MODE, ARP and INT; PIN, including Android shortcuts (APP-4.4); and audio for what this milestone shows: AUD-1, AUD-3, AUD-4, AUD-6 and AUD-7.
 - The trial (the Question), and the fixes it leads to.
@@ -24,13 +24,13 @@ Out (and where it goes instead):
 - Chords, triads, chord boxes (DIAG-2), Identify, and strummed audio (AUD-2): M02. Until then, links to chord cards (ARP-1.5, MODE-1.5) show the chord's name without a link.
 - Keys and the circle (DIAG-4), progressions and their loop (AUD-5), and search (SRCH): M03, which releases v1.0.0. Until then, the bottom bar's Search slot is left out.
 - The click and count-in (AUD-1.5) arrive with progressions in M03; the tuner and metronome in M04. This milestone builds what they rest on: their places in the navigation, the audio scheduler and the global tempo.
-- Everything in the vision's non-goals, and everything in `TODO.md`'s Unscheduled.
+- Everything in the vision's non-goals, and everything in the backlog's Parked and Ideas.
 
 ## Decisions taken in this plan
 
 From the concept brief (2026-11-23) and the planning session of 2026-11-24; each is cheap to change before its task starts.
 
-1. **Documents.** The vision says why and what not; the requirements say what the app does; `architecture.md` says how it's built; this file says what to build in what order and how it went. The [concept brief](../concept-brief.md) is a dated record.
+1. **Documents.** The vision says why and what not; the requirements say what the app does; `architecture.md` says how it's built; this file says what to build in what order and how it went. The [concept brief](../../concept-brief.md) is a dated record.
 2. **Milestones and releases**, as in the owner's other projects: version 1 is built in three milestones, each answering its own question and ending in a release. M01 is v0.1.0, M02 (chords and triads) v0.2.0, M03 (keys, progressions, search, and the full trial) v1.0.0. The tuner and metronome follow as M04 (v1.1.0). `main` is deployed on every merge; only releases are tagged.
 3. **Stack** as in `architecture.md`: SvelteKit with `adapter-static`, Svelte 5, strict TypeScript, Tonal.js wrapped by `fretkit`, Web Audio, `idb-keyval`, `@vite-pwa/sveltekit`, plain CSS tokens, Vitest and Playwright.
 4. **Theory is tested first.** Every `fretkit` behavior has a unit test named after its requirement ID before a diagram draws it, and a golden table covers every key's scale on all 12 roots.
@@ -60,7 +60,7 @@ From the concept brief (2026-11-23) and the planning session of 2026-11-24; each
 - [ ] **T5 — Storage, context and settings.** CTX-1 to CTX-3 and PIN-6: versioned records in IndexedDB, the context bar and its sheet (APP-2), the Settings screen, custom tunings. *Done when:* every setting changes what a test page shows and survives a relaunch of the installed app.
 - [ ] **T6 — App shell and URLs.** APP-1, APP-3, APP-5.5, APP-8: the bottom bar and module grid (with places for the later modules and tools), URL parsing and writing for every route, Not found, titles, wake lock. *Done when:* every route of this milestone opens from its URL in a fresh install, and back behaves as APP-1.3 and APP-3.2 say.
 - [ ] **T7 — Fretboard and keyboard.** DIAG-1, DIAG-3, DIAG-5: labels, handedness, capo, highlighting, mini renders, and the text alternative (APP-6.4). *Done when:* a fretboard of any tuning, capo and handedness draws a computed note set correctly, checked against `fretkit` in component tests.
-- [ ] **T8 — Audio engine.** AUD-1.1 to AUD-1.4, AUD-4, AUD-6, AUD-7: voices, tap to play, the drone, and a scheduler on the audio clock built to carry runs, loops, the click and the metronome. Check the iPhone silent switch (AUD-1.4). *Done when:* taps and the drone play on the owner's phone, on silent too, and the owner has judged the voices; if they sound toy-like, sampled instruments move up in `TODO.md`.
+- [ ] **T8 — Audio engine.** AUD-1.1 to AUD-1.4, AUD-4, AUD-6, AUD-7: voices, tap to play, the drone, and a scheduler on the audio clock built to carry runs, loops, the click and the metronome. Check the iPhone silent switch (AUD-1.4). *Done when:* taps and the drone play on the owner's phone, on silent too, and the owner has judged the voices; if they sound toy-like, sampled instruments leave the backlog's Parked for a milestone.
 - [ ] **T9 — Scales.** SCL: the list, the card, CAGED positions, 3-notes-per-string patterns, pentatonic boxes, bass boxes, and scale runs (AUD-3). *Done when:* every scale in SCL-1.1 opens on every root with correct positions in standard tuning, checked by golden tests and on the phone.
 - [ ] **T10 — Modes and arpeggios.** MODE and ARP, reusing the scale card. *Done when:* every mode and arpeggio quality opens on every root, with comparison and the brightness row working.
 - [ ] **T11 — Intervals and notes.** INT. *Done when:* every interval's card and every note's card open and play.
@@ -69,14 +69,14 @@ From the concept brief (2026-11-23) and the planning session of 2026-11-24; each
 
 ## Definition of done
 
-- [ ] Every sub-requirement in scope is `Implemented`, or `Retired` or moved to a later milestone or `TODO.md`, with the reason in its row and in Changes to the plan.
+- [ ] Every sub-requirement in scope is `Implemented`, or `Retired` or moved to a later milestone or the backlog, with the reason in its row and in Changes to the plan.
 - [ ] `fretkit`'s golden tests cover every key's scale and every mode on all 12 roots, checked by hand once.
 - [ ] Every card of this milestone loads and plays with the phone in airplane mode after install.
 - [ ] Every card is two taps from the home board (APP-1.2), and every view's URL reopens it as it was (APP-3.1).
 - [ ] Playwright smoke tests pass on a phone viewport for one card per module, pinning and offline.
 - [ ] The trial (the Question) ran for at least a week including a rehearsal or practice session, and its findings are in the Outcome.
 - [ ] `architecture.md`, `conventions.md`, `development.md`, `testing.md` and `deployment.md` describe the app as built.
-- [ ] v0.1.0 is tagged and deployed; the Outcome is filled in; `TODO.md` and the milestones list say released, and M02's file is written.
+- [ ] v0.1.0 is tagged and deployed; the Outcome is filled in; the roadmap says released, and M02's file is written.
 
 # Outcome
 

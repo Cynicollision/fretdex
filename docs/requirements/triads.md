@@ -1,6 +1,6 @@
 # Triads and String Sets (`TRI`)
 
-Major, minor, diminished and augmented triads, in each inversion, on each set of three adjacent strings: the small shapes used for comping and for finding a chord anywhere on the neck. Guitar only, and close-voiced on adjacent strings; sus and spread triads are later (TODO.md).
+Major, minor, diminished and augmented triads, in each inversion, on each set of three adjacent strings: the small shapes used for comping and for finding a chord anywhere on the neck. Guitar only, and close-voiced on adjacent strings; sus and spread triads are later (the backlog).
 
 Screens: **Triads** (`/triads`) and the triad card (`/triads/[root]/[quality]`, options `set` 1–4 and `inv`).
 

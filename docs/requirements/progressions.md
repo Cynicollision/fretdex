@@ -1,6 +1,6 @@
 # Progressions (`PROG`)
 
-A library of common progressions written in roman numerals, shown in any key with a voicing for each chord, and played on a loop at a set tempo to jam over. Saving your own is later (TODO.md); a pin already saves a library progression in a key at a tempo.
+A library of common progressions written in roman numerals, shown in any key with a voicing for each chord, and played on a loop at a set tempo to jam over. Saving your own is later (the backlog); a pin already saves a library progression in a key at a tempo.
 
 Screens: **Progressions** (`/progressions`) and the progression card (`/progressions/[slug]`, options `key` and `bpm`).
 
@@ -30,4 +30,4 @@ Screens: **Progressions** (`/progressions`) and the progression card (`/progress
 |---|---|---|
 | PROG-3.1 | **Play** shall loop the progression at the card's tempo (`bpm`, default 90, from 40 to 220), one bar of 4/4 per chord unless PROG-2.5 says otherwise, highlighting the chord that's playing (AUD-5). | Planned |
 | PROG-3.2 | The user can change the tempo while it plays. | Planned |
-| PROG-3.3 | Playback shall be in 4/4, each chord strummed on every beat, with the optional click and count-in of AUD-1.5. 3/4 and rhythm patterns are later (TODO.md). | Planned |
+| PROG-3.3 | Playback shall be in 4/4, each chord strummed on every beat, with the optional click and count-in of AUD-1.5. 3/4 and rhythm patterns are later (the backlog). | Planned |

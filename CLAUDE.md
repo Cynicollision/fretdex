@@ -7,13 +7,24 @@ Read the doc that fits the task before starting:
 - [docs/vision.md](docs/vision.md): what Fretdex is and isn't, and the design principles every decision is checked against
 - [docs/architecture.md](docs/architecture.md): packages, layers, tech stack, routes and the URL scheme, storage, offline
 - [docs/requirements/](docs/requirements/README.md): requirements by domain, with stable IDs and each domain's open questions
-- [docs/milestones/](docs/milestones/README.md): one file per milestone: the plan, its tasks in order, decisions, progress notes and the outcome. The current one is [M01](docs/milestones/M01-foundation-and-scales.md)
+- [docs/planning/](docs/planning/roadmap.md): the roadmap (one line per milestone), the backlog, and one file per milestone in `milestones/`: the plan, its tasks in order, decisions, progress notes and the outcome. The current one is [M01](docs/planning/milestones/M01-foundation-and-scales.md)
 - [docs/concept-brief.md](docs/concept-brief.md): the brief Fretdex was planned from (2026-11-23), a dated record; the docs above win where they differ
 - [CREDITS.md](CREDITS.md): every third-party library, dataset, font and image that ships, with its licence
 
 `docs/conventions.md`, `docs/development.md`, `docs/testing.md` and `docs/deployment.md` are written by M01's first tasks, when there's code for them to describe.
 
 ## Workflow
+
+Where the workflow's pieces live:
+
+- **Backlog**: [docs/planning/backlog.md](docs/planning/backlog.md)
+- **Milestones**: [docs/planning/milestones/](docs/planning/milestones/); the current one is the one [the roadmap](docs/planning/roadmap.md) marks planned or in progress
+- **Specs**: [docs/requirements/](docs/requirements/README.md), with each domain's open questions, checked against [docs/vision.md](docs/vision.md)'s principles
+- **Checks**: none yet; M01's T1 writes them into `docs/development.md`
+- **Upkeep**: none yet
+- **Try it**: none yet; there's no app until M01's T1
+
+Rules for every change:
 
 - Every change goes through a PR to `main`. Branch as `claude/<short-kebab-summary>`, keep branches short-lived, and open the PR with `gh pr create`.
 - When behavior changes, update the matching requirement in `docs/requirements/` (status or wording) in the same PR.
@@ -23,8 +34,8 @@ Read the doc that fits the task before starting:
 
 ## Backlog
 
-`TODO.md` is the high-level backlog: one line per milestone, then Unscheduled, with Ideas last. The milestone being built has its own file in `docs/milestones/`, which holds its tasks; work for it goes there.
+Planning lives in `docs/planning/`. `roadmap.md` has one line per milestone. `backlog.md` holds the work outside the milestone being built: an Inbox of things found but not sorted yet, sections for milestones not planned yet, then Anytime, Parked and Ideas (its introduction says what each is for). The milestone being built has its own file in `milestones/`, which holds its tasks; work for it goes there.
 
-- Delete a `TODO.md` item once it's done; git history is the changelog. A milestone task is ticked instead, with a *Changed while doing it* note in the PR that finishes it.
-- When you notice follow-up work that's out of scope for the current change, add it to the milestone's tasks or to `TODO.md`'s Unscheduled, instead of fixing it on the side.
+- Delete a backlog item once it's done; git history is the changelog. A milestone task is ticked instead, with a *Changed while doing it* note in the PR that finishes it.
+- When you notice follow-up work that's out of scope for the current change, add it to the milestone's tasks or to the backlog's Inbox, instead of fixing it on the side. Say what's wrong, where, and where you found it. Only the owner moves items out of the Inbox.
 - Point at code by file and symbol name, not line numbers.

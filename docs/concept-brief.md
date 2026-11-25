@@ -2,7 +2,7 @@
 
 2026-11-23 · Sean Normoyle
 
-> A dated record, not a living doc: the brief Fretdex was planned from, written in a Claude project and copied here as it was. It isn't edited. Where it and the other docs differ, the [vision](vision.md), [requirements](requirements/README.md), [architecture](architecture.md) and [milestones](milestones/README.md) win: most of its open questions have since been decided there, and its build plan became milestones. One correction: the first goal's "three or four apps and sites" was an assumption. The owner uses no app or site for this today; the reference is mostly in their head and in books.
+> A dated record, not a living doc: the brief Fretdex was planned from, written in a Claude project and copied here as it was. It isn't edited. Where it and the other docs differ, the [vision](vision.md), [requirements](requirements/README.md), [architecture](architecture.md) and [milestones](planning/roadmap.md) win: most of its open questions have since been decided there, and its build plan became milestones. One correction: the first goal's "three or four apps and sites" was an assumption. The owner uses no app or site for this today; the reference is mostly in their head and in books.
 
 ## Overview
 
