@@ -28,6 +28,7 @@
     <button
         type="button"
         class:pending={!loaded}
+        disabled={!loaded}
         aria-haspopup="dialog"
         aria-expanded={open}
         onclick={() => (open = true)}

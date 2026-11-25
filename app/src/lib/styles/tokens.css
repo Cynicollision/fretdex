@@ -10,6 +10,7 @@
     --surface: #1d2027; /* bars, cards, tiles */
     --surface-2: #272b34; /* controls on a surface */
     --line: #363a45; /* borders and dividers */
+    --backdrop: rgb(0 0 0 / 0.6); /* dims the page behind a sheet */
     --text: #ebe8e1;
     --muted: #a6a29a; /* secondary text, fret numbers */
     --accent: #f0a43a; /* the current choice, the current key, focus */
@@ -51,6 +52,7 @@
     --surface: #ffffff;
     --surface-2: #ebebe6;
     --line: #d4d4cd;
+    --backdrop: rgb(26 28 33 / 0.45);
     --text: #1a1c21;
     --muted: #555961;
     --accent: #9a4c00;
@@ -78,6 +80,7 @@
     --surface: #000000;
     --surface-2: #161616;
     --line: #ffffff;
+    --backdrop: rgb(0 0 0 / 0.8);
     --text: #ffffff;
     --muted: #e6e6e6;
     --accent: #ffd60a;

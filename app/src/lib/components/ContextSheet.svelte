@@ -68,13 +68,35 @@
         editing = false;
     }
 
-    // Closing by Escape, or a tap on the backdrop around the sheet.
+    // Closing by Escape, or a tap on the backdrop around the sheet. A click lands on the dialog itself for the
+    // backdrop, but also for its scrollbar or a text selection dragged out of it, so it closes only when the press
+    // started and ended outside the sheet's box.
+    let pressedOutside = false;
+
+    function outside(event: MouseEvent): boolean {
+        if (event.target !== dialog || !dialog) return false;
+        const box = dialog.getBoundingClientRect();
+        return (
+            event.clientX < box.left ||
+            event.clientX > box.right ||
+            event.clientY < box.top ||
+            event.clientY > box.bottom
+        );
+    }
+
     function backdropClick(event: MouseEvent) {
-        if (event.target === dialog) dialog?.close();
+        if (pressedOutside && outside(event)) dialog?.close();
+        pressedOutside = false;
     }
 </script>
 
-<dialog bind:this={dialog} aria-labelledby="context-sheet-title" {onclose} onclick={backdropClick}>
+<dialog
+    bind:this={dialog}
+    aria-labelledby="context-sheet-title"
+    {onclose}
+    onpointerdown={(event: PointerEvent) => (pressedOutside = outside(event))}
+    onclick={backdropClick}
+>
     {#if open}
         <div class="sheet">
             <header>
@@ -171,7 +193,7 @@
     }
 
     dialog::backdrop {
-        background: rgb(0 0 0 / 0.55);
+        background: var(--backdrop);
     }
 
     .sheet {

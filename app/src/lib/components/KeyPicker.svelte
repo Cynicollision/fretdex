@@ -11,12 +11,14 @@
 
     const key = $derived(settings.current.key);
 
-    // The mode the roots open in when there's no key yet.
-    let chosenMode: KeyMode = $state('major');
+    // The mode the roots open in when there's no key: the key's own until it's cleared.
+    // svelte-ignore state_referenced_locally
+    let chosenMode: KeyMode = $state(key?.mode ?? 'major');
     const mode = $derived(key?.mode ?? chosenMode);
 
-    // svelte-ignore state_referenced_locally
-    let allModes = $state(mode !== 'major' && mode !== 'minor');
+    // The other modes show once asked for, or while one of them is chosen.
+    let expanded = $state(false);
+    const allModes = $derived(expanded || (mode !== 'major' && mode !== 'minor'));
     const modeOptions = $derived(
         KEY_MODES.filter(candidate => allModes || candidate.id === 'major' || candidate.id === 'minor').map(
             candidate => ({ value: candidate.id, label: candidate.name })
@@ -39,6 +41,11 @@
         void settings.update(s => ({ ...s, key: pickKey(Number(pitchClass), mode, s.accidentals) }));
     }
 
+    function clearKey() {
+        chosenMode = mode;
+        void settings.update({ key: null });
+    }
+
     function respell() {
         if (!key || !other) return;
         const root = other;
@@ -50,7 +57,7 @@
     <div class="modes">
         <Choice legend="Mode" name="key-mode" options={modeOptions} value={mode} onchange={setMode} />
         {#if !allModes}
-            <button type="button" class="more" aria-expanded="false" onclick={() => (allModes = true)}>
+            <button type="button" class="more" aria-expanded="false" onclick={() => (expanded = true)}>
                 More modes
             </button>
         {/if}
@@ -59,9 +66,7 @@
     <Choice legend="Root" name="key-root" options={rootOptions} value={chosenRoot} columns={4} onchange={setRoot} />
 
     <div class="row">
-        <button type="button" class="none" aria-pressed={key === null} onclick={() => settings.update({ key: null })}>
-            No key
-        </button>
+        <button type="button" class="none" aria-pressed={key === null} onclick={clearKey}> No key </button>
         {#if key && other}
             <button type="button" class="respell" onclick={respell}>Spell as {noteLabel(other)}</button>
         {/if}

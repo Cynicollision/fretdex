@@ -122,6 +122,33 @@ describe('the context bar', () => {
         await expect.element(sheet().getByText(/the most there can be/)).toBeVisible();
     });
 
+    it('CTX-2.6 keeps the mode shown when the key is cleared', async () => {
+        await settings.update({ key: { root: 'D', mode: 'dorian' } });
+        await openSheet();
+
+        await sheet().getByRole('button', { name: 'No key' }).click();
+        await sheet().getByText('E', { exact: true }).click();
+
+        await expect.poll(() => settings.current.key).toEqual({ root: 'E', mode: 'dorian' });
+    });
+
+    it('closes with a tap on the backdrop, but not with a click that started in the sheet', async () => {
+        await openSheet();
+        const dialog = sheet().element() as HTMLDialogElement;
+        const box = dialog.getBoundingClientRect();
+        const press = (x: number, y: number, type: string) =>
+            dialog.dispatchEvent(new PointerEvent(type, { bubbles: true, clientX: x, clientY: y }));
+
+        // A text selection dragged out of the sheet, or its scrollbar: the click lands on the dialog, inside its box.
+        press(box.left + 10, box.top + 10, 'pointerdown');
+        press(box.left + 10, box.top + 10, 'click');
+        await expect.element(sheet()).toBeVisible();
+
+        press(box.left + 10, box.top - 20, 'pointerdown');
+        press(box.left + 10, box.top - 20, 'click');
+        await expect.element(sheet()).not.toBeInTheDocument();
+    });
+
     it('closes with Done', async () => {
         await openSheet();
 
