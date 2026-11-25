@@ -17,6 +17,7 @@ An item is one bullet: a bold title, what's wrong or wanted, and where (file and
 ## Inbox
 
 - **Licence notices in the built app.** The production build minifies Svelte's and SvelteKit's code into `app/build/_app/` without their MIT copyright notices, which the licence asks to travel with the code, and the same will go for Tonal.js and the chord dataset. Something should ship them, such as a generated third-party licences file in the build or a credits screen that shows `CREDITS.md`'s notices. (noticed in M01 T1)
+- **Scale-degree labels on sets that aren't seven-note scales.** With Labels on Scale degrees, a dot shows its place in the set (`MappedNote.degree`), so a maj7 arpeggio reads 1 2 3 4 and the minor pentatonic 1 2 3 4 5, where a player may expect 1 3 5 7 and 1 3 4 5 7; numbering by interval instead gives the blues scale two 5s. CTX-1.5 doesn't say which; `dotLabel` in `app/src/lib/diagrams/fretboard.ts`. Wants a decision before T9 and T10 build those cards. (PR 12 review, gemini)
 
 ---
 

@@ -15,7 +15,7 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 | DIAG-1.7 | The root shall be a square and other notes circles; where a card highlights chord tones within a scale, chord tones shall be filled and other notes outlined. Color adds to these and never replaces them. The design task may refine the look, not these distinctions. | Implemented |
 | DIAG-1.8 | Frets shall narrow gently up the neck, each 0.98 the width of the one below it rather than a real guitar's 0.944, so the neck reads as a neck while the highest frets stay readable and easy to tap. Where that would make a fret narrower than the tap target (APP-5.1), the narrowing eases toward even. Decided 2026-11-25, replacing evenly spaced frets. | Implemented |
 | DIAG-1.9 | With a capo (CTX-3), the fretboard shall draw it as a bar across the strings at its fret, with the frets below it dimmed and empty. | Implemented |
-| DIAG-1.10 | With the phone upright, the fretboard shall show at most six frets across the width: the chosen position, or a stretch of the neck when the card has none, with previous and next to move along it. A strip of the whole fret range below it shall mark that stretch and the roots, and tapping the strip shall move to that part of the neck. In landscape it shows the whole fret range (APP-5.4). | Implemented |
+| DIAG-1.10 | With the phone upright, the fretboard shall show at most six frets across the width: the chosen position, or a stretch of the neck when the card has none, with previous and next to move along it. A strip of the whole fret range below it shall mark that stretch and the roots, and tapping the strip shall move to that part of the neck. In landscape it shows the whole fret range (APP-5.4). | Partial |
 
 ## DIAG-2 Chord box
 
@@ -47,9 +47,11 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 
 | ID | Requirement | Status |
 |---|---|---|
-| DIAG-5.1 | Every diagram shall have a compact form for pin tiles (PIN-2.2) that stays legible at about 150 px wide: dots without labels, the root marked. | Implemented |
+| DIAG-5.1 | Every diagram shall have a compact form for pin tiles (PIN-2.2) that stays legible at about 150 px wide: dots without labels, the root marked. | Partial |
 
 ## Known gaps
 
 - **DIAG-1.6, DIAG-3.2:** a tapped fret or enlarged key is reported with its note, spelled as a lone note where the set has none, but nothing plays it until the audio engine (M01 T8) and nothing names it until the note card (INT-2.2, T11).
+- **DIAG-1.10:** upright, the fretboard shows a stretch with Lower and Higher over the strip, and in landscape the whole range; showing the chosen position comes with positions (M01 T9).
 - **DIAG-3.1:** the keyboard marks the notes and enlarges when tapped, on the scale, mode, arpeggio and note cards; it plays with T8.
+- **DIAG-5.1:** the fretboard has its compact form (`FretboardMini.svelte`); the chord box's comes in M02, and the pin tiles that show them in M01 T12.
