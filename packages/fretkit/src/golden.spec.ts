@@ -53,7 +53,7 @@ describe('golden table', () => {
         const intro = [
             '# Golden table: every scale on every root',
             '',
-            "Every scale in the Scales list (SCL-1.1) on each of the root picker's 12 buttons (THY-2.2): the root **Auto** opens and its notes, and the button's other spelling, marked *not offered* where its key would need a double sharp or flat (THY-2.5). Signatures count a double sharp or flat as two. Auto takes the spelling with fewer accidentals in its signature, and at a tie, sharps for a scale read in a key with a major 3rd and flats for one with a minor 3rd (THY-2.1).",
+            "Every scale in the Scales list (SCL-1.1) on each of the root picker's 12 buttons (THY-2.2): the root **Auto** opens and its notes, and the button's other spelling, marked *not offered* where its key would need a double sharp or flat and the root's other spelling wouldn't (THY-2.5). Signatures count a double sharp or flat as two. Auto takes the spelling with fewer accidentals in its signature, and at a tie, sharps for a scale read in a key with a major 3rd and flats for one with a minor 3rd (THY-2.1).",
             '',
             "Written by `src/golden.spec.ts` from `fretkit`'s answers, which fail the test if they change. To change one on purpose, run `npx vitest run -u` in `packages/fretkit` and check the diff by hand."
         ].join('\n');

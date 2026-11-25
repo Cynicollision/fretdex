@@ -41,6 +41,12 @@ describe('parseTuning and tuningSlug', () => {
         expect(parseTuning('E2-A2-D3-G3-B3-E')).toBeUndefined();
         expect(parseTuning('E2-A2-D3-G3-B3-Q4')).toBeUndefined();
     });
+
+    it('takes open strings up to G7, so every fret to 24 has a MIDI number', () => {
+        expect(parseTuning('E2-A2-D3-G3-B3-G7')).toHaveLength(6);
+        expect(parseTuning('E2-A2-D3-G3-B3-Gs7')).toBeUndefined();
+        expect(parseTuning('E2-A2-D3-G3-B3-G9')).toBeUndefined();
+    });
 });
 
 describe('string numbers', () => {
@@ -76,5 +82,16 @@ describe('openStrings and fretMidi', () => {
         expect(fretMidi(standard, 6, 2, 2)).toBe(openStrings(standard, 2)[0]);
         expect(fretMidi(standard, 6, 5, 2)).toBe(fretMidi(standard, 6, 5));
         expect(fretMidi(standard, 6, 1, 2)).toBeUndefined();
+    });
+
+    it('gives nothing for a fret off the neck, and refuses a capo off it', () => {
+        expect(fretMidi(standard, 6, -1)).toBeUndefined();
+        expect(fretMidi(standard, 6, 25)).toBeUndefined();
+        expect(fretMidi(standard, 6, 24)).toBe(64);
+        expect(fretMidi(standard, 6, 2.5)).toBeUndefined();
+        expect(fretMidi(standard, 0, 0)).toBeUndefined();
+        expect(() => fretMidi(standard, 6, 0, -2)).toThrow();
+        expect(() => fretMidi(standard, 6, 12, 12)).toThrow();
+        expect(() => openStrings(standard, -1)).toThrow();
     });
 });

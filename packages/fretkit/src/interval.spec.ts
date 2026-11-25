@@ -20,8 +20,12 @@ describe('intervalName', () => {
         expect(intervalName('13m')).toBe('b13');
     });
 
-    it('refuses what is not an interval', () => {
-        expect(() => intervalName('3P')).toThrow();
+    it('refuses what is not a rising interval', () => {
+        for (const read of [intervalName, intervalLabel, intervalSemitones]) {
+            expect(() => read('3P'), read.name).toThrow();
+            expect(() => read('-3m'), read.name).toThrow();
+            expect(() => read(''), read.name).toThrow();
+        }
     });
 });
 

@@ -29,6 +29,7 @@ export {
 } from './root';
 export {
     MAX_CAPO,
+    MAX_FRET,
     MAX_STRINGS,
     MIN_STRINGS,
     TUNINGS,

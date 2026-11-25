@@ -51,6 +51,12 @@ describe('mapScale', () => {
         expect(Math.min(...withCapo.map(cell => cell.fret))).toBe(2);
     });
 
+    it('stops a range at the nut and at fret 24', () => {
+        const cells = mapScale(standard, scale('E', 'minor-pentatonic'), { from: -3, to: 30 });
+        expect(Math.min(...cells.map(cell => cell.fret))).toBe(0);
+        expect(Math.max(...cells.map(cell => cell.fret))).toBe(24);
+    });
+
     it('lists highest string first, then up the neck', () => {
         const cells = mapScale(standard, scale('C', 'major'), { from: 0, to: 3 });
         const order = cells.map(cell => cell.string * 100 + cell.fret);

@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { enharmonics, noteLabel, noteMidi, noteSlug, parseNote, spellingsOf, spellMidi } from './note';
+import {
+    enharmonics,
+    noteAlteration,
+    noteLabel,
+    noteMidi,
+    notePitchClass,
+    notePitchName,
+    noteSlug,
+    parseNote,
+    spellingsOf,
+    spellMidi
+} from './note';
 
 describe('parseNote', () => {
     it('THY-1.5 accepts #, s and b, and the signs, for typed notes', () => {
@@ -12,12 +23,16 @@ describe('parseNote', () => {
         expect(parseNote('B♭')).toBe('Bb');
         expect(parseNote('b')).toBe('B');
         expect(parseNote(' C ')).toBe('C');
+        expect(parseNote('FS')).toBe('F#');
+        expect(parseNote('C♮')).toBe('C');
+        expect(parseNote('C♮4')).toBe('C4');
     });
 
     it('THY-1.3 reads double sharps and flats as URLs and search write them', () => {
         expect(parseNote('F##')).toBe('F##');
         expect(parseNote('Fss')).toBe('F##');
         expect(parseNote('Fx')).toBe('F##');
+        expect(parseNote('FX')).toBe('F##');
         expect(parseNote('F𝄪')).toBe('F##');
         expect(parseNote('Ebb')).toBe('Ebb');
         expect(parseNote('E𝄫')).toBe('Ebb');
@@ -29,7 +44,7 @@ describe('parseNote', () => {
     });
 
     it('refuses what is not a note', () => {
-        for (const text of ['', 'H', 'F#b', 'F###', 'Fbbb', 'C-1', 'C10', 'Cq', '#']) {
+        for (const text of ['', 'H', 'F#b', 'F###', 'Fbbb', 'C-1', 'C10', 'Cq', '#', 'BB', 'C♮♮', 'C♮#']) {
             expect(parseNote(text), text).toBeUndefined();
         }
     });
@@ -44,6 +59,11 @@ describe('noteLabel', () => {
         expect(noteLabel('C')).toBe('C');
         expect(noteLabel('C#4')).toBe('C♯4');
     });
+
+    it('THY-1.5 shows a triple sharp or flat as ♯𝄪 or ♭𝄫, never as # or b', () => {
+        expect(noteLabel('F###')).toBe('F♯𝄪');
+        expect(noteLabel('Fbbb')).toBe('F♭𝄫');
+    });
 });
 
 describe('noteSlug', () => {
@@ -57,6 +77,23 @@ describe('noteSlug', () => {
     it('reads back as the same note', () => {
         for (const note of ['C', 'F#', 'F##', 'Bb', 'Bbb', 'E#3']) {
             expect(parseNote(noteSlug(note))).toBe(note);
+        }
+    });
+});
+
+describe('what is not a note', () => {
+    it('throws rather than giving an empty answer', () => {
+        for (const read of [
+            noteLabel,
+            noteSlug,
+            notePitchClass,
+            noteMidi,
+            noteAlteration,
+            notePitchName,
+            enharmonics
+        ]) {
+            expect(() => read('Fs'), read.name).toThrow();
+            expect(() => read(''), read.name).toThrow();
         }
     });
 });

@@ -106,6 +106,31 @@ describe('rootChoices', () => {
         expect(rootChoices(10, type('dorian'), 'auto')).toEqual({ root: 'Bb' });
         expect(rootChoices(8, type('major'), 'auto')).toEqual({ root: 'Ab' });
     });
+
+    it('THY-2.5 offers both spellings where both keys need double sharps or flats', () => {
+        // C# altered has D## and F##; Db altered has Ebb and Bbb.
+        expect(rootChoices(1, type('altered'), 'auto')).toEqual({ root: 'C#', alternative: 'Db' });
+        expect(rootChoices(1, type('altered'), 'flats')).toEqual({ root: 'Db', alternative: 'C#' });
+    });
+
+    it('THY-2.5 agrees with isOfferedRoot on every button of every scale, whatever the accidentals', () => {
+        for (const t of SCALE_TYPES) {
+            for (const accidentals of ['auto', 'sharps', 'flats'] as const) {
+                for (const { pitchClass, spellings } of PICKER_ROOTS) {
+                    const { root, alternative } = rootChoices(pitchClass, t, accidentals);
+                    const label = `${String(pitchClass)} ${t.id} ${accidentals}`;
+                    expect(isOfferedRoot(root, t), label).toBe(true);
+                    const other = spellings.find(spelling => spelling !== root);
+                    expect(alternative, label).toBe(other !== undefined && isOfferedRoot(other, t) ? other : undefined);
+                    // A button always opens something.
+                    expect(
+                        spellings.some(spelling => isOfferedRoot(spelling, t)),
+                        label
+                    ).toBe(true);
+                }
+            }
+        }
+    });
 });
 
 describe('signature', () => {
@@ -134,6 +159,18 @@ describe('isOfferedRoot and simplerRoot', () => {
     it('THY-2.5 always offers a white-key root, though E altered needs F## for its #2', () => {
         expect(isOfferedRoot('E', type('altered'))).toBe(true);
         expect(simplerRoot('E', type('altered'))).toBeUndefined();
+        expect(isOfferedRoot('B', type('altered'))).toBe(true);
+    });
+
+    it('THY-2.5 offers nothing simpler where every spelling needs a double sharp or flat', () => {
+        expect(isOfferedRoot('Gb', type('altered'))).toBe(true);
+        expect(isOfferedRoot('F#', type('altered'))).toBe(true);
+        expect(simplerRoot('Gb', type('altered'))).toBeUndefined();
+    });
+
+    it('THY-2.5 offers a simpler root for a linked root with doubles in the note itself', () => {
+        expect(simplerRoot('G##', type('major'))).toBe('A');
+        expect(isOfferedRoot('G##', type('major'))).toBe(false);
     });
 });
 

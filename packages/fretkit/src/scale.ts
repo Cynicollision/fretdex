@@ -121,7 +121,10 @@ export interface SpelledScale {
     readonly intervals: readonly string[];
 }
 
-/** Spells a scale on a root, by interval from the root (THY-1.1, THY-1.3, THY-1.4). The root is kept as written. */
+/**
+ * Spells a scale on a root, by interval from the root (THY-1.1, THY-1.3, THY-1.4). The root is kept as written, and
+ * must be a `NoteName` (run URL and typed text through `parseNote` first); anything else throws.
+ */
 export function spellScale(root: NoteName, type: ScaleType): SpelledScale {
     return { root, type, notes: spell(root, type.intervals), intervals: type.intervals.map(intervalName) };
 }
@@ -131,5 +134,10 @@ export function spellScale(root: NoteName, type: ScaleType): SpelledScale {
  * from G♭ it's G♭ B♭ D♭ F♭. Each interval's number decides the letter and its quality the accidental.
  */
 export function spell(root: NoteName, intervals: readonly IntervalCode[]): NoteName[] {
-    return intervals.map(interval => Note.transpose(root, interval));
+    if (Note.get(root).empty) throw new Error(`Not a note: ${root}`);
+    return intervals.map(interval => {
+        const note = Note.transpose(root, interval);
+        if (note === '') throw new Error(`Can't spell ${interval} from ${root}`);
+        return note;
+    });
 }

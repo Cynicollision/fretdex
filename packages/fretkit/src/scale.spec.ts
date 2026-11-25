@@ -81,8 +81,18 @@ describe('spellScale', () => {
     });
 
     it('keeps the root as written', () => {
-        expect(spellScale('Fs', type('major')).root).toBe('Fs');
+        expect(spellScale('C#', type('major'))).toMatchObject({
+            root: 'C#',
+            notes: ['C#', 'D#', 'E#', 'F#', 'G#', 'A#', 'B#']
+        });
         expect(notes('Cb', 'major')).toBe('Cb Db Eb Fb Gb Ab Bb');
+        expect(notes('G##', 'major')).toBe('G## A## B## C## D## E## F###');
+    });
+
+    it('refuses a root that is not a note, such as a URL slug not yet parsed', () => {
+        expect(() => spellScale('Fs', type('major'))).toThrow();
+        expect(() => spellScale('', type('major'))).toThrow();
+        expect(() => spell('C', ['3P'])).toThrow();
     });
 
     it('lands every note on the pitch its interval says', () => {

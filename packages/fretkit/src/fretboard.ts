@@ -1,7 +1,7 @@
 import { notePitchClass, spellMidi, type NoteName } from './note';
 import { pitchClass } from './pitch';
 import type { SpelledScale } from './scale';
-import { fretMidi } from './tuning';
+import { fretMidi, MAX_FRET } from './tuning';
 
 /** One fret on one string where a note of the set falls. */
 export interface FretboardCell {
@@ -22,13 +22,14 @@ export interface FretboardCell {
 export interface FretRange {
     /** The first fret shown, 0 for the open strings (CTX-1.7). */
     readonly from: number;
-    /** The last fret shown, up to 24. */
+    /** The last fret shown, up to `MAX_FRET` (24). */
     readonly to: number;
 }
 
 /**
  * Every fret in a range where a note of the scale falls, on any tuning (THY-3.2), highest string first and then up
  * the neck. With a capo, only the frets from the capo up (CTX-3.4), which sound what they would without it (THY-3.5).
+ * A range reaching past the nut or past `MAX_FRET` stops there.
  */
 export function mapScale(
     strings: readonly NoteName[],
@@ -42,7 +43,7 @@ export function mapScale(
     });
     const cells: FretboardCell[] = [];
     for (let string = 1; string <= strings.length; string++) {
-        for (let fret = Math.max(range.from, capo); fret <= range.to; fret++) {
+        for (let fret = Math.max(range.from, capo, 0); fret <= Math.min(range.to, MAX_FRET); fret++) {
             const midi = fretMidi(strings, string, fret, capo);
             if (midi === undefined) continue;
             const index = byPitchClass.get(pitchClass(midi));
