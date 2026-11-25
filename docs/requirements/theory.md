@@ -6,43 +6,48 @@ What every module relies on from the theory engine (`fretkit`): notes spelled co
 
 | ID | Requirement | Status |
 |---|---|---|
-| THY-1.1 | Every scale, mode and key shall use each letter name exactly once (heptatonic scales), so F# major is spelled F# G# A# B C# D# E#. | Planned |
-| THY-1.2 | Chords shall be spelled from their root by interval (C#7 is C# E# G# B; Gb7 is Gb Bb Db Fb). | Planned |
-| THY-1.3 | Double sharps and double flats shall be shown where the spelling needs them (G# harmonic minor has F𝄪), written `##`/`bb` in URLs and search. | Planned |
-| THY-1.4 | Intervals shall be named by their spelling (an augmented 2nd is `#2`, not `b3`) in scales where both can occur (harmonic minor). | Planned |
+| THY-1.1 | Every scale, mode and key shall use each letter name exactly once (heptatonic scales), so F# major is spelled F# G# A# B C# D# E#. The altered scale is the exception: it's spelled by the tensions it's played for, `1 b2 #2 3 #4 b6 b7` (C Db D# E F# Ab Bb), as a 7alt chord is (owner, 2026-11-25). | Implemented |
+| THY-1.2 | Chords shall be spelled from their root by interval (C#7 is C# E# G# B; Gb7 is Gb Bb Db Fb). | Partial |
+| THY-1.3 | Double sharps and double flats shall be shown where the spelling needs them (G# harmonic minor has F𝄪), written `ss`/`bb` in URLs (`Fss`, since `#` can't appear in a URL path) and `##`/`bb` in search. | Implemented |
+| THY-1.4 | Intervals shall be named by their spelling (an augmented 2nd is `#2`, not `b3`) in scales where both can occur (harmonic minor). | Implemented |
 | THY-1.5 | Accidentals shall be shown on screen as ♯ ♭ 𝄪 𝄫, in a bundled font that has them; `#`, `s` and `b` shall be accepted wherever the user types a note. | Partial |
 
 ## THY-2 Roots pick sensible accidentals
 
 | ID | Requirement | Status |
 |---|---|---|
-| THY-2.1 | With accidentals on **Auto**, a key or scale on a black-key root shall use the spelling with fewer accidentals in its signature: Db major (5 flats), not C# major (7 sharps). At the tie of six, F# major and Eb minor, the spellings guitar charts use most. A root the user typed or linked to is kept as written. | Planned |
-| THY-2.2 | Root pickers shall offer the 12 roots as C, C#/Db, D, Eb, E, F, F#/Gb, G, Ab, A, Bb, B, each opening the spelling **Auto** prefers, with the other spelling one tap away. | Planned |
-| THY-2.3 | **Prefer sharps** and **Prefer flats** shall decide the spelling of roots and of lone notes (fretboard note names with no key), never respelling a key's own notes. | Planned |
-| THY-2.4 | Every note shall show its enharmonic equivalent where asked (INT-3). | Planned |
-| THY-2.5 | A root whose key would need double sharps or flats (A# Dorian, whose parent is G# major) shall never be offered in a root picker. Reached by a link or search, its card shall show as asked, with a note offering the enharmonic (Bb Dorian). | Planned |
+| THY-2.1 | With accidentals on **Auto**, a key or scale on a black-key root shall use the spelling with fewer accidentals in its signature: Db major (5 flats), not C# major (7 sharps). A mode is read in its parent key; harmonic and melodic minor and the minor pentatonic and blues in the minor key on their root; the major pentatonic and blues in the major key; scales with no key of their own (Phrygian dominant, Lydian dominant, altered, whole tone, the diminished scales) by their own notes. At a tie, sharps for a scale read in a key with a major 3rd and flats for one with a minor 3rd: at the tie of six, F# major and Eb minor, the spellings guitar charts use most, and likewise C# Mixolydian and Ab Dorian. A root the user typed or linked to is kept as written. | Implemented |
+| THY-2.2 | Root pickers shall offer the 12 roots as C, C#/Db, D, Eb, E, F, F#/Gb, G, Ab, A, Bb, B, each opening the spelling **Auto** prefers, with the other spelling one tap away. | Partial |
+| THY-2.3 | **Prefer sharps** and **Prefer flats** shall decide the spelling of roots and of lone notes (fretboard note names with no key), never respelling a key's own notes. | Implemented |
+| THY-2.4 | Every note shall show its enharmonic equivalent where asked (INT-3). | Partial |
+| THY-2.5 | A root whose key would need double sharps or flats (A# Dorian, whose parent is G# major) shall never be offered in a root picker when its other spelling's key wouldn't. Reached by a link or search, its card shall show as asked, with a note offering the enharmonic (Bb Dorian). Where both spellings of a black key need them (C# or Db altered), only the one **Auto** prefers is offered, whatever the accidentals setting, and its card says why (SCL-2.6); a white key's letter is always offered, as its button's only spelling. | Partial |
 
 ## THY-3 Tunings are lists of strings
 
 | ID | Requirement | Status |
 |---|---|---|
-| THY-3.1 | A tuning shall be an ordered list of open-string pitches with octaves, lowest string first (Standard guitar: E2 A2 D3 G3 B3 E4; Standard bass: E1 A1 D2 G2). | Planned |
-| THY-3.2 | Every fretboard computation (mapping, positions, voicings) shall take the tuning as input, and shall work for any string count from 4 to 8, though v1 offers only 4 and 6 (vision non-goals). | Planned |
+| THY-3.1 | A tuning shall be an ordered list of open-string pitches with octaves, lowest string first (Standard guitar: E2 A2 D3 G3 B3 E4; Standard bass: E1 A1 D2 G2). | Implemented |
+| THY-3.2 | Every fretboard computation (mapping, positions, voicings) shall take the tuning as input, and shall work for any string count from 4 to 8, though v1 offers only 4 and 6 (vision non-goals). | Implemented |
 | THY-3.3 | A custom tuning shall be entered as one pitch per string, each from a picker, for the current instrument's string count. | Planned |
-| THY-3.4 | Strings shall be numbered from the highest-pitched (string 1) to the lowest, as players do. | Planned |
-| THY-3.5 | A capo (CTX-3) shall raise every open string by its fret count for what sounds, so every computation that takes a tuning works with a capo unchanged. | Planned |
+| THY-3.4 | Strings shall be numbered from the highest-pitched (string 1) to the lowest, as players do. | Implemented |
+| THY-3.5 | A capo (CTX-3) shall raise every open string by its fret count for what sounds, so every computation that takes a tuning works with a capo unchanged. | Implemented |
 
 ## THY-4 Concert pitch
 
 | ID | Requirement | Status |
 |---|---|---|
-| THY-4.1 | Notes shall sound at concert pitch with A4 = 440 Hz, guitar and bass at their written octave's real pitch (guitar sounds an octave below written; the app shows and plays the real pitch). | Planned |
+| THY-4.1 | Notes shall sound at concert pitch with A4 = 440 Hz, guitar and bass at their written octave's real pitch (guitar sounds an octave below written; the app shows and plays the real pitch). | Partial |
 
 ## Known gaps
 
-- **THY-1.5:** the app bundles a font with ♯ ♭ 𝄪 𝄫, but nothing spells notes yet (M01 T4), and nothing takes typed notes until search (SRCH, M03).
+- **THY-1.2:** `fretkit` spells any chord formula from its root, but its chord qualities come with chords in M02.
+- **THY-1.5:** `fretkit` reads typed notes and writes them with ♯ ♭ 𝄪 𝄫, and the app bundles a font that has them, but nothing shows notes or takes typed ones yet: cards from M01 T9, search in M03.
+- **THY-2.2 and THY-2.5:** `fretkit` gives each picker button's root, its other spelling and whether a root is offered, but there's no root picker or card yet (M01 T9).
+- **THY-2.4:** `fretkit` lists every note's enharmonic spellings, but nothing shows them until the note card (INT-3, M01 T11).
+- **THY-3.3:** custom tunings are read from and written to URLs, but there's no picker to enter one yet (M01 T5).
+- **THY-4.1:** `fretkit` gives every fret's real pitch and the audio package tunes A4 to 440 Hz, but nothing plays yet (M01 T8).
 
 ## Notes
 
-- **Tonal.js** does spelling, intervals, chord and scale dictionaries, keys and roman numerals. `fretkit` tests these behaviors through its own API anyway, so a change of library can't change an answer unnoticed.
-- **Golden tests.** A table of every key's scale and every chord quality on every root, checked once by hand, makes a good regression test.
+- **Tonal.js** spells notes from a root by interval, which `fretkit`'s scales, and later its chords, rest on. `fretkit` keeps its own list of scales (`SCALE_TYPES` in `packages/fretkit/src/scale.ts`), so the spellings are its own (the altered scale, and the whole tone scale's `b7`), and tests these behaviors through its own API, so a change of library can't change an answer unnoticed.
+- **The golden table** is `packages/fretkit/golden/scales.md`: every scale on each picker root, as Auto spells it and in the other spelling, checked once by hand. A change to any answer fails its test (`packages/fretkit/src/golden.spec.ts`) until the file is regenerated and the diff checked. M02 adds every chord quality on every root.

@@ -2,7 +2,7 @@
 
 Fretdex is a static web app with no backend: a SvelteKit site built with `adapter-static`, TypeScript throughout, with the music theory and the audio in framework-free packages so they can be reused (the owner's synth-toy projects) and tested on their own. Everything runs in the browser; only settings, pins and recents are stored, and only on the device.
 
-The repository layout, tech stack, tooling, hosting and styling below are built (M01 T1 to T3); the rest describes the intended design. When code proves part of it wrong, fix this file in the same PR.
+The repository layout, tech stack, tooling, hosting and styling below are built (M01 T1 to T3), and so are the theory engine's pitch, spelling and tuning model (T4); the rest describes the intended design. When code proves part of it wrong, fix this file in the same PR.
 
 ## Layers
 
@@ -56,9 +56,9 @@ The packages have no build step: each exports its TypeScript source (`"exports":
 
 ## The theory engine (`fretkit`)
 
-- **Pitch and spelling.** Every note is spelled, not just a pitch class: F# major contains E#, not F. Spelling follows the key or the chord's root, with the accidentals setting (CTX-1.6) deciding ambiguous cases (THY).
-- **Tuning model.** A tuning is an ordered list of open-string pitches, lowest string first, with octaves (`E2 A2 D3 G3 B3 E4`). Every fretboard computation takes a tuning, so other string counts are a data change. A capo raises every open string for what sounds (THY-3.5), while chord shapes are computed against the open strings and named by shape (CTX-3).
-- **Fretboard mapping.** Given a set of notes (a scale, an arpeggio, a chord) and a tuning, list every fret on every string within a fret range, each with its note, interval from the root and scale degree.
+- **Pitch and spelling.** Every note is spelled, not just a pitch class: F# major contains E#, not F (THY). A note is a string in Tonal.js's form (`F#`, `Bbb`, `E2`), read from what users type and URLs carry by `parseNote` and shown by `noteLabel` (`note.ts`). `SCALE_TYPES` (`scale.ts`) lists every scale by its intervals, and `spellScale` spells one from its root through Tonal.js. `root.ts` decides which spelling a root takes from the accidentals setting (CTX-1.6): on Auto, by the key signature each scale is read in (`signatureFrom`). Spelling every scale on every root is the golden table, `packages/fretkit/golden/scales.md`.
+- **Tuning model.** A tuning is an ordered list of open-string pitches, lowest string first, with octaves (`E2 A2 D3 G3 B3 E4`), at the pitch they sound (`TUNINGS` in `tuning.ts`). Every fretboard computation takes a tuning, so other string counts are a data change. Frets are counted from the nut with or without a capo: a capo only rules out the frets below it, and `openStrings` gives what the open strings sound with it (THY-3.5), while chord shapes are computed against the open strings and named by shape (CTX-3).
+- **Fretboard mapping.** `mapScale` (`fretboard.ts`) lists every fret in a range where a scale's notes fall, on any tuning and capo, each with its note spelled as the scale spells it, its octave, its interval from the root and its degree.
 - **Positions.** CAGED shapes and 3-notes-per-string patterns for standard guitar tuning, and bass boxes, each a set of fretboard cells. In other tunings only 3-notes-per-string patterns and the full neck apply (SCL-3.6).
 - **Voicings.** A chord's voicings come from the curated dataset (standard tuning) and from a voicing search over the fretboard for families (drop 2, drop 3, shells) and for alternate tunings, with playability limits (fret span, open strings, muted strings).
 - **Chord identification.** Given frets in a tuning, every chord name the notes fit, simplest first, inversions and slash chords included (Identify, CHD-6).
@@ -112,7 +112,7 @@ One scheduler runs everything that keeps time: scale runs, progression loops, th
 
 Assumptions from the brief and from what the libraries are known to offer, not yet tested. The milestone's first tasks check them and fix this file:
 
-- Tonal.js covers spelling, chord and scale dictionaries, keys, modes and roman numerals as needed, and has no fretboard, position or voicing logic.
+- Tonal.js's chord dictionary and roman numerals cover what M02 and M03 need. (T4 confirmed it spells notes, intervals, scales, keys and modes, double sharps and flats included, and has no tunings or fretboard, position or voicing logic.)
 - The chord dataset's voicings are for standard tuning only, so alternate tunings need computed voicings.
 - On iPhones, Web Audio is silenced by the ring/silent switch unless the page plays through a media element; check what an installed PWA does.
 - GitHub Pages serves every route on a fresh load (prerendered pages, or a `404.html` fallback to the app), and offline, each route opens from the precache rather than the service worker's home-page fallback. Only `/` exists so far; T6 checks this with the real routes. (T2 confirmed that `@vite-pwa/sveltekit` 2 works with SvelteKit 3 and precaches the `adapter-static` build.)

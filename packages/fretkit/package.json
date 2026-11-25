@@ -11,5 +11,8 @@
         "check": "tsc -p tsconfig.json",
         "test": "vitest run",
         "test:watch": "vitest"
+    },
+    "dependencies": {
+        "tonal": "6.5.1"
     }
 }

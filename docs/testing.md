@@ -11,7 +11,7 @@ Every Vitest run sets `expect.requireAssertions`, so a test that checks nothing 
 
 ## The packages
 
-Plain unit tests of pure functions, in Node, with each package's `vitest.config.ts`. This is where most of the testing goes (M01 decision 4): every `fretkit` behavior gets a test named after its requirement ID before a diagram draws it, and golden tables cover every key's scale on all 12 roots (M01 T4). `audio` tests what can run without a sound card, such as pitches and the scheduler's timing.
+Plain unit tests of pure functions, in Node, with each package's `vitest.config.ts`. This is where most of the testing goes (M01 decision 4): every `fretkit` behavior gets a test named after its requirement ID before a diagram draws it, and a golden table covers every scale on all 12 roots: `src/golden.spec.ts` writes `fretkit`'s answers to `golden/scales.md` and fails if they change, so after a deliberate change, `npx vitest run -u` in the package rewrites it and the diff is checked by hand (`toMatchFileSnapshot`; in CI nothing is rewritten). `audio` tests what can run without a sound card, such as pitches and the scheduler's timing.
 
 ## The app
 
