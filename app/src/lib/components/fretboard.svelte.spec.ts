@@ -133,6 +133,10 @@ describe('Fretboard', () => {
         await show({ labels: 'degrees', set: scale('A', 'natural-minor'), range: { from: 0, to: 5 } });
         expect(dot(6, 3)?.textContent).toBe('7');
 
+        // Degrees count the scale's notes from the root: the blues scale's b5 is its 4th note, its 5 the 5th.
+        await show({ labels: 'degrees', set: scale('A', 'minor-blues'), range: { from: 5, to: 8 } });
+        expect([dot(5, 6)?.textContent, dot(5, 7)?.textContent, dot(6, 8)?.textContent]).toEqual(['4', '5', '2']);
+
         await show({ labels: 'none', range: { from: 0, to: 5 } });
         expect(dot(6, 0)?.textContent).toBe('');
     });

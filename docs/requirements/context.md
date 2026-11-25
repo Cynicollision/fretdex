@@ -10,7 +10,7 @@ One context drives every view, so the whole app re-centers on the song being pla
 | CTX-1.2 | Instrument | 6-string guitar, 4-string bass | Guitar | Implemented |
 | CTX-1.3 | Tuning | Guitar: Standard, Drop D, DADGAD, Open G, Open D, Half-step down. Bass: Standard (E A D G), Drop D, Half-step down. Custom (THY-3.3), up to 10 saved by name (CTX-2.7) | Standard | Implemented |
 | CTX-1.4 | Handedness | Right, Left (mirrors fretboards and chord boxes, DIAG-1.5) | Right | Implemented |
-| CTX-1.5 | Labels | Note names, Intervals (1, b3, 5), Scale degrees, None | Intervals | Implemented |
+| CTX-1.5 | Labels | Note names, Intervals (1, b3, 5), Scale degrees (the scale's notes counted from the root, so the minor pentatonic is 1 2 3 4 5 and the minor blues 1 2 3 4 5 6; decided 2026-11-25), None | Intervals | Implemented |
 | CTX-1.6 | Accidentals | Auto by key, Prefer sharps, Prefer flats (THY-2) | Auto | Implemented |
 | CTX-1.7 | Fret range | First and last fret of the full-neck view, from 0 to 24 | 0–15 | Implemented |
 | CTX-1.8 | Theme | Dark, Light, High contrast | Dark | Implemented |
