@@ -2,7 +2,7 @@
 
 Fretdex is a static web app with no backend: a SvelteKit site built with `adapter-static`, TypeScript throughout, with the music theory and the audio in framework-free packages so they can be reused (the owner's synth-toy projects) and tested on their own. Everything runs in the browser; only settings, pins and recents are stored, and only on the device.
 
-The repository layout, tech stack, tooling, hosting and styling below are built (M01 T1 to T3), and so are the theory engine's pitch, spelling and tuning model (T4); the rest describes the intended design. When code proves part of it wrong, fix this file in the same PR.
+The repository layout, tech stack, tooling, hosting and styling below are built (M01 T1 to T3), and so are the theory engine's pitch, spelling and tuning model (T4) and storage and settings (T5); the rest describes the intended design. When code proves part of it wrong, fix this file in the same PR.
 
 ## Layers
 
@@ -89,7 +89,12 @@ Any route may also carry `inst`, `tuning` and `capo`, so a pin keeps its own ins
 
 ## Storage
 
-IndexedDB, through `idb-keyval`, holds five things: settings, custom tunings, pins (with groups and order), recents (the last 20 views) and hidden voicings. Each is one versioned record, so a later schema change is a migration in code. The app asks for persistent storage (`navigator.storage.persist()`) when installed; JSON export and import of pins and settings is the backup. Nothing leaves the device.
+IndexedDB, through `idb-keyval` (`idbStore` in `app/src/lib/storage/idb.ts`: a `records` object store in a `fretdex` database), holds five things: settings, custom tunings, pins (with groups and order), recents (the last 20 views) and hidden voicings. So far only settings are stored. Nothing leaves the device.
+
+- **Versioned records.** Each thing is one record, stored with its format's version (`loadRecord` and `saveRecord` in `storage/record.ts`). Loading migrates an older record forward a step at a time, then reads it field by field, so anything missing or invalid takes its default rather than stopping the app. A record written by a newer version (a tab not yet updated) is read as far as this version understands it and never saved over. If IndexedDB is unavailable, the app runs on its defaults.
+- **Settings.** `Settings` and its record format, `SETTINGS_FORMAT`, are in `settings/settings.ts`, which also switches instrument (CTX-2.1). `SettingsStore` (`settings/store.svelte.ts`) holds them as runes state: the `settings` it exports loads them when the app starts and saves every change, and a change made before they've loaded waits for them. Views read `settings.current`, which holds the defaults until the stored settings arrive.
+- **The theme** is also copied into `localStorage` (`applyTheme` in `settings/theme.ts`), because IndexedDB can't be read before the first paint: a script in `app.html` sets `data-theme` from the copy, so a Light or High contrast theme shows from the first frame. The root layout then applies the stored theme and sets the `theme-color` meta to the theme's `--bg`.
+- **Persistent storage.** Running installed, the app asks the browser to keep its storage (`navigator.storage.persist()`, in `storage/persist.ts`), and Settings says whether it did (PIN-6.2). JSON export and import of pins and settings is the backup (PIN-5).
 
 ## Offline and install
 
@@ -97,7 +102,7 @@ The service worker precaches the whole build (app, voicing dataset, icons, fonts
 
 ## Styling
 
-- **Tokens.** `app/src/lib/styles/tokens.css` holds every colour, the font stack, the type scale (14, 16, 18, 22 and 28px, as `rem` so the system text size applies) and the 44px tap target. `:root` is the Dark theme; `data-theme="light"` or `"contrast"` on `<html>` swaps the colours (CTX-1.8 sets it). The diagram colours are tokens too (`--neck`, `--fret`, `--note`, `--root` and so on), so a theme repaints the diagrams. `tokens.spec.ts` checks every text pair's contrast against APP-6.2.
+- **Tokens.** `app/src/lib/styles/tokens.css` holds every colour, the font stack, the type scale (14, 16, 18, 22 and 28px, as `rem` so the system text size applies) and the 44px tap target. `:root` is the Dark theme; `data-theme="light"` or `"contrast"` on `<html>` swaps the colours, set from the theme setting (CTX-1.8, [Storage](#storage)). The diagram colours are tokens too (`--neck`, `--fret`, `--note`, `--root` and so on), so a theme repaints the diagrams. `tokens.spec.ts` checks every text pair's contrast against APP-6.2.
 - **Fonts.** Atkinson Hyperlegible Next comes from its Fontsource package, imported in the root layout. It has no musical signs, and no text font checked had 𝄪 and 𝄫, so `fonts.css` adds Fretdex Accidentals: Noto Music's ♭ ♮ ♯ 𝄪 𝄫, raised to sit beside capitals and given Atkinson's line metrics, with a `unicode-range` of just those five. It's made by `app/scripts/make-accidentals-font.py` and committed. Both are bundled into `_app/` (the accidentals inlined in the CSS) and precached.
 - **The look.** A charcoal page, a rosewood neck with nickel frets, bone dots and an amber root in Dark; a maple neck with dark dots in Light; black, white and yellow in High contrast. The root is a square and other notes circles (DIAG-1.7), frets are evenly spaced (DIAG-1.8), and with the phone upright a fretboard shows one position at a time over a strip of the whole neck (DIAG-1.10). The diagrams' sizes are in [M01-design.md](planning/milestones/M01-design.md) until T7 builds them.
 - **The icon** is `app/static/icon.svg`, a chord box in the Dark theme's colours; `app/scripts/draw-icons.ts` draws the PNGs from it.

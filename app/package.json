@@ -20,7 +20,8 @@
     "dependencies": {
         "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
         "@fretdex/audio": "*",
-        "@fretdex/fretkit": "*"
+        "@fretdex/fretkit": "*",
+        "idb-keyval": "^6.3.0"
     },
     "devDependencies": {
         "@playwright/test": "^1.65.1",

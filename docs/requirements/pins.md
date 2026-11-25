@@ -50,5 +50,10 @@ Screen: **Home** (`/`), and **Settings** (`/settings`) for export and import.
 
 | ID | Requirement | Status |
 |---|---|---|
-| PIN-6.1 | Pins, groups, recents, settings, custom tunings and hidden voicings shall be stored on the device only. | Planned |
-| PIN-6.2 | The app shall ask the browser for persistent storage the first time something is pinned and when installed, and Settings shall say whether it was granted. | Planned |
+| PIN-6.1 | Pins, groups, recents, settings, custom tunings and hidden voicings shall be stored on the device only. | Partial |
+| PIN-6.2 | The app shall ask the browser for persistent storage the first time something is pinned and when installed, and Settings shall say whether it was granted. | Partial |
+
+## Known gaps
+
+- **PIN-6.1:** settings are stored, on the device only; custom tunings (M01 T5b), pins and recents (T12) and hidden voicings (M02) come later.
+- **PIN-6.2:** the app asks for persistent storage when it runs installed, and Settings says whether it was granted; asking at the first pin comes with pinning (M01 T12).

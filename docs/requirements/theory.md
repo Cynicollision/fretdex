@@ -28,7 +28,7 @@ What every module relies on from the theory engine (`fretkit`): notes spelled co
 |---|---|---|
 | THY-3.1 | A tuning shall be an ordered list of open-string pitches with octaves, lowest string first (Standard guitar: E2 A2 D3 G3 B3 E4; Standard bass: E1 A1 D2 G2). | Implemented |
 | THY-3.2 | Every fretboard computation (mapping, positions, voicings) shall take the tuning as input, and shall work for any string count from 4 to 8, though v1 offers only 4 and 6 (vision non-goals). | Implemented |
-| THY-3.3 | A custom tuning shall be entered as one pitch per string, each from a picker, for the current instrument's string count. | Planned |
+| THY-3.3 | A custom tuning shall be entered as one pitch per string, for the current instrument's string count, starting from the current tuning, each string with buttons that lower or raise it a semitone (owner, 2026-11-25). | Planned |
 | THY-3.4 | Strings shall be numbered from the highest-pitched (string 1) to the lowest, as players do. | Implemented |
 | THY-3.5 | A capo (CTX-3) shall raise every open string by its fret count for what sounds, so every computation that takes a tuning works with a capo unchanged. | Implemented |
 

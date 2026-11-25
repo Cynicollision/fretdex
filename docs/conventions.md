@@ -21,7 +21,7 @@ Rules that apply across the codebase. Match the surrounding code for anything no
 
 - Strict, with `noUncheckedIndexedAccess`: indexing an array or record gives `T | undefined`, so handle the missing case rather than asserting it away with `!`.
 - Import types with `import type` (`verbatimModuleSyntax` requires it).
-- In the app, import shared modules from `app/src/lib` as `#lib/<path>` (SvelteKit 3's subpath imports, which replaced `$lib`).
+- In the app, import shared modules from `app/src/lib` as `#lib/<path>`, with the file's extension (`#lib/settings/store.svelte.ts`): SvelteKit 3's subpath imports, which replaced `$lib`, map the path as written and add no extension.
 
 ## Svelte
 

@@ -12,6 +12,7 @@ Development-only tools (test runners, linters, build plugins) that don't ship in
 | SvelteKit | 3.4.0 | https://github.com/sveltejs/kit | MIT (`node_modules/@sveltejs/kit/LICENSE`) | Its client runtime, in the app's JavaScript in `_app/` |
 | Workbox (Vite PWA's fork: `@vite-pwa/workbox-swkit`, `@vite-pwa/workbox-window`) | 8.0.15 | https://github.com/vite-pwa/workbox | MIT, © Google LLC and Anthony Fu (`node_modules/@vite-pwa/workbox-swkit/LICENSE`) | The service worker's runtime, `workbox-*.js`, and its registration code in `_app/` |
 | Tonal.js (`tonal` and its `@tonaljs/*` packages) | 6.5.1 | https://github.com/tonaljs/tonal | MIT, © danigb (`node_modules/tonal/LICENSE`) | Note spelling and intervals in `fretkit`, in the app's JavaScript in `_app/` |
+| idb-keyval | 6.3.0 | https://github.com/jakearchibald/idb-keyval | Apache 2.0, © 2016 Jake Archibald (`node_modules/idb-keyval/LICENCE`) | Storing settings in IndexedDB, in the app's JavaScript in `_app/` |
 | `@unplugin-pwa/core` | 0.0.8 | https://github.com/vite-pwa/unplugin-pwa | MIT (`node_modules/@unplugin-pwa/core/LICENSE`) | The service worker registration in `_app/`, made by `@vite-pwa/sveltekit` |
 
 ## Data, fonts and images
