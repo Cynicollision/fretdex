@@ -19,25 +19,16 @@ Read the doc that fits the task before starting:
 
 Where the workflow's pieces live:
 
-- **Backlog**: [docs/planning/backlog.md](docs/planning/backlog.md)
-- **Milestones**: [docs/planning/milestones/](docs/planning/milestones/); the current one is the one [the roadmap](docs/planning/roadmap.md) marks planned or in progress
+- **Backlog**: [docs/planning/backlog.md](docs/planning/backlog.md); its introduction says what each section is for and how an item is written
+- **Milestones**: [docs/planning/milestones/](docs/planning/milestones/); the current one is the one [the roadmap](docs/planning/roadmap.md) marks planned or in progress, and the roadmap says how a milestone file works
 - **Specs**: [docs/requirements/](docs/requirements/README.md), with each domain's open questions, checked against [docs/vision.md](docs/vision.md)'s principles
 - **Checks**: [docs/development.md](docs/development.md#before-opening-a-pr), "Before opening a PR": format, lint, type check, unit tests and smoke tests, all from the root; CI runs the same
 - **Upkeep**: none yet
 - **Try it**: [docs/development.md](docs/development.md#trying-a-change-in-the-app): `preview_start` with the `app` configuration in `.claude/launch.json` (`npm run dev`, http://localhost:5173), on a phone-sized viewport
+- **Second review**: `packages/fretkit/` (the theory every screen relies on, and its golden table), the service worker and offline caching, anything that stores or migrates the user's data (pins, settings), and `.github/workflows/`
 
 Rules for every change:
 
-- Every change goes through a PR to `main`. Branch as `claude/<short-kebab-summary>`, keep branches short-lived, and open the PR with `gh pr create`.
 - When behavior changes, update the matching requirement in `docs/requirements/` (status or wording) in the same PR.
 - An open question has a default, which is built unless the owner decides otherwise; the owner decides it at the latest when the task that needs it starts. Once decided, it becomes a requirement (or a decision in the milestone file, for plan and code choices) and leaves the Open questions list.
 - Bringing in a third-party library, dataset, font or image that ships adds a row to `CREDITS.md` in the same PR, with any notice its licence asks for.
-- Keep docs short and accurate. When code makes a doc wrong, fix the doc in the same PR.
-
-## Backlog
-
-Planning lives in `docs/planning/`. `roadmap.md` has one line per milestone. `backlog.md` holds the work outside the milestone being built: an Inbox of things found but not sorted yet, sections for milestones not planned yet, then Anytime, Parked and Ideas (its introduction says what each is for). The milestone being built has its own file in `milestones/`, which holds its tasks; work for it goes there.
-
-- Delete a backlog item once it's done; git history is the changelog. A milestone task is ticked instead, with a *Changed while doing it* note in the PR that finishes it.
-- When you notice follow-up work that's out of scope for the current change, add it to the milestone's tasks or to the backlog's Inbox, instead of fixing it on the side. Say what's wrong, where, and where you found it. Only the owner moves items out of the Inbox.
-- Point at code by file and symbol name, not line numbers.
