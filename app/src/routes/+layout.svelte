@@ -3,11 +3,24 @@
     import '#lib/styles/fonts.css';
     import '#lib/styles/tokens.css';
     import '#lib/styles/base.css';
+    import { settings } from '#lib/settings/store.svelte.ts';
+    import { applyTheme } from '#lib/settings/theme.ts';
+    import { isInstalled, requestPersistence } from '#lib/storage/persist.ts';
     import { onMount } from 'svelte';
     import { pwaInfo } from 'virtual:pwa-info';
     import type { LayoutProps } from './$types';
 
     let { children }: LayoutProps = $props();
+
+    // The theme setting, once the stored settings have loaded; until then app.html's script has set it (CTX-1.8).
+    $effect(() => {
+        if (settings.loaded) applyTheme(settings.current.theme);
+    });
+
+    // Installed, the app asks the browser to keep its storage (PIN-6.2).
+    onMount(() => {
+        if (isInstalled()) void requestPersistence();
+    });
 
     // The manifest's link tag, made by the PWA plugin from vite.config.ts. Empty in the dev server, which has no service worker.
     const manifestLink = pwaInfo?.webManifest.linkTag ?? '';

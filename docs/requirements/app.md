@@ -57,7 +57,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 | ID | Requirement | Status |
 |---|---|---|
-| APP-6.1 | The app shall offer **Dark** (default), **Light** and **High contrast** themes (CTX-1.8). | Partial |
+| APP-6.1 | The app shall offer **Dark** (default), **Light** and **High contrast** themes (CTX-1.8). | Implemented |
 | APP-6.2 | Text shall meet WCAG AA contrast in Dark and Light, and AAA in High contrast. | Partial |
 | APP-6.3 | Meaning shall never rest on color alone: a root or highlighted degree also differs in shape or label. | Planned |
 | APP-6.4 | Every diagram shall have a text alternative listing what it shows ("A minor seven flat five: A, C, Eb, G; frets x 0 1 0 1 x"). | Planned |
@@ -80,4 +80,4 @@ Behavior that applies across the whole app: how the user moves around, the conte
 ## Known gaps
 
 - **APP-4.1:** the app opens at a placeholder page until the home board (PIN-2, M01 T12).
-- **APP-5.3, APP-6.1, APP-6.2:** the three themes' colours and the type scale exist as design tokens, and a unit test checks every text pair's contrast, but nothing switches theme yet (CTX-1.8, M01 T5), and the screens and diagrams that use the tokens come with M01's later tasks.
+- **APP-5.3, APP-6.2:** the three themes' colours and the type scale are design tokens, and a unit test checks every text pair's contrast, but most of the screens and diagrams that use them come with M01's later tasks.
