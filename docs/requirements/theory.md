@@ -28,7 +28,7 @@ What every module relies on from the theory engine (`fretkit`): notes spelled co
 |---|---|---|
 | THY-3.1 | A tuning shall be an ordered list of open-string pitches with octaves, lowest string first (Standard guitar: E2 A2 D3 G3 B3 E4; Standard bass: E1 A1 D2 G2). | Implemented |
 | THY-3.2 | Every fretboard computation (mapping, positions, voicings) shall take the tuning as input, and shall work for any string count from 4 to 8, though v1 offers only 4 and 6 (vision non-goals). | Implemented |
-| THY-3.3 | A custom tuning shall be entered as one pitch per string, for the current instrument's string count, starting from the current tuning, each string with buttons that lower or raise it a semitone (owner, 2026-11-25). | Planned |
+| THY-3.3 | A custom tuning shall be entered as one pitch per string, for the current instrument's string count, starting from the current tuning, each string with buttons that lower or raise it a semitone (owner, 2026-11-25), within an octave of Standard's pitch for that string. Its pitches are spelled as notes with no key are (THY-2.3). | Implemented |
 | THY-3.4 | Strings shall be numbered from the highest-pitched (string 1) to the lowest, as players do. | Implemented |
 | THY-3.5 | A capo (CTX-3) shall raise every open string by its fret count for what sounds, so every computation that takes a tuning works with a capo unchanged. | Implemented |
 
@@ -41,10 +41,9 @@ What every module relies on from the theory engine (`fretkit`): notes spelled co
 ## Known gaps
 
 - **THY-1.2:** `fretkit` spells any chord formula from its root, but its chord qualities come with chords in M02.
-- **THY-1.5:** `fretkit` reads typed notes and writes them with ♯ ♭ 𝄪 𝄫, and the app bundles a font that has them, but nothing shows notes or takes typed ones yet: cards from M01 T9, search in M03.
-- **THY-2.2 and THY-2.5:** `fretkit` gives each picker button's root, its other spelling and whether a root is offered, but there's no root picker or card yet (M01 T9).
+- **THY-1.5:** `fretkit` reads typed notes and writes them with ♯ ♭ 𝄪 𝄫, and the app bundles a font that has them, and the context bar shows keys and tunings with them, but nothing takes typed notes yet: cards come in M01 T9, search in M03.
+- **THY-2.2 and THY-2.5:** the context bar's key picker offers roots this way; the cards' root pickers come with the cards (M01 T9).
 - **THY-2.4:** `fretkit` lists every note's enharmonic spellings, but nothing shows them until the note card (INT-3, M01 T11).
-- **THY-3.3:** custom tunings are read from and written to URLs, but there's no picker to enter one yet (M01 T5).
 - **THY-4.1:** `fretkit` gives every fret's real pitch and the audio package tunes A4 to 440 Hz, but nothing plays yet (M01 T8).
 
 ## Notes

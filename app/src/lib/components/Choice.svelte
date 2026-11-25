@@ -11,15 +11,21 @@
         name: string;
         options: readonly Option[];
         value: T;
+        /** Lays the options out in this many equal columns, rather than wrapping them in a row. */
+        columns?: number;
         onchange: (value: T) => void;
     }
 
-    let { legend, name, options, value, onchange }: Props = $props();
+    let { legend, name, options, value, columns, onchange }: Props = $props();
 </script>
 
 <fieldset>
     <legend>{legend}</legend>
-    <div class="options">
+    <div
+        class="options"
+        class:columns={columns !== undefined}
+        style:grid-template-columns={columns === undefined ? undefined : `repeat(${String(columns)}, 1fr)`}
+    >
         {#each options as option (option.value)}
             <label class:chosen={option.value === value}>
                 <input
@@ -55,6 +61,14 @@
         gap: 8px;
     }
 
+    .options.columns {
+        display: grid;
+    }
+
+    .columns label {
+        padding: 0 4px;
+    }
+
     label {
         position: relative;
         display: inline-flex;
@@ -63,6 +77,7 @@
         min-height: var(--tap);
         min-width: var(--tap);
         padding: 0 14px;
+        text-align: center;
         border: 1px solid var(--line);
         border-radius: var(--radius);
         background: var(--surface-2);

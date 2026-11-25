@@ -1,6 +1,7 @@
 <!-- A placeholder until the home board (PIN-2) arrives in M01 T12, with Settings and a preview of what they do. -->
 <script lang="ts">
     import { settings } from '#lib/settings/store.svelte.ts';
+    import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { resolve } from '$app/paths';
     import ContextPreview from './ContextPreview.svelte';
 </script>
@@ -14,7 +15,7 @@
     <p>A reference for guitar and bass: scales, modes and arpeggios in every key, from C to F♯ and B♭.</p>
     <p class="muted">Under construction.</p>
     <a class="settings" href={resolve('/settings')}>Settings ›</a>
-    <ContextPreview settings={settings.current} />
+    <ContextPreview settings={settings.current} saved={customTunings.current} />
 </main>
 
 <style>

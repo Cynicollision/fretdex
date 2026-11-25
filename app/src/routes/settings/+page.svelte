@@ -1,6 +1,6 @@
 <!--
-    Settings (CTX-1): how diagrams are drawn, the theme, the screen and the tempo. The key, instrument, tuning and capo
-    are set from the context bar's sheet (APP-2, M01 T5b).
+    Settings (CTX-1): how diagrams are drawn, the theme, the screen, the tempo, and the saved tunings (CTX-2.7). The
+    key, instrument, tuning and capo are set from the context bar's sheet (APP-2).
 -->
 <script lang="ts">
     import { MAX_FRET, type Accidentals } from '@fretdex/fretkit';
@@ -12,6 +12,7 @@
     import { shownPersistence, type Persistence } from '#lib/storage/persist.ts';
     import { resolve } from '$app/paths';
     import { onMount } from 'svelte';
+    import SavedTunings from './SavedTunings.svelte';
 
     const current = $derived(settings.current);
 
@@ -123,8 +124,13 @@
     </section>
 
     <section>
+        <h2>Saved tunings</h2>
+        <SavedTunings />
+    </section>
+
+    <section>
         <h2>Storage</h2>
-        <p>Settings are kept on this device only.</p>
+        <p>Settings and saved tunings are kept on this device only.</p>
         {#if stored}<p class="muted">{STORAGE_TEXT[stored]}</p>{/if}
     </section>
 </main>

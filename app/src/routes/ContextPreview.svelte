@@ -13,9 +13,10 @@
         spellScale,
         type FretboardCell
     } from '@fretdex/fretkit';
-    import { KEY_MODES, builtInTuning, type Settings } from '#lib/settings/settings.ts';
+    import { KEY_MODES, type Settings } from '#lib/settings/settings.ts';
+    import { NO_CUSTOM_TUNINGS, tuningName, type CustomTunings } from '#lib/settings/tunings.ts';
 
-    let { settings }: { settings: Settings } = $props();
+    let { settings, saved = NO_CUSTOM_TUNINGS }: { settings: Settings; saved?: CustomTunings } = $props();
 
     const mode = $derived(KEY_MODES.find(candidate => candidate.id === settings.key?.mode) ?? KEY_MODES[0]);
     const scale = $derived.by(() => {
@@ -27,7 +28,7 @@
         settings.key ? `${noteLabel(settings.key.root)} ${mode.name}` : 'None, so C major is shown'
     );
     const tuningText = $derived(
-        `${builtInTuning(settings.instrument, settings.tuning)?.name ?? 'Custom'}: ${settings.tuning.map(noteLabel).join(' ')}`
+        `${tuningName(settings.instrument, settings.tuning, saved)}: ${settings.tuning.map(noteLabel).join(' ')}`
     );
     const loneNotes = $derived(
         Array.from({ length: 12 }, (_, pc) => noteLabel(spellPitchClass(pc, settings.accidentals))).join(' ')

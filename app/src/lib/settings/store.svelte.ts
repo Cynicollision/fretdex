@@ -3,8 +3,8 @@ import { loadRecord, saveRecord, type KeyValueStore } from '#lib/storage/record.
 import { DEFAULT_SETTINGS, SETTINGS_FORMAT, readSettings, type Settings } from './settings';
 
 /**
- * The settings every view reads (CTX), loaded from the device when the app starts and saved on every change
- * (CTX-2.5). Until they've loaded, `current` holds the defaults.
+ * The settings every view reads (CTX), loaded from the device once the app has started (`ready`) and saved on every
+ * change (CTX-2.5). Until they've loaded, `current` holds the defaults.
  */
 export class SettingsStore {
     /** Replaced whole on each change, never changed in place. */
@@ -12,22 +12,26 @@ export class SettingsStore {
     loaded = $state(false);
 
     readonly #store: KeyValueStore | undefined;
-    readonly #ready: Promise<void>;
+    #loading: Promise<void> | undefined;
     #writable = true;
 
     /** With no store (prerendering, or a browser without IndexedDB), the defaults apply and nothing is saved. */
     constructor(store: KeyValueStore | undefined) {
         this.#store = store;
-        if (store) this.#ready = this.#load(store);
-        else {
+        if (!store) {
             this.loaded = true;
-            this.#ready = Promise.resolve();
+            this.#loading = Promise.resolve();
         }
     }
 
-    /** Resolves once the stored settings have loaded. */
+    /**
+     * Loads the stored settings the first time it's called, and resolves once they have. The root layout calls it
+     * once the page has hydrated: Svelte keeps a prerendered page's text as it was when hydrating it, so settings
+     * that arrived earlier would never be shown. Changing them calls it too.
+     */
     ready(): Promise<void> {
-        return this.#ready;
+        this.#loading ??= this.#store ? this.#load(this.#store) : Promise.resolve();
+        return this.#loading;
     }
 
     /**
@@ -37,7 +41,7 @@ export class SettingsStore {
      * defaults. If saving fails (IndexedDB full or unavailable), the change still applies until the app closes.
      */
     async update(change: Partial<Settings> | ((settings: Settings) => Settings)): Promise<void> {
-        await this.#ready;
+        await this.ready();
         const next = typeof change === 'function' ? change(this.current) : { ...this.current, ...change };
         this.current = readSettings(next);
         if (!this.#store || !this.#writable) return;
