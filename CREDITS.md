@@ -8,7 +8,8 @@ Development-only tools (test runners, linters, build plugins) that don't ship in
 
 | What | Version | Source | Licence | Where |
 |---|---|---|---|---|
-| *(none yet)* | | | | |
+| Svelte | 5.59.1 | https://github.com/sveltejs/svelte | MIT (`node_modules/svelte/LICENSE.md`) | Compiled into the app's JavaScript in `_app/` |
+| SvelteKit | 3.4.0 | https://github.com/sveltejs/kit | MIT (`node_modules/@sveltejs/kit/LICENSE`) | Its client runtime, in the app's JavaScript in `_app/` |
 
 ## Data, fonts and images
 

@@ -2,7 +2,7 @@
 
 Fretdex is a static web app with no backend: a SvelteKit site built with `adapter-static`, TypeScript throughout, with the music theory and the audio in framework-free packages so they can be reused (the owner's synth-toy projects) and tested on their own. Everything runs in the browser; only settings, pins and recents are stored, and only on the device.
 
-This describes the intended design. Nothing is built yet; when code proves part of it wrong, fix this file in the same PR.
+The repository layout, tech stack and tooling below are built (M01 T1); the rest describes the intended design. When code proves part of it wrong, fix this file in the same PR.
 
 ## Layers
 
@@ -34,12 +34,14 @@ npm workspaces in one repository (M01, decision 8):
 
 Neither package imports Svelte or touches the DOM beyond Web Audio (the app opens the microphone and hands the audio package its stream), so both run under Vitest without a browser.
 
+The packages have no build step: each exports its TypeScript source (`"exports": { ".": "./src/index.ts" }`), and the app's Vite compiles it with the app. That's enough while they're unpublished (M01, decision 9); publishing them for the synth toys would add a build to `dist/`. The app is SvelteKit 3, whose configuration lives in the `sveltekit()` plugin's options in `app/vite.config.ts` (there's no `svelte.config.js`), and the root holds the shared tooling: Prettier, ESLint and the base `tsconfig.base.json` the packages extend.
+
 ## Tech stack
 
 | Layer | Choice | Why |
 |---|---|---|
-| App framework | SvelteKit + `adapter-static`, Svelte 5 | Small bundles; fine-grained reactivity suits SVG diagrams; file-based routes map to the URL-as-state design |
-| Language | TypeScript (strict) | Theory code is small pure functions; types catch interval and enharmonic bugs |
+| App framework | SvelteKit 3 + `adapter-static`, Svelte 5 in runes mode, Vite 8; every route prerendered | Small bundles; fine-grained reactivity suits SVG diagrams; file-based routes map to the URL-as-state design |
+| Language | TypeScript 6 (strict, with `noUncheckedIndexedAccess`) | Theory code is small pure functions; types catch interval and enharmonic bugs. Not TypeScript 7 yet: `svelte-check` and `typescript-eslint` support up to 6 |
 | Theory | Tonal.js, wrapped by `fretkit` | Notes, intervals, chords, scales, keys, modes and roman numerals. `fretkit` adds what Tonal.js doesn't have: fretboard mapping, CAGED and 3-notes-per-string positions, triad string sets, voicing search |
 | Chord voicings | Seeded from an open-source chord dataset (for example chords-db, MIT), trimmed and extended by hand, shipped inside `fretkit` as JSON | Good voicings are taste, not math; computed shapes cover the long tail and alternate tunings |
 | Diagrams | Hand-built Svelte SVG components | Full control of the look, left-handed mirroring, tunings and labels |
@@ -48,8 +50,8 @@ Neither package imports Svelte or touches the DOM beyond Web Audio (the app open
 | Storage | IndexedDB through `idb-keyval` | Settings, pins, recents |
 | Offline and install | `@vite-pwa/sveltekit` (Workbox) | Precaches the whole app; manifest, icons, shortcuts |
 | Styling | Plain CSS with custom properties as design tokens, no UI kit; fonts self-hosted, one with ♯ ♭ 𝄪 𝄫 | Small surface, themeable (dark, light, high contrast); no font requests to other sites |
-| Testing | Vitest for the packages and app logic; Playwright for a few phone-viewport smoke tests | The theory engine is the part that must be right |
-| Tooling | npm workspaces, Node 24, Prettier (4 spaces, 120 columns, single quotes), ESLint with the Svelte plugin, GitHub Actions | As in Moped Finance |
+| Testing | Vitest for the packages and app logic, and for components in a real Chromium (browser mode); Playwright for a few smoke tests on Android and iPhone viewports | The theory engine is the part that must be right; diagrams need real layout to test |
+| Tooling | npm workspaces, Node 24, Prettier (4 spaces, 120 columns, single quotes), ESLint with type-checked `typescript-eslint` and the Svelte plugin, GitHub Actions | As in Moped Finance |
 | Hosting | GitHub Pages at `fretdex.seannormoyle.net`, deployed by a GitHub Action on each merge to `main` | No server to run; the personal site is on GitHub Pages too |
 
 ## The theory engine (`fretkit`)
