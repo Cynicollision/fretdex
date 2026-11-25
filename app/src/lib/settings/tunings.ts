@@ -4,6 +4,7 @@ import {
     parseTuning,
     spellMidi,
     spellPitchClass,
+    stringNumber,
     type Accidentals,
     type Instrument,
     type NoteName
@@ -81,7 +82,7 @@ export function newTuningId(taken: readonly CustomTuning[]): string {
 }
 
 /**
- * Why a tuning can't be saved as it is, or `undefined` if it can: it needs a name no other tuning of the instrument
+ * Why a tuning can't be saved as it is, or `undefined` if it can: each string within an octave of Standard's, a name no other tuning of the instrument
  * has, built in or saved, and pitches that aren't already in the list, built in or saved. `editing` is the id of the saved
  * tuning being changed, which doesn't count against itself.
  */
@@ -93,6 +94,11 @@ export function cannotSave(
     editing?: string
 ): string | undefined {
     const others = saved[instrument].filter(tuning => tuning.id !== editing);
+    const far = strings.findIndex((note, i) => !withinReach(instrument, i, note));
+    if (far !== -1) {
+        const number = stringNumber(far, strings.length);
+        return `String ${String(number)} is more than an octave from Standard's pitch.`;
+    }
     const builtIn = builtInTuning(instrument, strings);
     if (builtIn) return `That's ${builtIn.name}, which is already in the list.`;
     const same = others.find(tuning => sameTuning(tuning.strings, strings));

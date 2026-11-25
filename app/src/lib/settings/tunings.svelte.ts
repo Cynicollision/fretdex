@@ -44,27 +44,26 @@ export class CustomTuningsStore {
     }
 
     /**
-     * Saves a new tuning for an instrument and gives it, or `undefined` if the instrument already has
-     * `MAX_CUSTOM_TUNINGS`.
+     * Saves a new tuning for an instrument and gives it as saved, or `undefined` if the instrument already has
+     * `MAX_CUSTOM_TUNINGS` or the tuning isn't valid (`cannotSave` says why).
      */
     async add(instrument: Instrument, name: string, strings: readonly NoteName[]): Promise<CustomTuning | undefined> {
-        let added: CustomTuning | undefined;
+        let id: string | undefined;
         await this.update(all => {
             const list = all[instrument];
             if (list.length >= MAX_CUSTOM_TUNINGS) return all;
-            added = { id: newTuningId(list), name: name.trim(), strings };
-            return { ...all, [instrument]: [...list, added] };
+            id = newTuningId(list);
+            return { ...all, [instrument]: [...list, { id, name, strings }] };
         });
-        return added;
+        // What was kept, as the record reads it: a tuning that isn't valid is dropped (readCustomTunings).
+        return this.current[instrument].find(tuning => tuning.id === id);
     }
 
     /** Renames or retunes a saved tuning, keeping its place in the list. */
     async edit(instrument: Instrument, id: string, name: string, strings: readonly NoteName[]): Promise<void> {
         await this.update(all => ({
             ...all,
-            [instrument]: all[instrument].map(tuning =>
-                tuning.id === id ? { ...tuning, name: name.trim(), strings } : tuning
-            )
+            [instrument]: all[instrument].map(tuning => (tuning.id === id ? { ...tuning, name, strings } : tuning))
         }));
     }
 

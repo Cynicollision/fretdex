@@ -103,6 +103,12 @@ describe('custom tunings', () => {
             expect(cannotSave('guitar', 'Mine', OPEN_C.strings, SAVED)).toBe("That's Open C, which is already saved.");
         });
 
+        it("THY-3.3 needs each string within an octave of Standard's", () => {
+            expect(cannotSave('guitar', 'Low', ['D1', 'A2', 'D3', 'G3', 'B3', 'E4'], SAVED)).toBe(
+                "String 6 is more than an octave from Standard's pitch."
+            );
+        });
+
         it('lets a saved tuning keep its own name and pitches when it is edited', () => {
             expect(cannotSave('guitar', 'Open C', OPEN_C.strings, SAVED, OPEN_C.id)).toBeUndefined();
         });

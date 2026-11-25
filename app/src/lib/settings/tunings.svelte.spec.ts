@@ -66,6 +66,14 @@ describe('the custom tunings store', () => {
         expect(await store.add('bass', 'BEAD', ['B0', 'E1', 'A1', 'D2'])).toBeDefined();
     });
 
+    it('gives a new tuning as it was kept, or nothing when it is not valid', async () => {
+        const store = new CustomTuningsStore(freshDatabase());
+
+        expect(await store.add('guitar', '  Open C  ', OPEN_C)).toMatchObject({ name: 'Open C' });
+        expect(await store.add('guitar', 'Too low', ['D1', 'A2', 'D3', 'G3', 'B3', 'E4'])).toBeUndefined();
+        expect(store.current.guitar).toHaveLength(1);
+    });
+
     it('keeps a change when saving it fails', async () => {
         const failing = {
             get: () => Promise.resolve(undefined),
