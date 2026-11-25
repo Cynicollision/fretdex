@@ -1,6 +1,7 @@
 <!--
-    The context bar at the top of every screen (APP-1.4, APP-2.1): the current key, the instrument, the tuning's name
-    and the capo when one is set (CTX-3.1). A tap opens the sheet that changes them. On a card whose URL overrides the
+    The context bar at the top of every screen (APP-1.4, APP-2.1): Home (APP-1.1), then the current key, the
+    instrument, the tuning's name and the capo when one is set (CTX-3.1). A tap on those opens the sheet that changes
+    them. On a card whose URL overrides the
     instrument, tuning or capo (APP-3.3), it shows what the card shows, marked as the card's, with a button that
     clears the override (APP-2.3).
 -->
@@ -11,6 +12,8 @@
     import { tuningName } from '#lib/settings/tunings.ts';
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { overrides, viewContext, type ContextOverride } from '#lib/url/context.ts';
+    import { resolve } from '$app/paths';
+    import { page } from '$app/state';
 
     interface Props {
         /** What the current URL overrides (APP-3.3). */
@@ -40,6 +43,16 @@
 
 <header>
     <div class="row">
+        <a
+            class="home"
+            href={resolve('/')}
+            aria-current={page.url.pathname === '/' && !page.error ? 'page' : undefined}
+        >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z" />
+            </svg>
+            <span class="visually-hidden">Home</span>
+        </a>
         <button
             type="button"
             class="context"
@@ -86,7 +99,28 @@
         align-items: center;
         max-width: 40rem;
         margin: 0 auto;
+        padding-left: env(safe-area-inset-left, 0px);
         padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+
+    .home {
+        flex: none;
+        display: grid;
+        place-items: center;
+        width: 52px;
+        min-height: 56px;
+        color: var(--muted);
+        border-right: 1px solid var(--line);
+    }
+
+    .home[aria-current='page'] {
+        color: var(--accent);
+    }
+
+    .home svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
     }
 
     .context {
@@ -98,7 +132,7 @@
         align-items: center;
         column-gap: 12px;
         min-height: 56px;
-        padding: 6px 12px 6px max(16px, env(safe-area-inset-left, 0px));
+        padding: 6px 12px 6px 16px;
         border: 0;
         background: none;
         color: var(--text);

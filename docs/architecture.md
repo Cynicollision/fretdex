@@ -71,7 +71,6 @@ Paths name the thing; query parameters hold view options. Global settings stay o
 | Route | Example | Query options |
 |---|---|---|
 | `/` | Home board, with the modules under it (APP-1.2) | — |
-| `/modules` | The modules and tools (APP-1.1) | — |
 | `/chords`, `/chords/[root]/[quality]` | `/chords/A/m7b5` | `v` voicing, `inv` inversion |
 | `/chords/identify` | `/chords/identify?f=x32010` | `f` frets, lowest string first |
 | `/scales`, `/scales/[root]/[scale]` | `/scales/G/major` | `pos` 1–5 (CAGED) or `nps` 1–7, `labels` |
@@ -89,13 +88,13 @@ Any route may also carry `inst`, `tuning` and `capo`, so a pin keeps its own ins
 So far the routes of M01 are built, with the module lists and cards as text until their tasks draw them (`CardSketch.svelte`). Everything about reading and writing URLs is in `app/src/lib/url/`:
 
 - **Cards.** `routes.ts` reads a card's path into a `Card` (`readScaleCard` and the like), writes it back (`cardPath`) and names it (`cardTitle`); `href.ts` gives a card's link through SvelteKit's `resolve`. A card route's `load` (`cardLoad` in `load.ts`) shows Not found for a path it can't read (`+error.svelte`, APP-3.5), and redirects any other spelling to the one the app writes (`%23` and `#` to `s`, a mode under `/scales` to `/modes`, MODE-1.7). Any spelling of a root is read, so a linked root opens as written (THY-2.5).
-- **Rendering.** Home, Settings, Modules and the module lists are prerendered. Cards aren't, as every root makes hundreds of them: a card route sets `prerender` and `ssr` off, and is drawn in the browser from `adapter-static`'s fallback page, `404.html`, which GitHub Pages serves for any path it has no file for (with a 404 status, which browsers ignore). A card therefore blinks blank on a first load until the app's JavaScript runs.
+- **Rendering.** Home, Settings and the module lists are prerendered. Cards aren't, as every root makes hundreds of them: a card route sets `prerender` and `ssr` off, and is drawn in the browser from `adapter-static`'s fallback page, `404.html`, which GitHub Pages serves for any path it has no file for (with a 404 status, which browsers ignore). A card therefore blinks blank on a first load until the app's JavaScript runs.
 - **Query.** `readViewOptions` reads a card's options (`pos`, `nps`, `labels`, `compare`) and `context.ts` the override (`readOverride`). Once the page has hydrated and the settings have loaded, the root layout rewrites the query as the app would write it (`canonicalQuery`), so an option it can't read, or doesn't know, leaves the URL. Changing an option replaces the history entry (`setViewOption` in `navigate.ts`, APP-3.2).
 - **The override** shows in the context bar, which offers to clear it (APP-2.3); views read `viewContext`, the override where there is one and the settings elsewhere.
 - **Back.** `BackLink.svelte` goes back in the browser's history when the previous entry is one of the app's (the Navigation API's `canGoBack`, or else any history at all), and otherwise follows its link, the card's module list (APP-1.3).
 - **The wake lock** (`wake-lock.ts`) is held while **Keep screen awake** is on and taken again each time the app is shown, as the browser drops it when the app is hidden (APP-5.5).
 
-The root layout puts the context bar (`ContextBar.svelte` in `app/src/lib/components/`) at the top of every route and the bottom bar (`BottomBar.svelte`: Home and Modules) at the bottom. Its sheet (`ContextSheet.svelte`) sets the key, instrument, tuning and capo straight into the settings, so whatever screen is open follows at once (APP-2.2); custom tunings are entered there (`TuningEditor.svelte`) and managed on Settings.
+The root layout puts the context bar (`ContextBar.svelte` in `app/src/lib/components/`) at the top of every route: a Home link, then the context, which opens its sheet. There's no bottom bar (APP-1.1). The sheet (`ContextSheet.svelte`) sets the key, instrument, tuning and capo straight into the settings, so whatever screen is open follows at once (APP-2.2), and links to Settings; custom tunings are entered there (`TuningEditor.svelte`) and managed on Settings.
 
 ## Storage
 

@@ -1,12 +1,11 @@
 <!--
     A placeholder until the home board (PIN-2) arrives in M01 T12: the modules, so any card is two taps away
-    (APP-1.2), Settings and a preview of what they do.
+    (APP-1.2), and a preview of what the settings do.
 -->
 <script lang="ts">
     import ModuleGrid from '#lib/components/ModuleGrid.svelte';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
-    import { resolve } from '$app/paths';
     import ContextPreview from './ContextPreview.svelte';
 </script>
 
@@ -19,7 +18,6 @@
     <p>A reference for guitar and bass: scales and modes in every key, from C to F♯ and B♭.</p>
     <p class="muted">Under construction.</p>
     <ModuleGrid />
-    <a class="settings" href={resolve('/settings')}>Settings ›</a>
     <ContextPreview settings={settings.current} saved={customTunings.current} />
 </main>
 
@@ -40,15 +38,5 @@
 
     .muted {
         color: var(--muted);
-    }
-
-    .settings {
-        display: inline-flex;
-        align-items: center;
-        min-height: var(--tap);
-        justify-self: start;
-        color: var(--accent);
-        font-size: var(--text-m);
-        text-decoration: none;
     }
 </style>

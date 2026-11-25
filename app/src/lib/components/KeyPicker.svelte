@@ -55,7 +55,7 @@
 
 <div class="picker">
     <div class="modes">
-        <Choice legend="Mode" name="key-mode" options={modeOptions} value={mode} onchange={setMode} />
+        <Choice legend="Mode" name="key-mode" options={modeOptions} value={mode} hideLegend onchange={setMode} />
         {#if !allModes}
             <button type="button" class="more" aria-expanded="false" onclick={() => (expanded = true)}>
                 More modes

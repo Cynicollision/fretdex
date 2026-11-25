@@ -3,7 +3,6 @@
     import '#lib/styles/fonts.css';
     import '#lib/styles/tokens.css';
     import '#lib/styles/base.css';
-    import BottomBar from '#lib/components/BottomBar.svelte';
     import ContextBar from '#lib/components/ContextBar.svelte';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { applyTheme } from '#lib/settings/theme.ts';
@@ -79,17 +78,15 @@
     {@html manifestLink}
 </svelte:head>
 
-<!-- The current key, instrument, tuning and capo, on every screen (APP-1.4, APP-2). -->
+<!-- Home, and the current key, instrument, tuning and capo, on every screen (APP-1.1, APP-1.4, APP-2). -->
 <ContextBar {override} onclear={() => void clearOverride(page.url)} />
 <div class="screen">
     {@render children()}
 </div>
-<!-- Home and Modules, on every screen (APP-1.1). -->
-<BottomBar />
 
 <style>
-    /* Room for the bottom bar, so the end of a screen scrolls clear of it. */
+    /* The end of a screen scrolls clear of the home indicator. */
     .screen {
-        padding-bottom: calc(57px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 </style>

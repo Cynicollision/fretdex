@@ -25,7 +25,7 @@
     }
 </script>
 
-<Screen title="Scales" back="/modules">
+<Screen title="Scales" back="/">
     {#each GROUPS as group (group.id)}
         <section aria-labelledby="group-{group.id}">
             <h2 id="group-{group.id}">{group.name}</h2>

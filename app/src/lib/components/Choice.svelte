@@ -13,14 +13,16 @@
         value: T;
         /** Lays the options out in this many equal columns, rather than wrapping them in a row. */
         columns?: number;
+        /** Keeps the legend for screen readers only, where a heading above already says what the options are. */
+        hideLegend?: boolean;
         onchange: (value: T) => void;
     }
 
-    let { legend, name, options, value, columns, onchange }: Props = $props();
+    let { legend, name, options, value, columns, hideLegend = false, onchange }: Props = $props();
 </script>
 
 <fieldset>
-    <legend>{legend}</legend>
+    <legend class:visually-hidden={hideLegend}>{legend}</legend>
     <div
         class="options"
         class:columns={columns !== undefined}

@@ -22,7 +22,7 @@ In:
 Out (and where it goes instead):
 
 - Chords, triads, chord boxes (DIAG-2), Identify, and strummed audio (AUD-2): M02. Until then, links to chord cards (MODE-1.5) show the chord's name without a link.
-- Keys and the circle (DIAG-4), progressions and their loop (AUD-5), and search (SRCH): M03, which releases v1.0.0. Until then, the bottom bar's Search slot is left out.
+- Keys and the circle (DIAG-4), progressions and their loop (AUD-5), and search (SRCH): M03, which releases v1.0.0. Until then, the context bar has no Search button.
 - The click and count-in (AUD-1.5) arrive with progressions in M03; the tuner and metronome in M04. This milestone builds what they rest on: their places in the navigation, the audio scheduler and the global tempo.
 - Everything in the vision's non-goals, and everything in the backlog's Parked and Ideas.
 
