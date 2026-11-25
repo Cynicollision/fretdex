@@ -1,5 +1,5 @@
 import '#lib/styles/tokens.css';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import { DEFAULT_SETTINGS } from '#lib/settings/settings.ts';
@@ -147,6 +147,40 @@ describe('the context bar', () => {
         press(box.left + 10, box.top - 20, 'pointerdown');
         press(box.left + 10, box.top - 20, 'click');
         await expect.element(sheet()).not.toBeInTheDocument();
+    });
+
+    it("APP-2.3 shows what a card's URL overrides, marked as the card's, with a button that clears it", async () => {
+        const onclear = vi.fn();
+        await render(ContextBar, {
+            override: { instrument: 'bass', tuning: ['D1', 'A1', 'D2', 'G2'], capo: 0 },
+            onclear
+        });
+
+        await expect.element(page.getByText('Bass · Drop D', { exact: false })).toBeVisible();
+        await expect.element(page.getByText('· this card')).toBeVisible();
+        await page.getByRole('button', { name: 'Clear' }).click();
+        expect(onclear).toHaveBeenCalledOnce();
+    });
+
+    it('APP-2.3 shows no override when the URL names what the settings already are', async () => {
+        await render(ContextBar, { override: { instrument: 'guitar', capo: 0 }, onclear: vi.fn() });
+
+        await expect.element(page.getByText('Guitar · Standard', { exact: true })).toBeVisible();
+        await expect.element(page.getByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+    });
+
+    it('APP-2.3 changes the setting and clears the override when the sheet changes the capo', async () => {
+        const onclear = vi.fn();
+        await render(ContextBar, { override: { capo: 3 }, onclear });
+        await bar().click();
+        await expect
+            .element(sheet().getByText("This card's link shows it for Guitar · Standard · Capo 3.", { exact: false }))
+            .toBeVisible();
+
+        await sheet().getByRole('button', { name: 'Raise capo' }).click();
+
+        await expect.poll(() => settings.current.capo).toBe(1);
+        await expect.poll(() => onclear.mock.calls.length).toBe(1);
     });
 
     it('closes with Done', async () => {

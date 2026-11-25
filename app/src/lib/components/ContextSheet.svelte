@@ -1,6 +1,8 @@
 <!--
     The context bar's sheet (APP-2.1): the current key, instrument, tuning and capo (CTX-1), each applied as it's
     chosen so the screen behind updates in place (APP-2.2). A new custom tuning is entered here (THY-3.3, CTX-2.7).
+    On a card whose URL overrides the instrument, tuning or capo, changing one of them here also clears the override,
+    so the card follows the choice (APP-2.3).
 -->
 <script lang="ts">
     import { MAX_CAPO, TUNINGS, noteLabel, notePitchName, type Instrument, type NoteName } from '@fretdex/fretkit';
@@ -16,9 +18,13 @@
     interface Props {
         open: boolean;
         onclose: () => void;
+        /** What the card's URL overrides, as the bar shows it, when it overrides anything (APP-2.3). */
+        override?: string | undefined;
+        /** Called once the instrument, tuning or capo has changed, to clear the override. */
+        onchangecontext?: () => void;
     }
 
-    let { open, onclose }: Props = $props();
+    let { open, onclose, override, onchangecontext }: Props = $props();
 
     let dialog: HTMLDialogElement | undefined = $state();
     let editing = $state(false);
@@ -58,13 +64,24 @@
     }
 
     function chooseTuning(strings: readonly NoteName[]) {
-        void settings.update(s => ({ ...s, tuning: strings }));
+        void settings.update(s => ({ ...s, tuning: strings })).then(onchangecontext);
+    }
+
+    function chooseInstrument(instrument: Instrument) {
+        void settings.update(s => switchInstrument(s, instrument)).then(onchangecontext);
+    }
+
+    function chooseCapo(capo: number) {
+        void settings.update({ capo }).then(onchangecontext);
     }
 
     async function saveTuning(name: string, strings: NoteName[]) {
         const instrument = current.instrument;
         const added = await customTunings.add(instrument, name, strings);
-        if (added) await settings.update(s => (s.instrument === instrument ? { ...s, tuning: added.strings } : s));
+        if (added) {
+            await settings.update(s => (s.instrument === instrument ? { ...s, tuning: added.strings } : s));
+            onchangecontext?.();
+        }
         editing = false;
     }
 
@@ -121,6 +138,13 @@
                     <KeyPicker />
                 </section>
 
+                {#if override}
+                    <p class="override">
+                        This card's link shows it for {override}. Changing the instrument, tuning or capo here changes
+                        your setting and shows the card with it.
+                    </p>
+                {/if}
+
                 <section aria-label="Instrument">
                     <Choice
                         legend="Instrument"
@@ -130,7 +154,7 @@
                             { value: 'bass', label: 'Bass' }
                         ]}
                         value={current.instrument}
-                        onchange={(instrument: Instrument) => settings.update(s => switchInstrument(s, instrument))}
+                        onchange={chooseInstrument}
                     />
                 </section>
 
@@ -164,13 +188,7 @@
                 </section>
 
                 <section aria-label="Capo">
-                    <Stepper
-                        label="Capo"
-                        min={0}
-                        max={MAX_CAPO}
-                        value={current.capo}
-                        onchange={(capo: number) => settings.update({ capo })}
-                    />
+                    <Stepper label="Capo" min={0} max={MAX_CAPO} value={current.capo} onchange={chooseCapo} />
                 </section>
             {/if}
         </div>
@@ -190,6 +208,11 @@
         background: var(--surface);
         color: var(--text);
         box-sizing: border-box;
+    }
+
+    .override {
+        margin: 0;
+        color: var(--muted);
     }
 
     dialog::backdrop {

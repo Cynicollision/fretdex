@@ -26,7 +26,8 @@ Rules that apply across the codebase. Match the surrounding code for anything no
 ## Svelte
 
 - Svelte 5 runes everywhere: `$props()`, `$state`, `$derived` and `$effect`, and snippets with `{@render}` rather than slots. `app/vite.config.ts` turns runes mode on for every component, so the old syntax is a compile error.
-- A route's `<title>` is set in its `<svelte:head>`.
+- A screen is drawn inside `Screen.svelte` (`app/src/lib/components/`), which sets its `<title>` ("G major · Fretdex", APP-3.6), its heading and its back control.
+- Links to the app's own pages go through `resolve` from `$app/paths` (ESLint's `svelte/no-navigation-without-resolve`); a card's link comes from `cardHref` (`app/src/lib/url/href.ts`).
 
 ## Styling
 

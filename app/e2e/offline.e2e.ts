@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 test('the page links the manifest, which names the app and its icons (APP-4.1)', async ({ page, request }) => {
     await page.goto('/');
@@ -18,20 +18,49 @@ test('the page links the manifest, which names the app and its icons (APP-4.1)',
     expect(manifest.icons.some(icon => icon.purpose === 'maskable')).toBe(true);
 });
 
-test('after the first load the app opens with no network (APP-4.2)', async ({ page, context, browserName }) => {
-    // Playwright drives service workers in Chromium only.
-    test.skip(browserName !== 'chromium', 'service workers are tested in Chromium');
-
-    await page.goto('/');
+/** Waits until the service worker has installed and controls the page, as after an install. */
+async function installed(page: Page) {
     await page.evaluate(async () => {
         await navigator.serviceWorker.ready;
         if (!navigator.serviceWorker.controller) {
             await new Promise(resolve => navigator.serviceWorker.addEventListener('controllerchange', resolve));
         }
     });
+}
+
+test('after the first load the app opens with no network (APP-4.2)', async ({ page, context, browserName }) => {
+    // Playwright drives service workers in Chromium only.
+    test.skip(browserName !== 'chromium', 'service workers are tested in Chromium');
+
+    await page.goto('/');
+    await installed(page);
 
     await context.setOffline(true);
     await page.reload();
 
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fretdex');
+});
+
+test('after the first load every route opens from its URL with no network (APP-4.2, APP-3.1)', async ({
+    page,
+    context,
+    browserName
+}) => {
+    test.skip(browserName !== 'chromium', 'service workers are tested in Chromium');
+
+    await page.goto('/');
+    await installed(page);
+    await context.setOffline(true);
+
+    // A prerendered list, cards drawn from the fallback page, a redirect and Not found.
+    for (const [path, heading] of [
+        ['/scales', 'Scales'],
+        ['/scales/Ab/minor-blues?labels=notes', 'A♭ minor blues'],
+        ['/modes/F%23/lydian', 'F♯ Lydian'],
+        ['/notes/Bb', 'B♭'],
+        ['/arpeggios/C/m9', 'Not found']
+    ] as const) {
+        await page.goto(path);
+        await expect(page.getByRole('heading', { level: 1 }), path).toHaveText(heading);
+    }
 });

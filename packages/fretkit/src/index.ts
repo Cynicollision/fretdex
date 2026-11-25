@@ -12,7 +12,17 @@ export {
     spellMidi,
     type NoteName
 } from './note';
-export { intervalLabel, intervalName, intervalSemitones, type IntervalCode } from './interval';
+export {
+    INTERVALS,
+    intervalLabel,
+    intervalName,
+    intervalSemitones,
+    intervalSlug,
+    parseIntervalSlug,
+    type IntervalCode,
+    type IntervalType
+} from './interval';
+export { ARPEGGIO_TYPES, arpeggioType, type ArpeggioType } from './arpeggio';
 export { SCALE_TYPES, scaleType, spell, spellScale, type ScaleGroup, type ScaleType, type SpelledScale } from './scale';
 export {
     PICKER_ROOTS,

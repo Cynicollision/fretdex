@@ -2,7 +2,7 @@
 
 Fretdex is a static web app with no backend: a SvelteKit site built with `adapter-static`, TypeScript throughout, with the music theory and the audio in framework-free packages so they can be reused (the owner's synth-toy projects) and tested on their own. Everything runs in the browser; only settings, pins and recents are stored, and only on the device.
 
-The repository layout, tech stack, tooling, hosting and styling below are built (M01 T1 to T3), and so are the theory engine's pitch, spelling and tuning model (T4) and storage, settings and the context bar (T5); the rest describes the intended design. When code proves part of it wrong, fix this file in the same PR.
+The repository layout, tech stack, tooling, hosting and styling below are built (M01 T1 to T3), and so are the theory engine's pitch, spelling and tuning model (T4) storage, settings and the context bar (T5), and the app shell and URLs (T6); the rest describes the intended design. When code proves part of it wrong, fix this file in the same PR.
 
 ## Layers
 
@@ -40,7 +40,7 @@ The packages have no build step: each exports its TypeScript source (`"exports":
 
 | Layer | Choice | Why |
 |---|---|---|
-| App framework | SvelteKit 3 + `adapter-static`, Svelte 5 in runes mode, Vite 8; every route prerendered | Small bundles; fine-grained reactivity suits SVG diagrams; file-based routes map to the URL-as-state design |
+| App framework | SvelteKit 3 + `adapter-static`, Svelte 5 in runes mode, Vite 8; screens and lists prerendered, cards drawn in the browser from the fallback page ([Routes](#routes-and-the-url-scheme)) | Small bundles; fine-grained reactivity suits SVG diagrams; file-based routes map to the URL-as-state design |
 | Language | TypeScript 6 (strict, with `noUncheckedIndexedAccess`) | Theory code is small pure functions; types catch interval and enharmonic bugs. Not TypeScript 7 yet: `svelte-check` and `typescript-eslint` support up to 6 |
 | Theory | Tonal.js, wrapped by `fretkit` | Notes, intervals, chords, scales, keys, modes and roman numerals. `fretkit` adds what Tonal.js doesn't have: fretboard mapping, CAGED and 3-notes-per-string positions, triad string sets, voicing search |
 | Chord voicings | Seeded from an open-source chord dataset (for example chords-db, MIT), trimmed and extended by hand, shipped inside `fretkit` as JSON | Good voicings are taste, not math; computed shapes cover the long tail and alternate tunings |
@@ -70,24 +70,34 @@ Paths name the thing; query parameters hold view options. Global settings stay o
 
 | Route | Example | Query options |
 |---|---|---|
-| `/` | Home board | — |
+| `/` | Home board, with the modules under it (APP-1.2) | — |
+| `/modules` | The modules and tools (APP-1.1) | — |
 | `/chords`, `/chords/[root]/[quality]` | `/chords/A/m7b5` | `v` voicing, `inv` inversion |
 | `/chords/identify` | `/chords/identify?f=x32010` | `f` frets, lowest string first |
 | `/scales`, `/scales/[root]/[scale]` | `/scales/G/major` | `pos` 1–5 (CAGED) or `nps` 1–7, `labels` |
-| `/arpeggios`, `/arpeggios/[root]/[quality]` | `/arpeggios/D/maj7` | `pos` |
+| `/arpeggios`, `/arpeggios/[root]/[quality]` | `/arpeggios/D/maj7` | `pos`, `labels` |
 | `/triads`, `/triads/[root]/[quality]` | `/triads/C/major` | `set` 1–4 (all four when absent), `inv` |
-| `/modes`, `/modes/[root]/[mode]` | `/modes/Fs/dorian` | `compare` |
+| `/modes`, `/modes/[root]/[mode]` | `/modes/Fs/dorian` | `pos` or `nps`, `labels`, `compare` |
 | `/keys/[key]` (`/keys` redirects to `/circle`) | `/keys/Bb-major` | `sevenths` |
 | `/circle` | Circle of fifths | `key` |
 | `/progressions`, `/progressions/[slug]` | `/progressions/ii-v-i` | `key`, `bpm` |
-| `/intervals`, `/intervals/[interval]`, `/notes/[note]` | `/intervals/b3`, `/notes/Fs` | — |
+| `/intervals`, `/intervals/[interval]`, `/notes/[note]` | `/intervals/b3`, `/intervals/s4`, `/notes/Fs` | — |
 | `/settings` | Settings, export and import | — |
 | `/tuner` (M04) | Tuner | — |
 | `/metronome` (M04) | `/metronome?bpm=132&sig=6-8` | `bpm`, `sig`, `sub` |
 
-Any route may also carry `inst`, `tuning` and `capo`, so a pin keeps its own instrument, tuning and capo whatever the global setting is. A custom tuning is written as its pitches (`tuning=D2-A2-D3-G3-A3-D4`), so its URL works on a device that hasn't saved it. Sharps are written `s` in paths (`Fs`); `%23` is accepted too. Each module's list route takes the same filters its list offers (for example `/chords?key=E-minor`).
+Any route may also carry `inst`, `tuning` and `capo`, so a pin keeps its own instrument, tuning and capo whatever the global setting is. A built-in tuning is written by its id (`tuning=drop-d`) and a custom one as its pitches (`tuning=D2-A2-D3-G3-A3-D4`), so its URL works on a device that hasn't saved it; pitches with no `inst` give the instrument with that many strings. Sharps are written `s` in paths (`Fs`); `%23` is accepted too. Each module's list route takes the same filters its list offers (for example `/chords?key=E-minor`).
 
-The root layout puts the context bar (`ContextBar.svelte` in `app/src/lib/components/`) at the top of every route. Its sheet (`ContextSheet.svelte`) sets the key, instrument, tuning and capo straight into the settings, so whatever screen is open follows at once (APP-2.2); custom tunings are entered there (`TuningEditor.svelte`) and managed on Settings.
+So far the routes of M01 are built, with the module lists and cards as text until their tasks draw them (`CardSketch.svelte`). Everything about reading and writing URLs is in `app/src/lib/url/`:
+
+- **Cards.** `routes.ts` reads a card's path into a `Card` (`readScaleCard` and the like), writes it back (`cardPath`) and names it (`cardTitle`); `href.ts` gives a card's link through SvelteKit's `resolve`. A card route's `load` (`cardLoad` in `load.ts`) shows Not found for a path it can't read (`+error.svelte`, APP-3.5), and redirects any other spelling to the one the app writes (`%23` and `#` to `s`, a mode under `/scales` to `/modes`, MODE-1.7). Any spelling of a root is read, so a linked root opens as written (THY-2.5).
+- **Rendering.** Home, Settings, Modules and the module lists are prerendered. Cards aren't, as every root makes hundreds of them: a card route sets `prerender` and `ssr` off, and is drawn in the browser from `adapter-static`'s fallback page, `404.html`, which GitHub Pages serves for any path it has no file for (with a 404 status, which browsers ignore). A card therefore blinks blank on a first load until the app's JavaScript runs.
+- **Query.** `readViewOptions` reads a card's options (`pos`, `nps`, `labels`, `compare`) and `context.ts` the override (`readOverride`). Once the page has hydrated and the settings have loaded, the root layout rewrites the query as the app would write it (`canonicalQuery`), so an option it can't read, or doesn't know, leaves the URL. Changing an option replaces the history entry (`setViewOption` in `navigate.ts`, APP-3.2).
+- **The override** shows in the context bar, which offers to clear it (APP-2.3); views read `viewContext`, the override where there is one and the settings elsewhere.
+- **Back.** `BackLink.svelte` goes back in the browser's history when the previous entry is one of the app's (the Navigation API's `canGoBack`, or else any history at all), and otherwise follows its link, the card's module list (APP-1.3).
+- **The wake lock** (`wake-lock.ts`) is held while **Keep screen awake** is on and taken again each time the app is shown, as the browser drops it when the app is hidden (APP-5.5).
+
+The root layout puts the context bar (`ContextBar.svelte` in `app/src/lib/components/`) at the top of every route and the bottom bar (`BottomBar.svelte`: Home and Modules) at the bottom. Its sheet (`ContextSheet.svelte`) sets the key, instrument, tuning and capo straight into the settings, so whatever screen is open follows at once (APP-2.2); custom tunings are entered there (`TuningEditor.svelte`) and managed on Settings.
 
 ## Storage
 
@@ -96,13 +106,13 @@ IndexedDB, through `idb-keyval` (`idbStore` in `app/src/lib/storage/idb.ts`: a `
 - **Versioned records.** Each thing is one record, stored with its format's version (`loadRecord` and `saveRecord` in `storage/record.ts`). Loading migrates an older record forward a step at a time, then reads it field by field, so anything missing or invalid takes its default rather than stopping the app. A record written by a newer version (a tab not yet updated) is read as far as this version understands it and never saved over. If IndexedDB is unavailable, or a migration can't read a record, the app runs on its defaults; if a save fails, the change still applies until the app closes.
 - **Settings.** `Settings` and its record format, `SETTINGS_FORMAT`, are in `settings/settings.ts`, which also switches instrument (CTX-2.1) and matches a tuning to a built-in one by its pitches, however they're spelled (`builtInTuning`). The selected tuning is stored as its pitches, not a name. `SettingsStore` (`settings/store.svelte.ts`) holds them as runes state: the `settings` it exports loads them once asked (`ready`) and saves every change, and a change made before they've loaded waits for them (a change that depends on another setting is given as a function of the settings, so it reads them as loaded). Views read `settings.current`, which holds the defaults until the stored settings arrive.
 - **Custom tunings** are a second record, `customTunings` (`CUSTOM_TUNINGS_FORMAT` in `settings/tunings.ts`): each instrument's saved tunings, up to 10, each with an id that outlasts renames, a name and its pitches. `CustomTuningsStore` (`settings/tunings.svelte.ts`) works as `SettingsStore` does. A tuning's name is a built-in one's, else a saved one's with the same pitches, else "Custom" (`tuningName`), so deleting the tuning in use leaves it in use as "Custom".
-- **Loading after hydration.** Every route is prerendered with the defaults, and Svelte keeps a prerendered page's text as it was when it hydrates it, so stored values that arrived before hydration would never show. So the stores load nothing until asked: the root layout calls `ready()` on both in `onMount`, once the page has hydrated, and the stored values then arrive as an ordinary change. The context bar stays blank until they have, rather than showing the defaults.
+- **Loading after hydration.** Home, Settings and the lists are prerendered with the defaults, and Svelte keeps a prerendered page's text as it was when it hydrates it, so stored values that arrived before hydration would never show. So the stores load nothing until asked: the root layout calls `ready()` on both in `onMount`, once the page has hydrated, and the stored values then arrive as an ordinary change. The context bar stays blank until they have, rather than showing the defaults.
 - **The theme** is also copied into `localStorage` (`applyTheme` in `settings/theme.ts`), because IndexedDB can't be read before the first paint: a script in `app.html` sets `data-theme` from the copy, so a Light or High contrast theme shows from the first frame. The root layout then applies the stored theme and sets the `theme-color` meta to the theme's `--bg`.
 - **Persistent storage.** Running installed, the app asks the browser to keep its storage (`navigator.storage.persist()`, in `storage/persist.ts`), and Settings says whether it did (PIN-6.2). JSON export and import of pins and settings is the backup (PIN-5).
 
 ## Offline and install
 
-The service worker precaches the whole build (app, voicing dataset, icons, fonts), so after the first load the app needs no network. When the app opens with a network and a new version has been deployed, the new service worker installs in the background, takes over and reloads the app (`registerType: 'autoUpdate'`), so a launch picks up the new version within seconds. The root layout (`src/routes/+layout.svelte`) registers the service worker and adds the manifest's link. A navigation the service worker hasn't precached gets the home page's HTML. The manifest gives the app its name, icon, theme colors and, on Android, shortcuts to the top three pins. The app is served from the root of its own subdomain, so it needs no base path and the service worker's scope is the whole origin.
+The service worker precaches the whole build (app, voicing dataset, icons, fonts), so after the first load the app needs no network. When the app opens with a network and a new version has been deployed, the new service worker installs in the background, takes over and reloads the app (`registerType: 'autoUpdate'`), so a launch picks up the new version within seconds. The root layout (`src/routes/+layout.svelte`) registers the service worker and adds the manifest's link. A navigation the service worker hasn't precached, such as any card, gets the fallback page, `404.html`, which is precached too (`kit.adapterFallback` and `spa` in `app/vite.config.ts`), so every route opens offline. The manifest gives the app its name, icon, theme colors and, on Android, shortcuts to the top three pins. The app is served from the root of its own subdomain, so it needs no base path and the service worker's scope is the whole origin.
 
 ## Styling
 
@@ -124,7 +134,7 @@ Assumptions from the brief and from what the libraries are known to offer, not y
 - Tonal.js's chord dictionary and roman numerals cover what M02 and M03 need. (T4 confirmed it spells notes, intervals, scales, keys and modes, double sharps and flats included, and has no tunings or fretboard, position or voicing logic.)
 - The chord dataset's voicings are for standard tuning only, so alternate tunings need computed voicings.
 - On iPhones, Web Audio is silenced by the ring/silent switch unless the page plays through a media element; check what an installed PWA does.
-- GitHub Pages serves every route on a fresh load (prerendered pages, or a `404.html` fallback to the app), and offline, each route opens from the precache rather than the service worker's home-page fallback. Only `/` exists so far; T6 checks this with the real routes. (T2 confirmed that `@vite-pwa/sveltekit` 2 works with SvelteKit 3 and precaches the `adapter-static` build.)
+- GitHub Pages serves `404.html` for a card's path on a fresh load as `app/scripts/serve-build.ts` does in the smoke tests, which also check that every route opens offline. Checked on the owner's phone once T6 is deployed. (T2 confirmed that `@vite-pwa/sveltekit` 2 works with SvelteKit 3 and precaches the `adapter-static` build.)
 - Tonal.js's chord detection names inversions and slash chords well enough for Identify, or `fretkit` adds the ranking.
 - chords-db covers the qualities in CHD-1.1, has fingerings, and its licence and notice are as expected.
 - A phone's microphone and an autocorrelation pitch detector are accurate down to the bass's low E (M04).
