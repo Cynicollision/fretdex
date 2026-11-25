@@ -8,9 +8,9 @@ Static files on GitHub Pages, served over HTTPS from the root of their own subdo
 
 ## How a deploy works
 
-- **Trigger:** the `deploy` job in `.github/workflows/ci.yml` runs on every push to `main` once the format, lint, type check, unit test and smoke test jobs pass. To deploy `main` again without a new merge, run the CI workflow on `main` from the repository's Actions tab.
+- **Trigger:** the `build-pages` and `deploy` jobs in `.github/workflows/ci.yml` run on every push to `main` once the format, lint, type check, unit test and smoke test jobs pass. To deploy `main` again without a new merge, run the CI workflow on `main` from the repository's Actions tab.
 - **Build:** `npm run build` writes the static site to `app/build/`: Home, Settings and the module lists prerendered to HTML, `404.html` (the fallback page that draws every card in the browser, which Pages serves for any path it has no file for), the app's JavaScript and CSS in `_app/`, the files in `app/static/`, the manifest (`manifest.webmanifest`) and the service worker (`sw.js`).
-- **Publish:** GitHub's Pages actions upload `app/build/` and deploy it to the `github-pages` environment. The run's summary links the live site.
+- **Publish:** `build-pages` uploads `app/build/` with GitHub's Pages actions, and `deploy` then deploys it to the `github-pages` environment. They're separate jobs because deploying straight after the upload, in the same job, sometimes looked for the artifact before GitHub listed it and failed with "No artifacts named github-pages". The run's summary links the live site.
 
 ## Updates on the phone
 
