@@ -18,7 +18,7 @@ Everything runs from the repository root: it's one set of npm workspaces (`app/`
 |---|---|---|
 | Dev server | `npm run dev` | http://localhost:5173, with hot reload of the app and both packages |
 | Production build | `npm run build` | Static site in `app/build/` |
-| Serve the build | `npm run preview` | http://localhost:4173 |
+| Serve the build | `npm run preview` | http://localhost:4173, as GitHub Pages serves it (`app/scripts/serve-build.ts`) |
 | Unit and component tests | `npm test` | Every workspace; `npm run test:watch -w <workspace>` to watch one |
 | Smoke tests | `npm run test:e2e` | Builds the app and runs Playwright against it |
 | Type check | `npm run check` | `tsc` in the packages, `svelte-check` in the app |

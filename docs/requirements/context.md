@@ -48,4 +48,4 @@ With a capo, the app treats it as the nut: chords are named and drawn as the sha
 
 - **CTX-2.6:** the context bar's key picker shows major and minor first, with the other modes one tap away, but there are no key-relative views to follow a mode yet (M03).
 - **CTX-3.1:** the context bar shows the capo, and the home page's settings preview leaves the frets below it empty, but there are no fretboards or chord boxes to draw it until M01 T7 and M02.
-- **CTX-1.4, CTX-1.5, CTX-1.7, CTX-1.10, CTX-1.11:** each can be set on Settings, but until the diagrams (M01 T7), the wake lock (APP-5.5, T6) and audio (T8) arrive, only the home page's settings preview shows what they do.
+- **CTX-1.4, CTX-1.5, CTX-1.7, CTX-1.11:** each can be set on Settings, but until the diagrams (M01 T7) and audio (T8) arrive, only the home page's settings preview shows what they do.

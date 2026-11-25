@@ -12,10 +12,14 @@ export default defineConfig({
                     // Runes mode for our components; libraries in node_modules decide for themselves.
                     runes: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : true)
                 },
-                // Every page is prerendered to static HTML (src/routes/+layout.ts).
-                adapter: adapter()
+                // Every list and screen is prerendered to static HTML (src/routes/+layout.ts). Cards are drawn in the
+                // browser from the fallback page, which GitHub Pages serves for any path it has no file for.
+                adapter: adapter({ fallback: '404.html' })
             },
             {
+                // The fallback page is precached, and the service worker answers any navigation it hasn't precached
+                // with it, so every card opens offline (APP-4.2).
+                kit: { adapterFallback: '404.html', spa: true },
                 // A new version installs in the background, takes over and reloads the app, so a launch picks it up (APP-4.3).
                 registerType: 'autoUpdate',
                 // Registered from src/routes/+layout.svelte.

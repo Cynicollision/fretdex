@@ -4,13 +4,13 @@
 -->
 <script lang="ts">
     import { MAX_FRET, type Accidentals } from '@fretdex/fretkit';
+    import BackLink from '#lib/components/BackLink.svelte';
     import Choice from '#lib/components/Choice.svelte';
     import Stepper from '#lib/components/Stepper.svelte';
     import Switch from '#lib/components/Switch.svelte';
     import { MAX_TEMPO, MIN_TEMPO, type Handedness, type Labels, type Theme } from '#lib/settings/settings.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { shownPersistence, type Persistence } from '#lib/storage/persist.ts';
-    import { resolve } from '$app/paths';
     import { onMount } from 'svelte';
     import SavedTunings from './SavedTunings.svelte';
 
@@ -34,7 +34,7 @@
 </svelte:head>
 
 <main>
-    <a class="back" href={resolve('/')}>‹ Home</a>
+    <BackLink href="/" />
     <h1>Settings</h1>
 
     <section>
@@ -144,16 +144,6 @@
         padding-block: 16px 32px;
         padding-left: max(16px, env(safe-area-inset-left, 0px));
         padding-right: max(16px, env(safe-area-inset-right, 0px));
-    }
-
-    .back {
-        display: inline-flex;
-        align-items: center;
-        min-height: var(--tap);
-        justify-self: start;
-        color: var(--accent);
-        font-size: var(--text-m);
-        text-decoration: none;
     }
 
     section {

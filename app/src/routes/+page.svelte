@@ -1,5 +1,9 @@
-<!-- A placeholder until the home board (PIN-2) arrives in M01 T12, with Settings and a preview of what they do. -->
+<!--
+    A placeholder until the home board (PIN-2) arrives in M01 T12: the modules, so any card is two taps away
+    (APP-1.2), Settings and a preview of what they do.
+-->
 <script lang="ts">
+    import ModuleGrid from '#lib/components/ModuleGrid.svelte';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { resolve } from '$app/paths';
@@ -14,6 +18,7 @@
     <h1>Fretdex</h1>
     <p>A reference for guitar and bass: scales, modes and arpeggios in every key, from C to F♯ and B♭.</p>
     <p class="muted">Under construction.</p>
+    <ModuleGrid />
     <a class="settings" href={resolve('/settings')}>Settings ›</a>
     <ContextPreview settings={settings.current} saved={customTunings.current} />
 </main>
