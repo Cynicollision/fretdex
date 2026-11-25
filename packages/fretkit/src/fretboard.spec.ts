@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { mapScale } from './fretboard';
-import { scaleType, spellScale } from './scale';
+import { mapKeyboard, mapScale } from './fretboard';
+import { noteSet, scaleType, spellScale } from './scale';
 
 const standard = ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'];
 
@@ -15,8 +15,8 @@ describe('mapScale', () => {
         const cells = mapScale(standard, scale('F#', 'major'), { from: 0, to: 2 });
         // On the low E string, fret 1 is the 7th, spelled E# (THY-1.1), and fret 2 the root; the open E isn't in F# major.
         expect(cells.filter(cell => cell.string === 6)).toEqual([
-            { string: 6, fret: 1, midi: 41, note: 'E#2', interval: '7', degree: 7 },
-            { string: 6, fret: 2, midi: 42, note: 'F#2', interval: '1', degree: 1 }
+            { string: 6, fret: 1, midi: 41, note: 'E#2', code: '7M', interval: '7', degree: 7 },
+            { string: 6, fret: 2, midi: 42, note: 'F#2', code: '1P', interval: '1', degree: 1 }
         ]);
         // The B string has the open B (the 4th) and C# at fret 2 (the 5th); fret 1's C isn't in F# major.
         expect(cells.filter(cell => cell.string === 2).map(cell => `${String(cell.fret)}:${cell.note}`)).toEqual([
@@ -61,5 +61,35 @@ describe('mapScale', () => {
         const cells = mapScale(standard, scale('C', 'major'), { from: 0, to: 3 });
         const order = cells.map(cell => cell.string * 100 + cell.fret);
         expect(order).toEqual([...order].sort((a, b) => a - b));
+    });
+
+    it('THY-1.2 maps an arpeggio as its chord spells it', () => {
+        const cells = mapScale(standard, noteSet('C#', ['1P', '3M', '5P', '7m']), { from: 0, to: 4 });
+        expect(cells.filter(cell => cell.string === 6).map(cell => `${String(cell.fret)}:${cell.note}`)).toEqual([
+            '1:E#2',
+            '4:G#2'
+        ]);
+    });
+
+    it('maps a lone note wherever it falls', () => {
+        const cells = mapScale(standard, noteSet('Eb', ['1P']), { from: 0, to: 12 });
+        expect(cells.map(cell => `${String(cell.string)}:${String(cell.fret)}`)).toEqual([
+            '1:11',
+            '2:4',
+            '3:8',
+            '4:1',
+            '5:6',
+            '6:11'
+        ]);
+        expect(new Set(cells.map(cell => cell.degree))).toEqual(new Set([1]));
+    });
+});
+
+describe('mapKeyboard', () => {
+    it('finds every key of the set in the range, lowest first, spelled as the set spells it', () => {
+        const keys = mapKeyboard(noteSet('Gb', ['1P', '3M', '5P']), 48, 71);
+        expect(keys.map(key => key.note)).toEqual(['Db3', 'Gb3', 'Bb3', 'Db4', 'Gb4', 'Bb4']);
+        expect(keys.map(key => key.midi)).toEqual([49, 54, 58, 61, 66, 70]);
+        expect(keys.find(key => key.degree === 1)?.code).toBe('1P');
     });
 });

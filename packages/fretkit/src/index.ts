@@ -23,7 +23,17 @@ export {
     type IntervalType
 } from './interval';
 export { ARPEGGIO_TYPES, arpeggioType, type ArpeggioType } from './arpeggio';
-export { SCALE_TYPES, scaleType, spell, spellScale, type ScaleGroup, type ScaleType, type SpelledScale } from './scale';
+export {
+    SCALE_TYPES,
+    noteSet,
+    scaleType,
+    spell,
+    spellScale,
+    type NoteSet,
+    type ScaleGroup,
+    type ScaleType,
+    type SpelledScale
+} from './scale';
 export {
     PICKER_ROOTS,
     isOfferedRoot,
@@ -53,4 +63,4 @@ export {
     type Instrument,
     type Tuning
 } from './tuning';
-export { mapScale, type FretboardCell, type FretRange } from './fretboard';
+export { mapKeyboard, mapScale, type FretboardCell, type FretRange, type MappedNote } from './fretboard';

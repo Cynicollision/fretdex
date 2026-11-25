@@ -6,16 +6,16 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 
 | ID | Requirement | Status |
 |---|---|---|
-| DIAG-1.1 | The fretboard shall draw the current tuning's strings, the frets in the view's range, the nut when fret 0 is in range, and inlay markers at frets 3, 5, 7, 9, 12 (double), 15, 17, 19, 21 and 24. | Planned |
-| DIAG-1.2 | Each note shown shall be a dot labeled per the label mode (CTX-1.5). The root shall be visually distinct by shape as well as color (APP-6.3). | Planned |
-| DIAG-1.3 | A card can highlight a subset (a position, a degree, the playing note) with the rest dimmed, not hidden. | Planned |
-| DIAG-1.4 | Fret numbers shall be shown below the neck at inlay frets, and at the first fret of a position when it's not 0. | Planned |
-| DIAG-1.5 | Left-handed mode shall mirror the neck so the nut is on the right, keeping labels upright. | Planned |
-| DIAG-1.6 | Tapping a dot shall play its note (AUD-4.1); tapping an empty fret shall show and play that note too (INT-2). | Planned |
-| DIAG-1.7 | The root shall be a square and other notes circles; where a card highlights chord tones within a scale, chord tones shall be filled and other notes outlined. Color adds to these and never replaces them. The design task may refine the look, not these distinctions. | Planned |
-| DIAG-1.8 | Frets shall be evenly spaced, not narrowing up the neck as a real guitar's do, so the highest are as readable and as easy to tap as the lowest (APP-5.1, APP-5.3). | Planned |
-| DIAG-1.9 | With a capo (CTX-3), the fretboard shall draw it as a bar across the strings at its fret, with the frets below it dimmed and empty. | Planned |
-| DIAG-1.10 | With the phone upright, the fretboard shall show at most six frets across the width: the chosen position, or a stretch of the neck when the card has none, with previous and next to move along it. A strip of the whole fret range below it shall mark that stretch and the roots, and tapping the strip shall move to that part of the neck. In landscape it shows the whole fret range (APP-5.4). | Planned |
+| DIAG-1.1 | The fretboard shall draw the current tuning's strings, the frets in the view's range, the nut when fret 0 is in range, and inlay markers at frets 3, 5, 7, 9, 12 (double), 15, 17, 19, 21 and 24. | Implemented |
+| DIAG-1.2 | Each note shown shall be a dot labeled per the label mode (CTX-1.5). The root shall be visually distinct by shape as well as color (APP-6.3). | Implemented |
+| DIAG-1.3 | A card can highlight a subset (a position, a degree, the playing note) with the rest dimmed, not hidden. | Implemented |
+| DIAG-1.4 | Fret numbers shall be shown below the neck at inlay frets, and at the first fret of a position when it's not 0. | Implemented |
+| DIAG-1.5 | Left-handed mode shall mirror the neck so the nut is on the right, keeping labels upright. | Implemented |
+| DIAG-1.6 | Tapping a dot shall play its note (AUD-4.1); tapping an empty fret shall show and play that note too (INT-2). | Partial |
+| DIAG-1.7 | The root shall be a square and other notes circles; where a card highlights chord tones within a scale, chord tones shall be filled and other notes outlined. Color adds to these and never replaces them. The design task may refine the look, not these distinctions. | Implemented |
+| DIAG-1.8 | Frets shall narrow gently up the neck, each 0.98 the width of the one below it rather than a real guitar's 0.944, so the neck reads as a neck while the highest frets stay readable and easy to tap. Where that would make a fret narrower than the tap target (APP-5.1), the narrowing eases toward even. Decided 2026-11-25, replacing evenly spaced frets. | Implemented |
+| DIAG-1.9 | With a capo (CTX-3), the fretboard shall draw it as a bar across the strings at its fret, with the frets below it dimmed and empty. | Implemented |
+| DIAG-1.10 | With the phone upright, the fretboard shall show at most six frets across the width: the chosen position, or a stretch of the neck when the card has none, with previous and next to move along it. A strip of the whole fret range below it shall mark that stretch and the roots, and tapping the strip shall move to that part of the neck. In landscape it shows the whole fret range (APP-5.4). | Implemented |
 
 ## DIAG-2 Chord box
 
@@ -32,8 +32,8 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 
 | ID | Requirement | Status |
 |---|---|---|
-| DIAG-3.1 | A small keyboard of at least two octaves shall mark the notes shown, the root distinct, and enlarge to full width when tapped. | Planned |
-| DIAG-3.2 | Tapping a key on the enlarged keyboard shall play it (AUD-4.1). | Planned |
+| DIAG-3.1 | A small keyboard of at least two octaves shall mark the notes shown, the root distinct, and enlarge to full width when tapped. | Partial |
+| DIAG-3.2 | Tapping a key on the enlarged keyboard shall play it (AUD-4.1). | Partial |
 
 ## DIAG-4 Circle of fifths and staff
 
@@ -47,4 +47,9 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 
 | ID | Requirement | Status |
 |---|---|---|
-| DIAG-5.1 | Every diagram shall have a compact form for pin tiles (PIN-2.2) that stays legible at about 150 px wide: dots without labels, the root marked. | Planned |
+| DIAG-5.1 | Every diagram shall have a compact form for pin tiles (PIN-2.2) that stays legible at about 150 px wide: dots without labels, the root marked. | Implemented |
+
+## Known gaps
+
+- **DIAG-1.6, DIAG-3.2:** a tapped fret or enlarged key is reported with its note, spelled as a lone note where the set has none, but nothing plays it until the audio engine (M01 T8) and nothing names it until the note card (INT-2.2, T11).
+- **DIAG-3.1:** the keyboard marks the notes and enlarges when tapped, on the scale, mode, arpeggio and note cards; it plays with T8.
