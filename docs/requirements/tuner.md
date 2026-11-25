@@ -1,6 +1,6 @@
 # Tuner (`TUN`)
 
-A chromatic tuner that listens through the phone's microphone and tunes to the current tuning, so the stand needs no separate tuner app. It's built after version 1 (M04 in [TODO.md](../../TODO.md)). It's written down now so the first milestones leave room for it: a place in the navigation (APP-1.1), the microphone rule (APP-4.6), and an audio package with an input side as well as an output side.
+A chromatic tuner that listens through the phone's microphone and tunes to the current tuning, so the stand needs no separate tuner app. It's built after version 1 (M04 in the [roadmap](../planning/roadmap.md)). It's written down now so the first milestones leave room for it: a place in the navigation (APP-1.1), the microphone rule (APP-4.6), and an audio package with an input side as well as an output side.
 
 Screen: **Tuner** (`/tuner`).
 

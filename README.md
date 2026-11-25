@@ -2,7 +2,7 @@
 
 A personal, ad-free, offline reference for guitar and bass: chords, scales and positions, arpeggios, triads, modes, keys and the circle of fifths, progressions, and intervals, in every key and tuning, with pins for what you reach for most. It's a lookup tool for a working player, not a course.
 
-> **Status:** planning. There's no code yet. Version 1 is built in three milestones, starting with [M01](docs/milestones/M01-foundation-and-scales.md); what the app does is in [docs/requirements/](docs/requirements/README.md). It will live at `fretdex.seannormoyle.net`.
+> **Status:** planning. There's no code yet. Version 1 is built in three milestones, starting with [M01](docs/planning/milestones/M01-foundation-and-scales.md); what the app does is in [docs/requirements/](docs/requirements/README.md). It will live at `fretdex.seannormoyle.net`.
 
 ## What it will do
 
@@ -21,8 +21,8 @@ Guitar (6 strings) and bass (4 strings), in standard and alternate tunings, righ
 - [Vision](docs/vision.md): goals, non-goals and design principles
 - [Architecture](docs/architecture.md): packages, layers, tech stack, routes
 - [Requirements](docs/requirements/README.md): what the app does, by domain, with stable IDs
-- [Milestones](docs/milestones/README.md): version 1's plan
-- [TODO.md](TODO.md): the backlog
+- [Roadmap](docs/planning/roadmap.md): version 1's plan, one line per milestone
+- [Backlog](docs/planning/backlog.md): everything outside the current milestone
 - [Concept brief](docs/concept-brief.md): the original brief, kept as written
 
 Built with SvelteKit (static), TypeScript, Tonal.js and the Web Audio API. MIT licence (see [LICENSE](LICENSE)); third-party credits are in [CREDITS.md](CREDITS.md).

@@ -1,8 +1,8 @@
 # Fretdex Requirements
 
-This folder is Fretdex's requirements: what it does and what it's planned to do, as numbered requirements grouped by domain. It's also the feature backlog: every `Planned` or `Partial` sub-requirement is work to do. `TODO.md` lists the milestones, and the milestone's file in [milestones/](../milestones/README.md) orders the work into tasks by requirement ID.
+This folder is Fretdex's requirements: what it does and what it's planned to do, as numbered requirements grouped by domain. It's also the feature backlog: every `Planned` or `Partial` sub-requirement is work to do. The [roadmap](../planning/roadmap.md) lists the milestones, and the milestone's file in [milestones/](../planning/milestones/) orders the work into tasks by requirement ID.
 
-The first set was written on 2026-11-24 from the [concept brief](../concept-brief.md), before any code, and most of its open questions were decided the same day. Every sub-requirement is `Planned`; which milestone builds it is in [TODO.md](../../TODO.md) and the milestone files.
+The first set was written on 2026-11-24 from the [concept brief](../concept-brief.md), before any code, and most of its open questions were decided the same day. Every sub-requirement is `Planned`; which milestone builds it is in the [roadmap](../planning/roadmap.md) and the milestone files.
 
 A domain may end with **Open questions**, each with a **default**: what gets built unless the owner decides otherwise, so work never waits on a question. The owner decides one at the latest when the milestone task that needs it starts; a decided question becomes a sub-requirement (or a decision in the milestone file, for plan and code choices) and leaves the list.
 
@@ -38,7 +38,7 @@ A domain may end with **Open questions**, each with a **default**: what gets bui
 
 - IDs are **stable**. Never renumber. New requirements take the next free number in their domain.
 - A removed sub-requirement keeps its ID with status `Retired` and a one-line reason.
-- Reference requirements by ID from test names (`THY-1.2 spells F# major with E#`), commits, PRs and `TODO.md`.
+- Reference requirements by ID from test names (`THY-1.2 spells F# major with E#`), commits, PRs and backlog items.
 - Cross-cutting quality requirements (performance, accessibility, privacy) go under `APP`.
 
 ## Status
