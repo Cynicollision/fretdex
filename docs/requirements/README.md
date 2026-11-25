@@ -16,12 +16,12 @@ A domain may end with **Open questions**, each with a **default**: what gets bui
 | `DIAG` | Diagrams: fretboard, chord box, keyboard, circle, staff, and how they label, mirror and respond to taps | [diagrams.md](diagrams.md) |
 | `CHD` | Chords: list, detail card, voicings, inversions | [chords.md](chords.md) |
 | `SCL` | Scales and positions: full neck, CAGED, 3-notes-per-string, bass boxes | [scales.md](scales.md) |
-| `ARP` | Arpeggios | [arpeggios.md](arpeggios.md) |
+| `ARP` | Arpeggios (retired) | [arpeggios.md](arpeggios.md) |
 | `TRI` | Triads and string sets | [triads.md](triads.md) |
 | `MODE` | Modes and parallel comparison | [modes.md](modes.md) |
 | `KEY` | Keys and the circle of fifths | [keys.md](keys.md) |
 | `PROG` | Progressions | [progressions.md](progressions.md) |
-| `INT` | Intervals and notes | [intervals.md](intervals.md) |
+| `INT` | Intervals and notes (retired) | [intervals.md](intervals.md) |
 | `PIN` | Pins, the home board, recents, backup | [pins.md](pins.md) |
 | `SRCH` | Search | [search.md](search.md) |
 | `AUD` | Audio | [audio.md](audio.md) |
@@ -68,11 +68,11 @@ Each domain file has an introduction, then one table per requirement, then up to
 | Card | The detail view of one thing (a chord, a scale in a key, a progression). Every card has its own URL and can be pinned. |
 | List | A module's index of cards, filterable, with pinned items first. |
 | Context | The global current key, instrument, tuning, capo and display settings (CTX). |
-| Root | The note a chord, scale, arpeggio or mode is built on. |
-| Quality | A chord's or arpeggio's type: `m`, `7`, `maj7`, `m7b5` and so on. |
+| Root | The note a chord, scale or mode is built on. |
+| Quality | A chord's type: `m`, `7`, `maj7`, `m7b5` and so on. |
 | Tuning | The ordered list of open-string pitches, lowest string first (THY-3). |
 | Voicing | One way to play a chord on the instrument: a fret (or mute) per string. |
-| Position | A region of the neck where a scale or arpeggio is played: a CAGED shape, a 3-notes-per-string pattern or a bass box. |
+| Position | A region of the neck where a scale is played: a CAGED shape, a 3-notes-per-string pattern or a bass box. |
 | String set | Three adjacent strings (TRI). Set 1 is strings 1–3 (high E, B, G), set 4 is strings 4–6. |
 | Label mode | What a diagram writes on each note: note names, intervals, scale degrees, or nothing (CTX-1.5). |
 | Pin | A saved URL plus a label, shown on the home board (PIN). |

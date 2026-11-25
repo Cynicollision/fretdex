@@ -1,6 +1,6 @@
 # Audio (`AUD`)
 
-Tap to hear anything on screen, synthesized in the browser with no sample files: chords strummed or blocked in the exact voicing shown, scales and arpeggios run up and down with the playing note lit, progressions looped as a backing to jam over, and a drone for modal practice.
+Tap to hear anything on screen, synthesized in the browser with no sample files: chords strummed or blocked in the exact voicing shown, scales and modes run up and down with the playing note lit, progressions looped as a backing to jam over, and a drone for modal practice.
 
 ## AUD-1 Audio works on phones
 
@@ -20,7 +20,7 @@ Tap to hear anything on screen, synthesized in the browser with no sample files:
 | AUD-2.1 | **Strum** shall play the shown voicing's notes, low to high, about 30 ms apart, at the pitches the voicing sounds (THY-4.1). | Planned |
 | AUD-2.2 | **Block** shall play them all at once. The last choice is remembered. | Planned |
 
-## AUD-3 Scales, modes and arpeggios
+## AUD-3 Scales and modes
 
 | ID | Requirement | Status |
 |---|---|---|
@@ -32,7 +32,7 @@ Tap to hear anything on screen, synthesized in the browser with no sample files:
 | ID | Requirement | Status |
 |---|---|---|
 | AUD-4.1 | Tapping a dot on a fretboard, or a key on an enlarged keyboard, shall play that note in the instrument's voice. | Planned |
-| AUD-4.2 | An interval (INT-1.3) shall play melodically, then both notes together. | Planned |
+| AUD-4.2 | An interval (INT-1.3) shall play melodically, then both notes together. Retired 2026-11-25 with Intervals (INT). | Retired |
 
 ## AUD-5 Progressions
 

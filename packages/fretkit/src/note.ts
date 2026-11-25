@@ -89,15 +89,6 @@ export function notePitchName(note: NoteName): NoteName {
     return getNote(note).pc;
 }
 
-/**
- * The other spellings of a note's pitch, up to double sharps and flats, fewest accidentals first (THY-2.4, INT-3.1):
- * `F#` gives `Gb` and `E##`, `B#` gives `C` and `Dbb`. Any octave is dropped.
- */
-export function enharmonics(note: NoteName): NoteName[] {
-    const own = notePitchName(note);
-    return spellingsOf(notePitchClass(note)).filter(spelling => spelling !== own);
-}
-
 /** Every spelling of a pitch class with at most a double sharp or flat, fewest accidentals first, sharps before flats. */
 export function spellingsOf(pc: number): NoteName[] {
     const spellings: { name: NoteName; alteration: number }[] = [];

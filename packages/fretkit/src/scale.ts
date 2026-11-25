@@ -111,7 +111,7 @@ export function scaleType(id: string): ScaleType | undefined {
     return SCALE_TYPES.find(type => type.id === id);
 }
 
-/** Notes spelled from a root by interval: a scale, an arpeggio, or a lone note. */
+/** Notes spelled from a root by interval: a scale, a chord's tones, or a lone note. */
 export interface NoteSet {
     readonly root: NoteName;
     /** In order from the root, each letter once in a seven-note scale (THY-1.1), with double sharps and flats where the spelling needs them (THY-1.3). */
@@ -136,8 +136,8 @@ export function spellScale(root: NoteName, type: ScaleType): SpelledScale {
 }
 
 /**
- * Spells a set of notes from a root by interval (THY-1.2), as `spell` does, with their intervals' short names: an
- * arpeggio from its quality's intervals, or a lone note from `['1P']`.
+ * Spells a set of notes from a root by interval (THY-1.2), as `spell` does, with their intervals' short names: a
+ * chord's tones from its formula, or a lone note from `['1P']`.
  */
 export function noteSet(root: NoteName, codes: readonly IntervalCode[]): NoteSet {
     return { root, notes: spell(root, codes), codes, intervals: codes.map(intervalName) };

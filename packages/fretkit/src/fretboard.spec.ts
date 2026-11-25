@@ -63,7 +63,7 @@ describe('mapScale', () => {
         expect(order).toEqual([...order].sort((a, b) => a - b));
     });
 
-    it('THY-1.2 maps an arpeggio as its chord spells it', () => {
+    it("THY-1.2 maps a chord's tones as the chord spells them", () => {
         const cells = mapScale(standard, noteSet('C#', ['1P', '3M', '5P', '7m']), { from: 0, to: 4 });
         expect(cells.filter(cell => cell.string === 6).map(cell => `${String(cell.fret)}:${cell.note}`)).toEqual([
             '1:E#2',

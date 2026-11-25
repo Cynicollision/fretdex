@@ -19,7 +19,8 @@ Screens: **Chords** (`/chords`) and the chord card (`/chords/[root]/[quality]`, 
 | CHD-2.1 | The card shall show the chord's name with its common alternative symbols (`Am7b5`, `Aø7`), its notes spelled (THY-1.2), its intervals from the root, and its formula (`1 b3 b5 b7`). | Planned |
 | CHD-2.2 | The card shall show the chord on a small keyboard (DIAG-3). | Planned |
 | CHD-2.3 | Where the chord is diatonic to the current key, the card shall show its roman numeral there (`ii` in G major). | Planned |
-| CHD-2.4 | The card shall link to the same root and quality as an arpeggio (ARP) and, for triads, to Triads (TRI). | Planned |
+| CHD-2.4 | For a triad, the card shall link to the same triad in Triads (TRI). | Planned |
+| CHD-2.5 | The card shall show the chord's tones across the fret range on the current tuning (DIAG-1), with the current key's scale behind them, its other notes dimmed, when there's a key (DIAG-1.7). This takes the place of the arpeggio card (ARP, retired). | Planned |
 
 ## CHD-3 The user can browse a chord's voicings (guitar)
 
@@ -58,6 +59,6 @@ Screens: **Chords** (`/chords`) and the chord card (`/chords/[root]/[quality]`, 
 | ID | Requirement | Status |
 |---|---|---|
 | CHD-6.1 | On guitar, Identify shall offer a blank chord box where the user sets a fret, open or mute on each string; on bass, a fretboard where the user taps notes. | Planned |
-| CHD-6.2 | As notes are set, it shall list the chord names they fit, simplest first, each linking to its chord card: inversions and slash chords included (`C/E`, `Am7/G`), and every name where the notes fit more than one (`Am7` and `C6/A`). Two notes shall be named as an interval (INT). | Planned |
+| CHD-6.2 | As notes are set, it shall list the chord names they fit, simplest first, each linking to its chord card: inversions and slash chords included (`C/E`, `Am7/G`), and every name where the notes fit more than one (`Am7` and `C6/A`). Two notes shall be named as an interval (`b3`, minor third). | Planned |
 | CHD-6.3 | It shall work in the current tuning and with a capo, naming the shape (CTX-3.2). | Planned |
 | CHD-6.4 | The frets set shall be in the URL (`f=x32010`), so a shape can be pinned, and the box shall play like any chord box (AUD-2). | Planned |

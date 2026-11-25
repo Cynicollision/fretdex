@@ -41,7 +41,7 @@ With a capo, the app treats it as the nut: chords are named and drawn as the sha
 | CTX-3.1 | With a capo set, fretboards and chord boxes shall draw it (DIAG-1.9, DIAG-2.6), and the context bar shall show it ("Capo 2"). | Partial |
 | CTX-3.2 | Chords shall be named by the shape played, with what it sounds beside it: "G · sounds A" with the capo at 2. A chord card's URL names the shape. | Planned |
 | CTX-3.3 | The current key is the key that sounds. With a capo, key-relative views (diatonic chords, progressions, a list filtered to the key) shall list the shapes that sound it: "Key of A, capo 2: G C D". | Planned |
-| CTX-3.4 | Scales, modes, arpeggios, intervals and notes shall show the notes that sound, on the frets above the capo. | Planned |
+| CTX-3.4 | Scales and modes shall show the notes that sound, on the frets above the capo. | Planned |
 | CTX-3.5 | Audio shall play the pitch that sounds (THY-4.1). | Planned |
 
 ## Known gaps

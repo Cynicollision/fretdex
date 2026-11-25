@@ -39,9 +39,9 @@ Every requirement and design decision is checked against these. When two pull ag
 
 ## What "version 1" means
 
-All eight modules (chords, scales and positions, arpeggios, triads and string sets, modes, keys and the circle of fifths, progressions, intervals and notes), Identify (naming a chord from its frets), the global context and settings with a capo, pins and the home board, search, and audio, installed on the owner's phone from `fretdex.seannormoyle.net` and used at rehearsals and gigs as the owner's reference.
+All six modules (chords, scales and positions, triads and string sets, modes, keys and the circle of fifths, and progressions), Identify (naming a chord from its frets), the global context and settings with a capo, pins and the home board, search, and audio, installed on the owner's phone from `fretdex.seannormoyle.net` and used at rehearsals and gigs as the owner's reference.
 
-It's built in three milestones, each released and used on the phone along the way: scales, modes, arpeggios, intervals and pins first ([M01](planning/milestones/M01-foundation-and-scales.md), v0.1.0), then chords and triads (M02), then keys, progressions and search (M03, v1.0.0). The tuner and metronome follow (M04); version 1 leaves room for them in the navigation, the audio engine and the privacy rules.
+It's built in three milestones, each released and used on the phone along the way: scales, modes and pins first ([M01](planning/milestones/M01-foundation-and-scales.md), v0.1.0), then chords and triads (M02), then keys, progressions and search (M03, v1.0.0). The tuner and metronome follow (M04); version 1 leaves room for them in the navigation, the audio engine and the privacy rules.
 
 ## Later, not never
 

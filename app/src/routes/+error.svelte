@@ -1,6 +1,6 @@
 <!--
-    Not found (APP-3.5): a path the app can't read, or a card whose root, scale, quality, interval or note it doesn't
-    know, with a link to the module's list where the path names one. Any other error says so, with a way home.
+    Not found (APP-3.5): a path the app can't read, or a card whose root or scale it doesn't know, with a link to the
+    module's list where the path names one. Any other error says so, with a way home.
 -->
 <script lang="ts">
     import Screen from '#lib/components/Screen.svelte';

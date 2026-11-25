@@ -57,8 +57,8 @@ test('after the first load every route opens from its URL with no network (APP-4
         ['/scales', 'Scales'],
         ['/scales/Ab/minor-blues?labels=notes', 'A♭ minor blues'],
         ['/modes/F%23/lydian', 'F♯ Lydian'],
-        ['/notes/Bb', 'B♭'],
-        ['/arpeggios/C/m9', 'Not found']
+        ['/modes/Bb/aeolian', 'B♭ Aeolian'],
+        ['/scales/C/bebop', 'Not found']
     ] as const) {
         await page.goto(path);
         await expect(page.getByRole('heading', { level: 1 }), path).toHaveText(heading);

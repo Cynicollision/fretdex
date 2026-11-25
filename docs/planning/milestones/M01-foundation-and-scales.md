@@ -6,9 +6,9 @@ Status: in progress. Release: v0.1.0.
 
 ## Question
 
-Can Fretdex be the owner's scale, mode and arpeggio reference on their phone, installed from `fretdex.seannormoyle.net`, on a music stand, offline?
+Can Fretdex be the owner's scale and mode reference on their phone, installed from `fretdex.seannormoyle.net`, on a music stand, offline?
 
-"Yes" means: for at least a week that includes a rehearsal or practice session, the owner looked up scales, modes, arpeggios, intervals and notes in Fretdex rather than working them out from memory or a reference book; every card they opened was right (no wrong note, spelling or position found); any card was two taps from the home board, through a pin or a module's list; and it worked with the phone in airplane mode. Anything they still had to work out or look up elsewhere, within this milestone's scope, is listed in the Outcome. "Not yet" is an answer too, if the Outcome says what was missing.
+"Yes" means: for at least a week that includes a rehearsal or practice session, the owner looked up scales and modes in Fretdex rather than working them out from memory or a reference book; every card they opened was right (no wrong note, spelling or position found); any card was two taps from the home board, through a pin or a module's list; and it worked with the phone in airplane mode. Anything they still had to work out or look up elsewhere, within this milestone's scope, is listed in the Outcome. "Not yet" is an answer too, if the Outcome says what was missing.
 
 ## Scope
 
@@ -16,12 +16,12 @@ In:
 
 - The repository as in [architecture.md](../../architecture.md): the app plus the `fretkit` and audio packages, CI, and the docs that describe them (`conventions.md`, `development.md`, `testing.md`, `deployment.md`).
 - Deploying to `fretdex.seannormoyle.net` on every merge to `main`, and installing on the owner's phone.
-- Requirements: THY; CTX, capo included; APP (the shell, URLs, install and offline, stand use, themes, accessibility, speed, browsers); DIAG-1, DIAG-3 and DIAG-5; SCL, MODE, ARP and INT; PIN, including Android shortcuts (APP-4.4); and audio for what this milestone shows: AUD-1, AUD-3, AUD-4, AUD-6 and AUD-7.
+- Requirements: THY; CTX, capo included; APP (the shell, URLs, install and offline, stand use, themes, accessibility, speed, browsers); DIAG-1, DIAG-3 and DIAG-5; SCL and MODE; PIN, including Android shortcuts (APP-4.4); and audio for what this milestone shows: AUD-1, AUD-3, AUD-4, AUD-6 and AUD-7.
 - The trial (the Question), and the fixes it leads to.
 
 Out (and where it goes instead):
 
-- Chords, triads, chord boxes (DIAG-2), Identify, and strummed audio (AUD-2): M02. Until then, links to chord cards (ARP-1.5, MODE-1.5) show the chord's name without a link.
+- Chords, triads, chord boxes (DIAG-2), Identify, and strummed audio (AUD-2): M02. Until then, links to chord cards (MODE-1.5) show the chord's name without a link.
 - Keys and the circle (DIAG-4), progressions and their loop (AUD-5), and search (SRCH): M03, which releases v1.0.0. Until then, the bottom bar's Search slot is left out.
 - The click and count-in (AUD-1.5) arrive with progressions in M03; the tuner and metronome in M04. This milestone builds what they rest on: their places in the navigation, the audio scheduler and the global tempo.
 - Everything in the vision's non-goals, and everything in the backlog's Parked and Ideas.
@@ -41,6 +41,7 @@ From the concept brief (2026-11-23) and the planning session of 2026-11-24; each
 9. **Package names.** `@fretdex/fretkit` and `@fretdex/audio`, unpublished; renamed if the synth toys ever import them from npm.
 10. **A design pass first.** Before the diagram components, a short task settles the look: tokens for the three themes, the type scale, and the fretboard (landscape and portrait, APP-Q2), the keyboard and a pin tile as static SVG mockups, checked on the phone at arm's length.
 11. **Open questions have defaults.** A requirement's open question is built as its default unless the owner decides otherwise, at the latest when the task that needs it starts.
+12. **No Intervals or Arpeggios** (owner, 2026-11-25, after trying the app shell). Neither earns a module: interval shapes and arpeggios are read off a scale by a player who knows what they are, and a tapped fret names its note. INT and ARP are retired, T11 is dropped, and T10 builds modes only. A chord's tones on the neck, over the key's scale, move to the chord card in M02 (CHD-2.5). Triads stays for now; whether it folds into Chords is in the backlog's M02 section.
 
 ## How to work on a task
 
@@ -72,8 +73,8 @@ From the concept brief (2026-11-23) and the planning session of 2026-11-24; each
   - *Changed while doing it:* The owner changed DIAG-1.8 (2026-11-25): frets narrow gently up the neck, each 0.98 of the one below, the mockup's "Gently" option, as it orients better than even frets; where that would take a fret under the 44px tap target, as at fret 15 on a phone turned sideways, the narrowing eases toward even. The scale, mode, arpeggio and note cards draw their notes on a fretboard and keyboard now, and the home page's text fretboard is the real one (owner, 2026-11-25), so cards are useful before T9 to T11; interval cards stay text until T11. Whether a fretboard shows the whole range or an upright stretch is decided by the width available, not the orientation, and card screens are `wide` (72rem) so a landscape phone has room. A stretch isn't kept in the URL; it opens at the capo or the bottom of the fret range, and steps a stretch at a time, the last ending at the top of the range. `fretkit` gained `NoteSet` and `noteSet`, so arpeggios and lone notes map as scales do, and `mapKeyboard`. The mockup marked white keys in `--note`, which in Dark is the white key's own colour, so a key's mark is in the other key colour. Taps are reported with their note (`ontap`) but play nothing yet. **T8 must play a fretboard's and an enlarged keyboard's taps (`ontap`). T9 must add positions to `Fretboard` (the position buttons above it, its frets at full strength and those either side dimmed, DIAG-1.3) and write `pos` to the URL. T11 must name a tapped fret on the note card (INT-2.2). T12 must build the pin tiles around `FretboardMini` from M01-design.md, then delete it.**
 - [ ] **T8 — Audio engine.** AUD-1.1 to AUD-1.4, AUD-4, AUD-6, AUD-7: voices, tap to play, the drone, and a scheduler on the audio clock built to carry runs, loops, the click and the metronome. Check the iPhone silent switch (AUD-1.4). *Done when:* taps and the drone play on the owner's phone, on silent too, and the owner has judged the voices; if they sound toy-like, sampled instruments leave the backlog's Parked for a milestone.
 - [ ] **T9 — Scales.** SCL: the list, the card, CAGED positions, 3-notes-per-string patterns, pentatonic boxes, bass boxes, and scale runs (AUD-3). *Done when:* every scale in SCL-1.1 opens on every root with correct positions in standard tuning, checked by golden tests and on the phone.
-- [ ] **T10 — Modes and arpeggios.** MODE and ARP, reusing the scale card. *Done when:* every mode and arpeggio quality opens on every root, with comparison and the brightness row working.
-- [ ] **T11 — Intervals and notes.** INT. *Done when:* every interval's card and every note's card open and play.
+- [ ] **T10 — Modes.** MODE, reusing the scale card. *Done when:* every mode opens on every root, with comparison and the brightness row working.
+- **T11 — Intervals and notes.** Dropped with INT (decision 12).
 - [ ] **T12 — Pins, home board and recents.** PIN-1 to PIN-5 and APP-4.4. *Done when:* a pinned card reopens exactly as pinned after a relaunch, and an export imported on a fresh install restores the board.
 - [ ] **T13 — Polish, trial and release.** APP-6.4, APP-6.5 and APP-7 checked across the app; the trial (the Question); fixes it leads to. *Done when:* the definition of done holds.
 
