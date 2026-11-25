@@ -3,14 +3,22 @@
     import '#lib/styles/fonts.css';
     import '#lib/styles/tokens.css';
     import '#lib/styles/base.css';
+    import ContextBar from '#lib/components/ContextBar.svelte';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { applyTheme } from '#lib/settings/theme.ts';
+    import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { isInstalled, requestPersistence } from '#lib/storage/persist.ts';
     import { onMount } from 'svelte';
     import { pwaInfo } from 'virtual:pwa-info';
     import type { LayoutProps } from './$types';
 
     let { children }: LayoutProps = $props();
+
+    // What's stored loads once the page has hydrated, so it shows as a change to the prerendered page (store.svelte.ts).
+    onMount(() => {
+        void settings.ready();
+        void customTunings.ready();
+    });
 
     // The theme setting, once the stored settings have loaded; until then app.html's script has set it (CTX-1.8).
     $effect(() => {
@@ -40,4 +48,6 @@
     {@html manifestLink}
 </svelte:head>
 
+<!-- The current key, instrument, tuning and capo, on every screen (APP-1.4, APP-2). -->
+<ContextBar />
 {@render children()}

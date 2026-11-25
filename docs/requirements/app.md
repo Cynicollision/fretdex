@@ -9,15 +9,15 @@ Behavior that applies across the whole app: how the user moves around, the conte
 | APP-1.1 | The app shall have a bottom bar with **Home** (the pin board at `/`, PIN-2), **Search** (SRCH) and **Modules**: a grid of the eight modules (**Chords**, **Scales**, **Arpeggios**, **Triads**, **Modes**, **Keys**, **Progressions** and **Intervals**) and the tools (**Identify**, CHD-6, and later **Tuner**, TUN, and **Metronome**, MET). **Settings** opens from Home. | Planned |
 | APP-1.2 | Any card shall be reachable in at most two taps from the home board: a pin opens its card in one, and a module's list plus one of its items is two. | Planned |
 | APP-1.3 | Every card shall have a back control that returns to where the user came from (the browser's history), and the browser's and phone's own back shall do the same. | Planned |
-| APP-1.4 | The context bar (APP-2) shall be at the top of every screen, and search one tap away on every screen (SRCH-1.1). | Planned |
+| APP-1.4 | The context bar (APP-2) shall be at the top of every screen, and search one tap away on every screen (SRCH-1.1). | Partial |
 | APP-1.5 | A cross-link between modules (a chord in a key, a mode's parent scale) shall open that card with the same instrument and tuning. | Planned |
 
 ## APP-2 The context bar sets the key and instrument once
 
 | ID | Requirement | Status |
 |---|---|---|
-| APP-2.1 | A context bar on every screen shall show the current key (or "No key"), the instrument, the tuning and the capo when one is set, and open a sheet to change them (CTX-1). | Planned |
-| APP-2.2 | Changing the context shall update the screen in place, without leaving it. | Planned |
+| APP-2.1 | A context bar on every screen shall show the current key (or "No key"), the instrument, the tuning and the capo when one is set, and open a sheet to change them (CTX-1). | Implemented |
+| APP-2.2 | Changing the context shall update the screen in place, without leaving it. | Implemented |
 | APP-2.3 | When the current card's URL overrides the instrument or tuning (APP-3.3), the context bar shall show the override and offer to clear it. | Planned |
 
 ## APP-3 Every view is a URL
@@ -79,5 +79,6 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 ## Known gaps
 
+- **APP-1.4:** the context bar is at the top of every screen; search comes in M03.
 - **APP-4.1:** the app opens at a placeholder page until the home board (PIN-2, M01 T12).
 - **APP-5.3, APP-6.2:** the three themes' colours and the type scale are design tokens, and a unit test checks every text pair's contrast, but most of the screens and diagrams that use them come with M01's later tasks.

@@ -2,6 +2,7 @@ import {
     MAX_CAPO,
     MAX_FRET,
     TUNINGS,
+    noteMidi,
     notePitchName,
     parseNote,
     parseTuning,
@@ -118,11 +119,14 @@ export function switchInstrument(settings: Settings, instrument: Instrument): Se
     return { ...settings, instrument, tuning: tuning.strings };
 }
 
-/** The built-in tuning with these pitches, if there is one. */
+/** The built-in tuning with these pitches, however they're spelled (D♯2 is E♭2), if there is one. */
 export function builtInTuning(instrument: Instrument, strings: readonly NoteName[]): Tuning | undefined {
-    return TUNINGS[instrument].find(
-        tuning => tuning.strings.length === strings.length && tuning.strings.every((note, i) => note === strings[i])
-    );
+    return TUNINGS[instrument].find(tuning => sameTuning(tuning.strings, strings));
+}
+
+/** Whether two tunings sound the same pitches on every string, however they're spelled. */
+export function sameTuning(a: readonly NoteName[], b: readonly NoteName[]): boolean {
+    return a.length === b.length && a.every((note, i) => b[i] !== undefined && noteMidi(note) === noteMidi(b[i]));
 }
 
 function readKey(value: unknown): CurrentKey | null {

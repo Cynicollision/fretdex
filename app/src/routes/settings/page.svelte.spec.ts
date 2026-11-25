@@ -5,6 +5,8 @@ import { render } from 'vitest-browser-svelte';
 import { DEFAULT_SETTINGS } from '#lib/settings/settings.ts';
 import { settings } from '#lib/settings/store.svelte.ts';
 import { applyTheme } from '#lib/settings/theme.ts';
+import { NO_CUSTOM_TUNINGS } from '#lib/settings/tunings.ts';
+import { customTunings } from '#lib/settings/tunings.svelte.ts';
 import Settings from './+page.svelte';
 
 /** Leaves a field, as a change of what's typed is committed then. */
@@ -53,6 +55,55 @@ describe('the Settings screen', () => {
 
         await expect.poll(() => settings.current.tempo).toBe(250);
         await expect.element(page.getByRole('spinbutton', { name: 'Tempo' })).toHaveValue(250);
+    });
+});
+
+describe("Settings' saved tunings", () => {
+    const OPEN_C = ['C2', 'G2', 'C3', 'G3', 'C4', 'E4'];
+
+    beforeEach(async () => {
+        await settings.update(DEFAULT_SETTINGS);
+        await customTunings.update(() => NO_CUSTOM_TUNINGS);
+    });
+
+    it('says when none are saved', async () => {
+        await render(Settings);
+
+        await expect.element(page.getByText(/None saved yet/)).toBeVisible();
+    });
+
+    it('CTX-2.7 renames and retunes a saved tuning, and the tuning in use follows it', async () => {
+        await customTunings.add('guitar', 'Open C', OPEN_C);
+        await settings.update({ tuning: OPEN_C });
+        await render(Settings);
+
+        await page.getByRole('button', { name: 'Edit Open C' }).click();
+        await page.getByRole('button', { name: 'Raise string 5' }).click();
+        await page.getByRole('button', { name: 'Raise string 5' }).click();
+        await page.getByRole('textbox', { name: 'Name' }).fill('Open C6');
+        await page.getByRole('button', { name: 'Save' }).click();
+
+        const C6 = ['C2', 'A2', 'C3', 'G3', 'C4', 'E4'];
+        await expect.poll(() => customTunings.current.guitar).toMatchObject([{ name: 'Open C6', strings: C6 }]);
+        await expect.poll(() => settings.current.tuning).toEqual(C6);
+        await expect.element(page.getByText('C A C G C E')).toBeVisible();
+    });
+
+    it('CTX-2.7 deletes a saved tuning once that is confirmed', async () => {
+        await customTunings.add('guitar', 'Open C', OPEN_C);
+        await customTunings.add('bass', 'BEAD', ['B0', 'E1', 'A1', 'D2']);
+        await render(Settings);
+
+        await page.getByRole('button', { name: 'Delete Open C' }).click();
+        await page.getByRole('button', { name: 'Keep' }).click();
+        expect(customTunings.current.guitar).toHaveLength(1);
+
+        await page.getByRole('button', { name: 'Delete Open C' }).click();
+        await page.getByRole('button', { name: 'Delete', exact: true }).click();
+
+        await expect.poll(() => customTunings.current.guitar).toEqual([]);
+        await expect.element(page.getByRole('heading', { name: 'Guitar' })).not.toBeInTheDocument();
+        await expect.element(page.getByText('BEAD')).toBeVisible();
     });
 });
 

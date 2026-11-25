@@ -55,5 +55,5 @@ Screen: **Home** (`/`), and **Settings** (`/settings`) for export and import.
 
 ## Known gaps
 
-- **PIN-6.1:** settings are stored, on the device only; custom tunings (M01 T5b), pins and recents (T12) and hidden voicings (M02) come later.
+- **PIN-6.1:** settings and custom tunings are stored, on the device only; pins and recents (M01 T12) and hidden voicings (M02) come later.
 - **PIN-6.2:** the app asks for persistent storage when it runs installed, and Settings says whether it was granted; asking at the first pin comes with pinning (M01 T12).
