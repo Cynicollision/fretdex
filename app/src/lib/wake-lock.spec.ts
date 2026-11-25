@@ -53,6 +53,18 @@ describe('keepScreenAwake', () => {
         expect(browser.listeners.size).toBe(0);
     });
 
+    it('APP-5.5 takes one lock when the page is shown again while the first request is pending', async () => {
+        const browser = fakeBrowser();
+        const stop = keepScreenAwake();
+        await browser.setVisible(true);
+        await Promise.resolve();
+        expect(browser.request).toHaveBeenCalledTimes(1);
+
+        stop();
+        await Promise.resolve();
+        expect(browser.sentinels.every(sentinel => sentinel.released)).toBe(true);
+    });
+
     it('APP-5.5 does nothing where the browser has no wake lock', () => {
         vi.stubGlobal('navigator', {});
         expect(() => keepScreenAwake()()).not.toThrow();

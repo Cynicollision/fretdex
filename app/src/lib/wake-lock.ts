@@ -8,16 +8,22 @@ export function keepScreenAwake(): () => void {
     const wakeLock = navigator.wakeLock;
 
     let sentinel: WakeLockSentinel | undefined;
+    let requesting = false;
     let stopped = false;
 
+    // One request at a time, so a page shown again while the first is pending doesn't take a second lock that
+    // `stop` would never release.
     const take = async () => {
-        if (stopped || document.visibilityState !== 'visible' || (sentinel && !sentinel.released)) return;
+        if (stopped || requesting || document.visibilityState !== 'visible' || (sentinel && !sentinel.released)) return;
+        requesting = true;
         try {
             const taken = await wakeLock.request('screen');
             if (stopped) void taken.release();
             else sentinel = taken;
         } catch {
             // Refused (low battery, a browser policy): the screen dims as usual.
+        } finally {
+            requesting = false;
         }
     };
     const onVisibility = () => void take();

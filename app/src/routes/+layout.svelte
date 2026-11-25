@@ -44,9 +44,11 @@
         if (query !== page.url.search) void replaceQuery(page.url, query);
     });
 
-    // The screen stays awake while the setting is on (APP-5.5).
+    // The screen stays awake while the setting is on (APP-5.5). Derived first, so changing another setting, which
+    // replaces `settings.current`, leaves the lock alone.
+    const keepAwake = $derived(settings.loaded && settings.current.keepAwake);
     $effect(() => {
-        if (settings.loaded && settings.current.keepAwake) return keepScreenAwake();
+        if (keepAwake) return keepScreenAwake();
     });
 
     // The theme setting, once the stored settings have loaded; until then app.html's script has set it (CTX-1.8).
