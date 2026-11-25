@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <!-- Placeholder icon until the design pass (M01 T3). Drawn inside the middle 80% so it also works as a maskable icon. -->
+    <rect width="512" height="512" fill="#16181d" />
+    <g stroke="#e8e6e1" stroke-linecap="round">
+        <g stroke-width="10">
+            <line x1="156" y1="136" x2="356" y2="136" />
+            <line x1="156" y1="216" x2="356" y2="216" />
+            <line x1="156" y1="296" x2="356" y2="296" />
+            <line x1="156" y1="376" x2="356" y2="376" />
+        </g>
+        <g stroke-width="6">
+            <line x1="156" y1="136" x2="156" y2="376" />
+            <line x1="196" y1="136" x2="196" y2="376" />
+            <line x1="236" y1="136" x2="236" y2="376" />
+            <line x1="276" y1="136" x2="276" y2="376" />
+            <line x1="316" y1="136" x2="316" y2="376" />
+            <line x1="356" y1="136" x2="356" y2="376" />
+        </g>
+    </g>
+    <circle cx="236" cy="256" r="24" fill="#f0a030" />
+    <circle cx="316" cy="176" r="24" fill="#f0a030" />
+</svg>

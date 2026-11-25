@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Run on main from the Actions tab, to deploy again without a new merge.
+  workflow_dispatch:
 
 # A new push to a PR cancels that PR's run still in progress.
 concurrency:
@@ -88,3 +90,40 @@ jobs:
           name: playwright-traces
           path: app/test-results/
           retention-days: 7
+
+  # Each push to main that passes every check above deploys to GitHub Pages (fretdex.seannormoyle.net).
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: [static, unit, smoke]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the app
+        run: npm run build
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: app/build
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5

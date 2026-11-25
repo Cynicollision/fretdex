@@ -35,7 +35,7 @@ TypeScript stays on 6.x until `svelte-check` and `typescript-eslint` support 7 (
 
 ## Trying a change in the app
 
-For anything the screen shows, try the change in the running app as well as its tests, on a phone-sized viewport. Claude uses the desktop app's built-in browser: `preview_start` with the `app` configuration in `.claude/launch.json` starts the dev server. Once deploys work (M01 T2), try it on the owner's phone too.
+For anything the screen shows, try the change in the running app as well as its tests, on a phone-sized viewport. Claude uses the desktop app's built-in browser: `preview_start` with the `app` configuration in `.claude/launch.json` starts the dev server. Once it's merged and deployed ([deployment.md](deployment.md)), try it on the owner's phone too.
 
 ## Before opening a PR
 
@@ -45,7 +45,7 @@ For anything the screen shows, try the change in the running app as well as its 
 - `npm test`
 - `npm run test:e2e`
 
-CI (`.github/workflows/ci.yml`) runs the same on every PR and push to `main`, in three jobs: format, lint and type check; unit tests; and smoke tests on phone viewports. See [testing.md](testing.md) for how the tests are set up.
+CI (`.github/workflows/ci.yml`) runs the same on every PR and push to `main`, in three jobs: format, lint and type check; unit tests; and smoke tests on phone viewports. On `main`, a fourth job deploys the site once those pass ([deployment.md](deployment.md)). See [testing.md](testing.md) for how the tests are set up.
 
 ## Releases
 

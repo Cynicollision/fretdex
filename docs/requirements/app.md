@@ -35,11 +35,11 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 | ID | Requirement | Status |
 |---|---|---|
-| APP-4.1 | The app shall be installable as a progressive web app, named "Fretdex" with its own icon and theme colors, opening full screen at the home board. | Planned |
-| APP-4.2 | After the first load, every screen, diagram, sound and the voicing data shall work with no network. | Planned |
-| APP-4.3 | An installed app shall pick up a new version at the latest on its next launch, without the user clearing anything. | Planned |
+| APP-4.1 | The app shall be installable as a progressive web app, named "Fretdex" with its own icon and theme colors, opening full screen at the home board. | Partial |
+| APP-4.2 | After the first load, every screen, diagram, sound and the voicing data shall work with no network. | Implemented |
+| APP-4.3 | An installed app shall pick up a new version at the latest on its next launch, without the user clearing anything. | Implemented |
 | APP-4.4 | On Android, the installed app's icon shall offer shortcuts to the first three pins on the board (PIN-2). | Planned |
-| APP-4.5 | The app shall make no network request after it's installed other than checking for its own update, and shall have no analytics, tracking, ads or accounts. | Planned |
+| APP-4.5 | The app shall make no network request after it's installed other than checking for its own update, and shall have no analytics, tracking, ads or accounts. | Implemented |
 | APP-4.6 | The microphone shall be used only by the tuner (TUN), only while its screen is open, and nothing it hears shall be recorded, stored or sent. | Planned |
 
 ## APP-5 It's usable on a phone on a music stand
@@ -76,6 +76,10 @@ Behavior that applies across the whole app: how the user moves around, the conte
 |---|---|---|
 | APP-8.1 | The app shall be supported on current Safari on iOS, installed and in the browser, and current Chrome on Android. | Planned |
 | APP-8.2 | Current desktop Chrome, Firefox and Safari shall work as a convenience: fixed when found broken, not tested for each release. | Planned |
+
+## Known gaps
+
+- **APP-4.1:** the icon and theme colours are placeholders until the design pass (M01 T3), and the app opens at a placeholder page until the home board (PIN-2, M01 T12).
 
 ## Open questions
 
