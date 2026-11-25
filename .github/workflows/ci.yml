@@ -91,19 +91,19 @@ jobs:
           path: app/test-results/
           retention-days: 7
 
-  # Each push to main that passes every check above deploys to GitHub Pages (fretdex.seannormoyle.net).
-  deploy:
-    name: Deploy to GitHub Pages
+  # Each push to main that passes every check above deploys to GitHub Pages (fretdex.seannormoyle.net),
+  # in two jobs: one builds and uploads the site, the next deploys it. Deploying in the same job as the
+  # upload can ask for the artifact before GitHub lists it ("No artifacts named github-pages"); starting
+  # a new job gives it time to appear.
+  build-pages:
+    name: Build the site for GitHub Pages
     needs: [static, unit, smoke]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      # configure-pages reads the repository's Pages settings
+      pages: read
     steps:
       - uses: actions/checkout@v7
 
@@ -124,6 +124,17 @@ jobs:
         with:
           path: app/build
 
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build-pages
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v5

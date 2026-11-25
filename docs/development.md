@@ -52,7 +52,7 @@ Both are generated once and committed; rerun the script only to change them.
 - `npm test`
 - `npm run test:e2e`
 
-CI (`.github/workflows/ci.yml`) runs the same on every PR and push to `main`, in three jobs: format, lint and type check; unit tests; and smoke tests on phone viewports. On `main`, a fourth job deploys the site once those pass ([deployment.md](deployment.md)). See [testing.md](testing.md) for how the tests are set up.
+CI (`.github/workflows/ci.yml`) runs the same on every PR and push to `main`, in three jobs: format, lint and type check; unit tests; and smoke tests on phone viewports. On `main`, two more jobs build and deploy the site once those pass ([deployment.md](deployment.md)). See [testing.md](testing.md) for how the tests are set up.
 
 ## Releases
 

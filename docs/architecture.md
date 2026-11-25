@@ -52,7 +52,7 @@ The packages have no build step: each exports its TypeScript source (`"exports":
 | Styling | Plain CSS with custom properties as design tokens, no UI kit; Atkinson Hyperlegible Next, with ♯ ♭ 𝄪 𝄫 from a small cut of Noto Music, both self-hosted ([Styling](#styling)) | Small surface, themeable (dark, light, high contrast); no font requests to other sites; letters and digits that stay distinct at arm's length |
 | Testing | Vitest for the packages and app logic, and for components in a real Chromium (browser mode); Playwright for a few smoke tests on Android and iPhone viewports | The theory engine is the part that must be right; diagrams need real layout to test |
 | Tooling | npm workspaces, Node 24, Prettier (4 spaces, 120 columns, single quotes), ESLint with type-checked `typescript-eslint` and the Svelte plugin, GitHub Actions | As in Moped Finance |
-| Hosting | GitHub Pages at `fretdex.seannormoyle.net`, deployed by the CI workflow's `deploy` job on each merge to `main` ([deployment.md](deployment.md)) | No server to run; the personal site is on GitHub Pages too |
+| Hosting | GitHub Pages at `fretdex.seannormoyle.net`, deployed by the CI workflow's `build-pages` and `deploy` jobs on each merge to `main` ([deployment.md](deployment.md)) | No server to run; the personal site is on GitHub Pages too |
 
 ## The theory engine (`fretkit`)
 
