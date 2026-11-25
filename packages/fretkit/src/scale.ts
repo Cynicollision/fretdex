@@ -111,14 +111,20 @@ export function scaleType(id: string): ScaleType | undefined {
     return SCALE_TYPES.find(type => type.id === id);
 }
 
-/** A scale spelled on a root. */
-export interface SpelledScale {
+/** Notes spelled from a root by interval: a scale, an arpeggio, or a lone note. */
+export interface NoteSet {
     readonly root: NoteName;
-    readonly type: ScaleType;
     /** In order from the root, each letter once in a seven-note scale (THY-1.1), with double sharps and flats where the spelling needs them (THY-1.3). */
     readonly notes: readonly NoteName[];
+    /** Each note's interval from the root, in the same order. */
+    readonly codes: readonly IntervalCode[];
     /** Short names, in the same order (`1 2 b3 4 5 b6 7`, THY-1.4). */
     readonly intervals: readonly string[];
+}
+
+/** A scale spelled on a root. */
+export interface SpelledScale extends NoteSet {
+    readonly type: ScaleType;
 }
 
 /**
@@ -126,7 +132,15 @@ export interface SpelledScale {
  * must be a `NoteName` (run URL and typed text through `parseNote` first); anything else throws.
  */
 export function spellScale(root: NoteName, type: ScaleType): SpelledScale {
-    return { root, type, notes: spell(root, type.intervals), intervals: type.intervals.map(intervalName) };
+    return { ...noteSet(root, type.intervals), type };
+}
+
+/**
+ * Spells a set of notes from a root by interval (THY-1.2), as `spell` does, with their intervals' short names: an
+ * arpeggio from its quality's intervals, or a lone note from `['1P']`.
+ */
+export function noteSet(root: NoteName, codes: readonly IntervalCode[]): NoteSet {
+    return { root, notes: spell(root, codes), codes, intervals: codes.map(intervalName) };
 }
 
 /**

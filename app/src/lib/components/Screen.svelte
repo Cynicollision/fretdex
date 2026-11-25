@@ -12,17 +12,19 @@
         title: string;
         /** Where the back control goes when there's no history to go back through; no back control without it. */
         back?: ScreenPath;
+        /** Lets a screen with a fretboard use a wide window, so it shows the whole neck in landscape (DIAG-1.10). */
+        wide?: boolean;
         children: Snippet;
     }
 
-    let { title, back, children }: Props = $props();
+    let { title, back, wide = false, children }: Props = $props();
 </script>
 
 <svelte:head>
     <title>{pageTitle(title)}</title>
 </svelte:head>
 
-<main>
+<main class:wide>
     {#if back !== undefined}
         <BackLink href={back} />
     {/if}
@@ -40,5 +42,9 @@
         padding-block: 16px 32px;
         padding-left: max(16px, env(safe-area-inset-left, 0px));
         padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+
+    main.wide {
+        max-width: 72rem;
     }
 </style>

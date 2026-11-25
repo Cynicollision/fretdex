@@ -60,7 +60,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 | APP-6.1 | The app shall offer **Dark** (default), **Light** and **High contrast** themes (CTX-1.8). | Implemented |
 | APP-6.2 | Text shall meet WCAG AA contrast in Dark and Light, and AAA in High contrast. | Partial |
 | APP-6.3 | Meaning shall never rest on color alone: a root or highlighted degree also differs in shape or label. | Planned |
-| APP-6.4 | Every diagram shall have a text alternative listing what it shows ("A minor seven flat five: A, C, Eb, G; frets x 0 1 0 1 x"). | Planned |
+| APP-6.4 | Every diagram shall have a text alternative listing what it shows ("A minor seven flat five: A, C, Eb, G; frets x 0 1 0 1 x"). | Partial |
 | APP-6.5 | The app shall work with the system's text size and reduced-motion settings. | Planned |
 
 ## APP-7 It's fast
@@ -82,6 +82,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 - **APP-1.1:** the bottom bar has Home and Modules; Search joins it in M03. The modules and tools later milestones build are in the grid, marked as coming later.
 - **APP-1.2:** Home shows the modules, so any card is two taps away through its list; pins arrive with the home board (M01 T12).
 - **APP-1.4:** the context bar is at the top of every screen; search comes in M03.
-- **APP-3.1:** every route of M01 opens from its URL with its options and override, but the cards are text until their tasks draw them (scales T9, modes and arpeggios T10, intervals and notes T11), which show `pos`, `nps` and `compare`; the lists take no filters yet.
+- **APP-3.1:** every route of M01 opens from its URL with its options and override, but the cards are sketches until their tasks build them (scales T9, modes and arpeggios T10, intervals and notes T11), which show `pos`, `nps` and `compare`; the lists take no filters yet.
 - **APP-4.1:** the app opens at a placeholder page until the home board (PIN-2, M01 T12).
 - **APP-5.3, APP-6.2:** the three themes' colours and the type scale are design tokens, and a unit test checks every text pair's contrast, but most of the screens and diagrams that use them come with M01's later tasks.
+- **APP-6.4:** the fretboard, its compact form and the keyboard have text alternatives; the chord box (M02), circle and staff (M03) will need theirs.
