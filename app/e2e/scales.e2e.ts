@@ -57,7 +57,6 @@ test('SCL-3 and SCL-4 choose a position, step through them, and keep the choice 
     await page.goto('/scales/G/major?pos=2');
     const name = page.getByRole('group', { name: 'Position', exact: true });
     await expect(name).toContainText('Position 2 · E shape');
-    await expect(name).toContainText('frets 2–5');
     await page.getByRole('button', { name: 'Next ›' }).click();
     await expect.poll(() => where(page)).toBe('/scales/G/major?pos=3');
     await expect(name).toContainText('Position 3 · D shape');

@@ -17,6 +17,7 @@ An item is one bullet: a bold title, what's wrong or wanted, and where (file and
 ## Inbox
 
 - **Licence notices in the built app.** The production build minifies Svelte's and SvelteKit's code into `app/build/_app/` without their MIT copyright notices, which the licence asks to travel with the code, and the same will go for Tonal.js and the chord dataset. Something should ship them, such as a generated third-party licences file in the build or a credits screen that shows `CREDITS.md`'s notices. (noticed in M01 T1)
+- **Keep a global current key, or pick the key in each module?** Vision principle 2 has one current key re-centering every module, but it never changes an open card (CTX-2.8), and its uses are lists and key-relative views: the Scales list's root (SCL-1.2), the Modes overview (MODE-1.10), chords in the key (CHD-1.3, CHD-2.3, CHD-2.5), keys, the circle and progressions (KEY-1.1, PROG-1.2, PROG-2.1), capo shapes (CTX-3.3), pins that follow the key (PIN-1.5) and **Show in E minor** (CTX-2.9). The owner asked whether a key picked inside Progressions (and the like) would do instead, dropping it from the context bar (`ContextBar.svelte`) and the sheet. Decide before M02's planning, as chords lean on it. (PR 18, owner's feedback on the context bar)
 
 ---
 

@@ -44,7 +44,8 @@ export function chosenPosition(groups: readonly PositionGroup[], options: ViewOp
 }
 
 /**
- * A position's name (SCL-3.4): its number, its shape and its frets. "Position 2 · E shape · frets 4–8" for the major
+ * A position's full name, for the fretboard's text alternative (SCL-3.4, APP-6.4): its number, its shape and its
+ * frets. "Position 2 · E shape · frets 4–8" for the major
  * scale; a mode or minor scale names its parent major (owner, 2026-11-25), "Position 3 · G shape of C major · frets
  * 5–9"; "Box 1 · G shape of C major · frets 5–8"; "Pattern 3 · from the 3 · frets 7–12"; on bass, "Box 1 · one
  * octave from the E string · frets 2–5".
@@ -54,11 +55,11 @@ export function positionName(position: Position, scale: SpelledScale, strings: r
 }
 
 /** A position's frets, the end of its name: "frets 4–8". */
-export function positionFrets(position: Position): string {
+function positionFrets(position: Position): string {
     return `frets ${String(position.from)}–${String(position.to)}`;
 }
 
-/** A position's name without its frets: "Position 3 · G shape of C major". */
+/** A position's name as the card shows it, without the frets the neck numbers: "Position 3 · G shape of C major". */
 export function positionTitle(position: Position, scale: SpelledScale, strings: readonly NoteName[]): string {
     switch (position.kind) {
         case 'caged':

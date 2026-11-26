@@ -31,7 +31,6 @@
         KIND_LABELS,
         POSITION_OPTION,
         chosenPosition,
-        positionFrets,
         positionName,
         positionTitle
     } from '#lib/scales/positions.ts';
@@ -215,10 +214,8 @@
                     >
                         ‹ Previous
                     </button>
-                    <span class="name" aria-live="polite">
-                        {positionTitle(chosen.position, set, view.tuning)}
-                        <span class="frets">{positionFrets(chosen.position)}</span>
-                    </span>
+                    <!-- The frets are numbered on the neck; the figure's caption names them (APP-6.4). -->
+                    <span class="name" aria-live="polite">{positionTitle(chosen.position, set, view.tuning)}</span>
                     <button
                         type="button"
                         disabled={chosen.index === chosen.group.positions.length - 1}
@@ -325,9 +322,6 @@
                 next === settings.current.labels ? undefined : next
             )}
     />
-    <p class="muted">
-        For {instrumentText}, {tuningText} tuning{view.capo === 0 ? '' : `, capo ${String(view.capo)}`}.
-    </p>
 </Screen>
 
 <style>
@@ -414,13 +408,7 @@
     }
 
     .steps .name {
-        display: grid;
         text-align: center;
-    }
-
-    .steps .frets {
-        color: var(--muted);
-        white-space: nowrap;
     }
 
     button:disabled {

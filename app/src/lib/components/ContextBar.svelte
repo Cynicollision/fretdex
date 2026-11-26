@@ -1,7 +1,8 @@
 <!--
     The context bar at the top of every screen (APP-1.4, APP-2.1): Home (APP-1.1), then the current key, the
-    instrument, the tuning's name and the capo when one is set (CTX-3.1). A tap on those opens the sheet that changes
-    them. On a card whose URL overrides the
+    instrument, the tuning's name and the capo when one is set (CTX-3.1). On a card it leaves out the key, which never
+    changes what a card shows (CTX-2.8), so it can't be read as the card's name (owner, 2026-11-25). A tap on those
+    opens the sheet that changes them. On a card whose URL overrides the
     instrument, tuning or capo (APP-3.3), it shows what the card shows, marked as the card's, with a button that
     clears the override (APP-2.3).
 -->
@@ -20,9 +21,11 @@
         override?: ContextOverride;
         /** Clears the override from the URL. */
         onclear?: () => void;
+        /** On a card, which the key doesn't change, the key is left out. */
+        card?: boolean;
     }
 
-    let { override = {}, onclear }: Props = $props();
+    let { override = {}, onclear, card = false }: Props = $props();
 
     let open = $state(false);
 
@@ -57,12 +60,13 @@
             type="button"
             class="context"
             class:pending={!loaded}
+            class:card
             disabled={!loaded}
             aria-haspopup="dialog"
             aria-expanded={open}
             onclick={() => (open = true)}
         >
-            <span class="key">{keyName(current.key)}</span>
+            {#if !card}<span class="key">{keyName(current.key)}</span>{/if}
             <span class="details">
                 {details.join(' · ')}
                 {#if loaded && overridden}<span class="card-only">· this card</span>{/if}
@@ -139,6 +143,15 @@
         font: inherit;
         text-align: left;
         cursor: pointer;
+    }
+
+    .context.card {
+        grid-template-areas: 'details change';
+    }
+
+    .context.card .details {
+        color: var(--text);
+        font-size: var(--text-m);
     }
 
     .context.pending > * {

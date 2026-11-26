@@ -95,7 +95,7 @@ So far the routes of M01 are built, except `/modes/[root]`, which comes with the
 - **Back.** `BackLink.svelte` goes back in the browser's history when the previous entry is one of the app's (the Navigation API's `canGoBack`, or else any history at all), and otherwise follows its link, the card's module list (APP-1.3).
 - **The wake lock** (`wake-lock.ts`) is held while **Keep screen awake** is on and taken again each time the app is shown, as the browser drops it when the app is hidden (APP-5.5).
 
-The root layout puts the context bar (`ContextBar.svelte` in `app/src/lib/components/`) at the top of every route: a Home link, then the context, which opens its sheet. There's no bottom bar (APP-1.1). The sheet (`ContextSheet.svelte`) sets the key, instrument, tuning and capo straight into the settings, so whatever screen is open follows at once (APP-2.2), holds the master volume and mute (AUD-1.2), and links to Settings; custom tunings are entered there (`TuningEditor.svelte`) and managed on Settings.
+The root layout puts the context bar (`ContextBar.svelte` in `app/src/lib/components/`) at the top of every route: a Home link, then the context (on a card, without the key, `card` in `ContextBar.svelte`), which opens its sheet. There's no bottom bar (APP-1.1). The sheet (`ContextSheet.svelte`) sets the key, instrument, tuning and capo straight into the settings, so whatever screen is open follows at once (APP-2.2), holds the master volume and mute (AUD-1.2), and links to Settings; custom tunings are entered there (`TuningEditor.svelte`) and managed on Settings.
 
 ## Storage
 

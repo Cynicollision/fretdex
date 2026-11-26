@@ -16,7 +16,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 | ID | Requirement | Status |
 |---|---|---|
-| APP-2.1 | A context bar on every screen shall show the current key (or "No key"), the instrument, the tuning and the capo when one is set, and open a sheet to change them (CTX-1). | Implemented |
+| APP-2.1 | A context bar on every screen shall show the current key (or "No key"), the instrument, the tuning and the capo when one is set, and open a sheet to change them (CTX-1). On a card it leaves the key out: a card's URL decides what it shows (CTX-2.8), and a key beside a card in another root read as the card's name (owner, 2026-11-25). | Implemented |
 | APP-2.2 | Changing the context shall update the screen in place, without leaving it. | Implemented |
 | APP-2.3 | When the current card's URL overrides the instrument or tuning (APP-3.3), the context bar shall show the override and offer to clear it. Changing the instrument, tuning or capo in the sheet changes the setting and clears the override, so the card follows the choice (owner, 2026-11-25). | Implemented |
 
