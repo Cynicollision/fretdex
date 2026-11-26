@@ -3,6 +3,7 @@
     import '#lib/styles/fonts.css';
     import '#lib/styles/tokens.css';
     import '#lib/styles/base.css';
+    import { sound } from '#lib/audio/sound.ts';
     import ContextBar from '#lib/components/ContextBar.svelte';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { applyTheme } from '#lib/settings/theme.ts';
@@ -48,6 +49,11 @@
     const keepAwake = $derived(settings.loaded && settings.current.keepAwake);
     $effect(() => {
         if (keepAwake) return keepScreenAwake();
+    });
+
+    // The master volume and mute follow the settings (AUD-1.2), before the first sound as after.
+    $effect(() => {
+        sound.setVolume(settings.current.volume, settings.current.muted);
     });
 
     // The theme setting, once the stored settings have loaded; until then app.html's script has set it (CTX-1.8).

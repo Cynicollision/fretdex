@@ -53,6 +53,10 @@ export interface Settings {
     readonly keepAwake: boolean;
     /** Beats per minute. */
     readonly tempo: number;
+    /** The master volume, from 0 to 100 (AUD-1.2). */
+    readonly volume: number;
+    /** Silences every sound, keeping the volume (AUD-1.2). */
+    readonly muted: boolean;
 }
 
 /** The strings v1 offers on each instrument (THY-3.2). */
@@ -79,7 +83,9 @@ export const DEFAULT_SETTINGS: Settings = {
     theme: 'dark',
     capo: 0,
     keepAwake: true,
-    tempo: 100
+    tempo: 100,
+    volume: 80,
+    muted: false
 };
 
 /**
@@ -101,7 +107,9 @@ export function readSettings(data: unknown): Settings {
         theme: oneOf(stored.theme, ['dark', 'light', 'contrast'] as const, d.theme),
         capo: wholeIn(stored.capo, 0, MAX_CAPO) ?? d.capo,
         keepAwake: typeof stored.keepAwake === 'boolean' ? stored.keepAwake : d.keepAwake,
-        tempo: wholeIn(stored.tempo, MIN_TEMPO, MAX_TEMPO) ?? d.tempo
+        tempo: wholeIn(stored.tempo, MIN_TEMPO, MAX_TEMPO) ?? d.tempo,
+        volume: wholeIn(stored.volume, 0, 100) ?? d.volume,
+        muted: typeof stored.muted === 'boolean' ? stored.muted : d.muted
     };
 }
 

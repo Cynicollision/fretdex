@@ -6,7 +6,7 @@ const tuning = (instrument: 'guitar' | 'bass', id: string) =>
     TUNINGS[instrument].find(candidate => candidate.id === id)?.strings;
 
 describe('settings', () => {
-    it('CTX-1 defaults to no key, guitar in standard tuning, intervals, Auto, frets 0 to 15, Dark, no capo, the screen kept awake and 100 bpm', () => {
+    it('CTX-1 defaults to no key, guitar in standard tuning, intervals, Auto, frets 0 to 15, Dark, no capo, the screen kept awake and 100 bpm, and AUD-1.2 the volume at 80 and not muted', () => {
         expect(readSettings(undefined)).toEqual({
             key: null,
             instrument: 'guitar',
@@ -18,7 +18,9 @@ describe('settings', () => {
             theme: 'dark',
             capo: 0,
             keepAwake: true,
-            tempo: 100
+            tempo: 100,
+            volume: 80,
+            muted: false
         });
     });
 
@@ -34,7 +36,9 @@ describe('settings', () => {
             theme: 'contrast',
             capo: 11,
             keepAwake: false,
-            tempo: 250
+            tempo: 250,
+            volume: 0,
+            muted: true
         };
 
         expect(readSettings(structuredClone(chosen))).toEqual(chosen);
@@ -52,7 +56,9 @@ describe('settings', () => {
             theme: 'light',
             capo: 12,
             keepAwake: 'yes',
-            tempo: 29
+            tempo: 29,
+            volume: 101,
+            muted: 'no'
         });
 
         expect(read).toEqual({

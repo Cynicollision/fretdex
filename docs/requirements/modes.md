@@ -23,4 +23,4 @@ Screens: **Modes** (`/modes`) and the mode card (`/modes/[root]/[mode]`, option 
 |---|---|---|
 | MODE-2.1 | The user can turn on **Compare** (`compare`), which shows the mode against another on the same root (default: the nearest brighter or darker major or minor, such as Dorian against Aeolian), with the notes that differ marked on the neck and in the interval list. | Planned |
 | MODE-2.2 | The user can choose which mode to compare with. | Planned |
-| MODE-2.3 | A drone of the root (AUD-6) shall be one tap away on the card. | Planned |
+| MODE-2.3 | A drone of the root (AUD-6) shall be one tap away on the card. Retired 2026-11-25 with the drone (AUD-6). | Retired |
