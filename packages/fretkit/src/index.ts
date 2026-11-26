@@ -62,3 +62,4 @@ export {
     type DiatonicChord,
     type ModeInfo
 } from './mode';
+export { scalePositions, type CagedShape, type Position, type PositionGroup, type PositionKind } from './position';

@@ -88,6 +88,9 @@ describe('view options', () => {
     it('APP-3.1 reads the options each card takes', () => {
         expect(options('scale', 'pos=3&labels=notes')).toEqual({ pos: 3, labels: 'notes' });
         expect(options('scale', 'nps=7')).toEqual({ nps: 7 });
+        expect(options('scale', 'box=4')).toEqual({ box: 4 });
+        expect(options('scale', 'nps=2&box=1')).toEqual({ nps: 2 });
+        expect(options('scale', 'box=5')).toEqual({});
         expect(options('scale', 'pos=5&nps=2')).toEqual({ pos: 5 });
     });
 
@@ -171,5 +174,9 @@ describe('withViewOption', () => {
         );
         expect(withViewOption('scale', query('nps=3'), DEFAULT_SETTINGS, 'pos', 1)).toBe('?pos=1');
         expect(withViewOption('scale', query('nps=3'), DEFAULT_SETTINGS, 'pos', undefined)).toBe('?nps=3');
+        expect(withViewOption('scale', query('nps=3&labels=notes'), DEFAULT_SETTINGS, 'box', 2)).toBe(
+            '?box=2&labels=notes'
+        );
+        expect(withViewOption('scale', query('box=2'), DEFAULT_SETTINGS, 'nps', 1)).toBe('?nps=1');
     });
 });

@@ -2,7 +2,7 @@
 
 The scales module: any scale on any root, the modes included, on the full neck and in positions, with degrees highlighted. Positions are what make it a guitar reference rather than a theory chart: five CAGED shapes and seven 3-notes-per-string patterns on guitar, one- and two-octave boxes on bass.
 
-Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, options `pos` 1–5 CAGED or `nps` 1–7, `deg` for the highlighted degrees, `labels`); the list takes `root` (`/scales?root=Eb`).
+Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, options `pos` 1–5 for a CAGED position or pentatonic box, `nps` 1–7, `box` 1–4 on bass, `deg` for the highlighted degrees, `labels`); the list takes `root` (`/scales?root=Eb`).
 
 ## SCL-1 The user can find a scale
 
@@ -27,19 +27,20 @@ Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, op
 
 | ID | Requirement | Status |
 |---|---|---|
-| SCL-3.1 | For the major scale and its modes in standard tuning, the card shall offer five CAGED positions, numbered in order up the neck from the lowest that fits below fret 12, each highlighting its notes on the neck with the rest dimmed (DIAG-1.3), the choice being the URL's `pos`. | Planned |
-| SCL-3.2 | For seven-note scales, the card shall offer seven 3-notes-per-string patterns, one starting on each degree on the lowest string, the choice being `nps`. | Planned |
-| SCL-3.3 | For pentatonic and blues scales in standard tuning, the card shall offer the five pentatonic boxes, numbered up the neck as in SCL-3.1 and named by their CAGED shape, with the blue note added in the blues scales. | Planned |
-| SCL-3.4 | Each position shall name its starting fret and its shape ("Position 2 · E shape · frets 4–8"). | Planned |
-| SCL-3.5 | The user can step through positions with previous and next, and each position plays on its own (AUD-3). | Planned |
-| SCL-3.6 | In tunings other than standard, CAGED positions and pentatonic boxes shall be hidden, leaving the 3-notes-per-string patterns and the full neck. A capo isn't another tuning: positions move up with it. | Planned |
-| SCL-3.7 | Scales that are neither seven-note nor pentatonic (whole tone, the diminished scales) shall show the full neck only. | Planned |
+| SCL-3.1 | For the major scale, its modes and natural minor in standard tuning, the card shall offer five CAGED positions, numbered in order up the neck from the lowest that fits, each highlighting its notes on the neck with the rest dimmed (DIAG-1.3), the choice being the URL's `pos`. A mode and natural minor take their parent major's five positions, the same fingerings with only the root moved, named by the parent's shapes ("G shape of C major"), as CAGED traditionally teaches modes (owner, 2026-11-25). Each position is five frets, each note of the scale in it played once, on the higher string where it falls on two. | Implemented |
+| SCL-3.2 | For seven-note scales, the card shall offer seven 3-notes-per-string patterns, one starting on each degree on the lowest string, numbered by that degree and stepped through up the neck, the choice being `nps`. | Implemented |
+| SCL-3.3 | For pentatonic and blues scales in standard tuning, the card shall offer the five pentatonic boxes, two notes on each string, with the blue note added in the blues scales wherever it falls within the box's frets. They're numbered as traditionally taught, Box 1 having the minor pentatonic's root on the lowest string and the rest following up the neck, the major pentatonic sharing its relative minor's numbers, and named by their relative major's CAGED shape (owner, 2026-11-25). Each is placed as low as it fits and they're stepped through up the neck; the choice is `pos`. | Implemented |
+| SCL-3.4 | Each position shall name its shape and its frets ("Position 2 · E shape · frets 4–8"; for a mode, "Position 3 · G shape of C major · frets 5–9"; a 3-notes-per-string pattern, "Pattern 3 · from the ♭3 · frets 1–7"). | Implemented |
+| SCL-3.5 | The user can step through positions with previous and next, and each position plays on its own (AUD-3). The choice is above the neck: **Full neck**, then the kinds the scale offers (**CAGED** or **Boxes**, and **3 per string**), then Previous, the position's name and Next (owner, 2026-11-25). Highlighted degrees (SCL-2.3) work within the position. | Partial |
+| SCL-3.6 | In tunings other than standard, CAGED positions and pentatonic boxes shall be hidden, leaving the 3-notes-per-string patterns and the full neck. A capo isn't another tuning: positions move up with it, so only those at or above the capo are offered. | Implemented |
+| SCL-3.7 | Scales that are neither seven-note nor pentatonic (whole tone, the diminished scales) shall show the full neck only, on bass too. | Implemented |
 
 ## SCL-4 Bass shows boxes
 
 | ID | Requirement | Status |
 |---|---|---|
-| SCL-4.1 | On bass, the card shall offer a one-octave box and a two-octave box from the root on each of the lowest two strings. | Planned |
+| SCL-4.1 | On bass, the card shall offer a one-octave box and a two-octave box from the root on each of the lowest two strings, the choice being `box`: 1 and 2 one octave from the lowest and next string, 3 and 4 two octaves from them (owner, 2026-11-25). A one-octave box climbs from the root one finger a fret; a two-octave box is that box, then a shift to the octave on the next string and the same box from there, so it needs three strings above its root's, and on a four-string bass box 4 isn't offered (owner, 2026-11-25). | Implemented |
+| SCL-4.2 | Bass shall offer no CAGED positions or 3-notes-per-string patterns, which are guitar's (owner, 2026-11-25). | Implemented |
 
 ## SCL-5 A mode's card shows what makes it a mode
 
@@ -54,6 +55,6 @@ For the seven modes of the major scale (MODE-1.7), which have no card of their o
 ## Known gaps
 
 - **SCL-1.3:** pinned scales aren't listed first until pins exist (M01 T12).
-- **SCL-3 and SCL-4:** positions come in M01 T9b, and scale runs in T9c.
+- **SCL-3.5:** a position doesn't play on its own until scale runs (M01 T9c).
 - **SCL-5.2:** the link to the Modes overview opens `/modes`, on the current key's root, until the overview takes a root (`/modes/[root]`, M01 T10).
 - **SCL-5.3:** the chords are listed by name, without links, until chord cards exist (M02).

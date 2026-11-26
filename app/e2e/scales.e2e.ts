@@ -52,3 +52,26 @@ test('THY-2.5 and SCL-2.6 explain roots that need double sharps or flats', async
     await page.goto('/scales/Cs/altered');
     await expect(page.getByText(/named by their intervals from the root/u)).toBeVisible();
 });
+
+test('SCL-3 and SCL-4 choose a position, step through them, and keep the choice in the URL', async ({ page }) => {
+    await page.goto('/scales/G/major?pos=2');
+    const name = page.getByRole('group', { name: 'Position', exact: true });
+    await expect(name).toContainText('Position 2 · E shape');
+    await expect(name).toContainText('frets 2–5');
+    await page.getByRole('button', { name: 'Next ›' }).click();
+    await expect.poll(() => where(page)).toBe('/scales/G/major?pos=3');
+    await expect(name).toContainText('Position 3 · D shape');
+    // Upright, the neck shows the position's frets alone (DIAG-1.10).
+    await expect(page.locator('.fretboard svg[data-frets]')).toHaveAttribute('data-frets', '4-8');
+
+    await page.getByText('3 per string', { exact: true }).click();
+    await expect.poll(() => where(page)).toBe('/scales/G/major?nps=6');
+    await page.getByText('Full neck', { exact: true }).click();
+    await expect.poll(() => where(page)).toBe('/scales/G/major');
+
+    await page.goto('/scales/A/minor-pentatonic?box=1&inst=bass');
+    await expect(page.getByRole('group', { name: 'Position', exact: true })).toContainText(
+        'Box 1 · one octave from the E string'
+    );
+    await expect(page.getByText('3 per string', { exact: true })).toHaveCount(0);
+});

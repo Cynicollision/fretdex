@@ -1,6 +1,7 @@
 import {
     mapScale,
     noteSet,
+    scalePositions,
     scaleType,
     spellScale,
     type FretboardCell,
@@ -34,6 +35,7 @@ interface Options {
     handedness?: 'right' | 'left';
     labels?: 'notes' | 'intervals' | 'degrees' | 'none';
     width?: number;
+    focus?: { from: number; to: number; cells: readonly { string: number; fret: number }[] };
     ontap?: (tapped: TappedFret) => void;
 }
 
@@ -48,6 +50,7 @@ async function show(options: Options = {}) {
         labels: options.labels ?? 'notes',
         handedness: options.handedness ?? 'right',
         title: 'C major on guitar',
+        ...(options.focus ? { focus: options.focus } : {}),
         ...(options.ontap ? { ontap: options.ontap } : {})
     });
 }
@@ -274,6 +277,42 @@ describe('Fretboard', () => {
         expect(frets()).toBe('10-15');
         await expect.element(page.getByRole('button', { name: /Higher/u })).toBeDisabled();
         await page.getByRole('button', { name: /Lower/u }).click();
+        expect(frets()).toBe('7-12');
+    });
+
+    it('DIAG-1.3 and DIAG-1.10 show a position at full strength, the rest dimmed, upright its frets alone', async () => {
+        const set = scale('G', 'major');
+        const caged = scalePositions(STANDARD, set, 'guitar').find(group => group.kind === 'caged');
+        const position = caged?.positions[1];
+        if (!position) throw new Error('No position');
+        await show({ set, focus: position });
+        expect(document.querySelector('.fretboard svg')?.getAttribute('data-frets')).toBe('0-15');
+        expect(dot(6, 3)?.classList.contains('dim')).toBe(false);
+        expect(dot(6, 7)?.classList.contains('dim')).toBe(true);
+        // B on the G string's 4th fret belongs to the E shape, the open B to the G shape.
+        expect(dot(3, 4)?.classList.contains('dim')).toBe(false);
+        expect(dot(2, 0)?.classList.contains('dim')).toBe(true);
+
+        await show({ width: UPRIGHT, set, focus: position });
+        expect(document.querySelector('.fretboard svg')?.getAttribute('data-frets')).toBe('2-5');
+        await expect.element(page.getByRole('button', { name: /Lower/u })).not.toBeInTheDocument();
+    });
+
+    it('DIAG-1.10 shows the whole of a position past the fret range, and steps along one too wide upright', async () => {
+        const set = scale('G', 'major');
+        const caged = scalePositions(STANDARD, set, 'guitar').find(group => group.kind === 'caged');
+        const top = caged?.positions[4];
+        if (!top) throw new Error('No position');
+        await show({ set, range: { from: 0, to: 12 }, focus: top });
+        expect(document.querySelector('.fretboard svg')?.getAttribute('data-frets')).toBe('0-13');
+        expect(dot(2, 13)).not.toBeNull();
+
+        const bass = scalePositions(BASS, set, 'bass')[0]?.positions.find(box => box.octaves === 2);
+        if (!bass) throw new Error('No box');
+        await show({ width: UPRIGHT, tuning: BASS, set, focus: bass });
+        const frets = () => document.querySelector('.fretboard svg')?.getAttribute('data-frets');
+        expect(frets()).toBe('2-7');
+        await page.getByRole('button', { name: /Higher/u }).click();
         expect(frets()).toBe('7-12');
     });
 

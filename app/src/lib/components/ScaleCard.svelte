@@ -1,7 +1,8 @@
 <!--
     A scale card (SCL-2, SCL-5): the scale's notes, intervals and steps; its root picker (THY-2.2); its notes on the
-    neck and a keyboard, which play a tapped note and name a tapped fret (DIAG-1.6); degrees to highlight (SCL-2.3);
-    and, for the seven modes, what makes it a mode (SCL-5). Its options are the URL's (APP-3.1).
+    neck and a keyboard, which play a tapped note and name a tapped fret (DIAG-1.6); its positions, chosen above the
+    neck and stepped through with Previous and Next (SCL-3, SCL-4); degrees to highlight (SCL-2.3); and, for the
+    seven modes, what makes it a mode (SCL-5). Its options are the URL's (APP-3.1).
 -->
 <script lang="ts">
     import {
@@ -11,11 +12,13 @@
         noteLabel,
         notePitchClass,
         rootChoices,
+        scalePositions,
         simplerRoot,
         spellScale,
         stepFormula,
         unavoidableDoubles,
-        type FretboardCell
+        type FretboardCell,
+        type PositionKind
     } from '@fretdex/fretkit';
     import { playFret, playKey } from '#lib/audio/sound.ts';
     import Choice from '#lib/components/Choice.svelte';
@@ -24,6 +27,14 @@
     import Screen from '#lib/components/Screen.svelte';
     import type { TappedFret } from '#lib/diagrams/fretboard.ts';
     import { brightnessRow, chordLabel, numeralLabel, parentLine, tappedLine } from '#lib/scales/card.ts';
+    import {
+        KIND_LABELS,
+        POSITION_OPTION,
+        chosenPosition,
+        positionFrets,
+        positionName,
+        positionTitle
+    } from '#lib/scales/positions.ts';
     import { rootButtons } from '#lib/settings/key.ts';
     import type { Labels } from '#lib/settings/settings.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
@@ -59,7 +70,31 @@
     const labels: Labels = $derived(options.labels ?? settings.current.labels);
     const tuningText = $derived(tuningName(view.instrument, view.tuning, customTunings.current));
     const instrumentText = $derived(view.instrument === 'guitar' ? 'guitar' : 'bass');
-    const diagramTitle = $derived(`${title} on ${instrumentText}, ${tuningText} tuning`);
+
+    // Positions (SCL-3, SCL-4): the kinds this scale, instrument and tuning offer, and the one the URL chooses.
+    const groups = $derived(scalePositions(view.tuning, set, view.instrument, view.capo));
+    const chosen = $derived(chosenPosition(groups, options));
+    const chosenName = $derived(chosen ? positionName(chosen.position, set, view.tuning) : undefined);
+    const kindOptions = $derived([
+        { value: 'neck', label: 'Full neck' },
+        ...groups.map(group => ({ value: group.kind, label: KIND_LABELS[group.kind] }))
+    ]);
+    function showPosition(kind: PositionKind | 'neck', index = 0) {
+        // One option at most: setting this one clears the others (`withViewOption`).
+        if (kind === 'neck') {
+            for (const name of ['pos', 'nps', 'box'] as const) {
+                if (options[name] !== undefined)
+                    void setViewOption(page.url, card.kind, settings.current, name, undefined);
+            }
+            return;
+        }
+        const position = groups.find(group => group.kind === kind)?.positions[index];
+        if (position) void setViewOption(page.url, card.kind, settings.current, POSITION_OPTION[kind], position.number);
+    }
+
+    const diagramTitle = $derived(
+        `${title} on ${instrumentText}, ${tuningText} tuning${chosenName ? `, ${chosenName}` : ''}`
+    );
 
     // The root picker (THY-2.2, THY-2.5): the spellings this scale offers, and the other one a tap away.
     const buttons = $derived(rootButtons(type));
@@ -162,6 +197,40 @@
         </div>
     </details>
 
+    {#if groups.length > 0}
+        <div class="positions">
+            <Choice
+                legend="Positions"
+                name="card-positions"
+                options={kindOptions}
+                value={chosen?.group.kind ?? 'neck'}
+                onchange={kind => showPosition(kind as PositionKind | 'neck')}
+            />
+            {#if chosen}
+                <div class="steps" role="group" aria-label="Position">
+                    <button
+                        type="button"
+                        disabled={chosen.index === 0}
+                        onclick={() => showPosition(chosen.group.kind, chosen.index - 1)}
+                    >
+                        ‹ Previous
+                    </button>
+                    <span class="name" aria-live="polite">
+                        {positionTitle(chosen.position, set, view.tuning)}
+                        <span class="frets">{positionFrets(chosen.position)}</span>
+                    </span>
+                    <button
+                        type="button"
+                        disabled={chosen.index === chosen.group.positions.length - 1}
+                        onclick={() => showPosition(chosen.group.kind, chosen.index + 1)}
+                    >
+                        Next ›
+                    </button>
+                </div>
+            {/if}
+        </div>
+    {/if}
+
     <Fretboard
         tuning={view.tuning}
         {set}
@@ -173,6 +242,7 @@
         title={diagramTitle}
         {...dimmed ? { dimmed } : {}}
         {...marked ? { marked } : {}}
+        {...chosen ? { focus: chosen.position } : {}}
         ontap={tap}
     />
     <p class="tapped" aria-live="polite">{tappedText ?? 'Tap a fret to hear and name it.'}</p>
@@ -329,6 +399,34 @@
         gap: 8px;
         justify-items: start;
         padding-top: 8px;
+    }
+
+    .positions {
+        display: grid;
+        gap: 8px;
+    }
+
+    .steps {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .steps .name {
+        display: grid;
+        text-align: center;
+    }
+
+    .steps .frets {
+        color: var(--muted);
+        white-space: nowrap;
+    }
+
+    button:disabled {
+        color: var(--muted);
+        opacity: 0.5;
+        cursor: default;
     }
 
     .highlight {

@@ -1,7 +1,9 @@
 <!--
     A fretboard (DIAG-1): the notes `fretkit` maps for a set on a tuning, drawn as architecture.md's Styling says. Wide enough for
     the whole fret range at the tap target, it shows it all; otherwise, as on a phone held upright, it shows a stretch
-    of up to six frets with Lower and Higher, over a strip of the whole neck (DIAG-1.10).
+    of up to six frets with Lower and Higher, over a strip of the whole neck (DIAG-1.10). Given a position, its notes
+    are at full strength and the rest dimmed (DIAG-1.3), and upright it shows the position's frets, with Lower and
+    Higher only when they don't fit.
 -->
 <script lang="ts">
     import {
@@ -33,6 +35,12 @@
     } from '#lib/diagrams/fretboard.ts';
     import type { Handedness, Labels } from '#lib/settings/settings.ts';
 
+    interface Focus {
+        readonly from: number;
+        readonly to: number;
+        readonly cells: readonly { readonly string: number; readonly fret: number }[];
+    }
+
     interface Props {
         /** The tuning's pitches, lowest string first. */
         tuning: readonly NoteName[];
@@ -51,6 +59,8 @@
         outlined?: (cell: FretboardCell) => boolean;
         /** Notes to ring, such as a mode's characteristic note (SCL-5.1), leaving the rest as they are. */
         marked?: (cell: FretboardCell) => boolean;
+        /** A position (SCL-3): its frets and its notes; the other notes are dimmed, and the neck shows past `range` to hold it. */
+        focus?: Focus;
         ontap?: (tapped: TappedFret) => void;
     }
 
@@ -66,16 +76,27 @@
         dimmed,
         outlined,
         marked,
+        focus,
         ontap
     }: Props = $props();
 
     let measured = $state(0);
     const width = $derived(measured > 0 ? measured : 343);
     const stringCount = $derived(tuning.length);
-    const cells = $derived(mapScale(tuning, set, range, capo));
+    /** The fret range, widened to hold the position. */
+    const neck: FretRange = $derived(
+        focus ? { from: Math.min(range.from, focus.from), to: Math.max(range.to, focus.to) } : range
+    );
+    const cells = $derived(mapScale(tuning, set, neck, capo));
+    const inFocus = $derived(new Set(focus?.cells.map(cell => `${String(cell.string)}:${String(cell.fret)}`)));
+    function faded(cell: FretboardCell): boolean {
+        if (focus && !inFocus.has(`${String(cell.string)}:${String(cell.fret)}`)) return true;
+        return dimmed?.(cell) ?? false;
+    }
 
-    const whole = $derived(layNeck(range.from, range.to, width, stringCount));
-    const runs = $derived(stretches(range, stretchLength(width)));
+    const whole = $derived(layNeck(neck.from, neck.to, width, stringCount));
+    // Upright, the stretches of the position's frets, or of the whole range.
+    const runs = $derived(stretches(focus ? { from: focus.from, to: focus.to } : neck, stretchLength(width)));
     /**
      * The stretch chosen with Lower, Higher or the strip, for the stretches it was chosen among; until then, or once the
      * capo, the range or the width changes them, the one with the capo or the bottom of the range.
@@ -89,7 +110,7 @@
         )
     );
     const index = $derived(Math.min(Math.max(chosen?.among === among ? chosen.index : start, 0), runs.length - 1));
-    const shown: FretRange = $derived(whole ? range : (runs[index] ?? range));
+    const shown: FretRange = $derived(whole ? neck : (runs[index] ?? neck));
     const layout = $derived(
         whole ??
             layNeck(shown.from, shown.to, width, stringCount) ??
@@ -173,7 +194,8 @@
 </script>
 
 <figure class="fretboard" bind:clientWidth={measured}>
-    {#if !whole}
+    <!-- A position that fits needs no Lower and Higher: the card steps through positions (DIAG-1.10). -->
+    {#if !whole && (!focus || runs.length > 1)}
         <div class="stretch" role="group" aria-label="Part of the neck">
             {#snippet lower(side: 'start' | 'end')}
                 <button type="button" onclick={() => move(-1)} disabled={index === 0}>
@@ -290,7 +312,7 @@
                         class:root
                         class:ring
                         class:marked={mark}
-                        class:dim={dimmed?.(cell) ?? false}
+                        class:dim={faded(cell)}
                         data-string={cell.string}
                         data-fret={cell.fret}
                         data-note={cell.note}
@@ -313,7 +335,7 @@
     {/if}
     {#if !whole}
         <NeckStrip
-            {range}
+            range={neck}
             {shown}
             {stringCount}
             {handedness}
