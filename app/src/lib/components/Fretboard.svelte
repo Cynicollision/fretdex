@@ -148,7 +148,15 @@
     const numbered = $derived(
         fretted.filter(space => INLAYS.includes(space.fret) || (layout?.nut === undefined && space === fretted[0]))
     );
-    const description = $derived(describeFretboard(title, tuning, cells, capo));
+    // With a position, the text alternative lists its notes alone (APP-6.4), as the title names it.
+    const description = $derived(
+        describeFretboard(
+            title,
+            tuning,
+            focus ? cells.filter(cell => inFocus.has(`${String(cell.string)}:${String(cell.fret)}`)) : cells,
+            capo
+        )
+    );
 
     function spaceOf(fret: number): FretSpace | undefined {
         return layout?.spaces.find(space => space.fret === fret);

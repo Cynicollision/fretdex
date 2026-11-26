@@ -293,6 +293,11 @@ describe('Fretboard', () => {
         expect(dot(3, 4)?.classList.contains('dim')).toBe(false);
         expect(dot(2, 0)?.classList.contains('dim')).toBe(true);
 
+        // The text alternative lists the position's notes alone (APP-6.4).
+        const caption = document.querySelector('figcaption')?.textContent ?? '';
+        expect(caption).toContain('3 G');
+        expect(caption).not.toContain('7 B');
+
         await show({ width: UPRIGHT, set, focus: position });
         expect(document.querySelector('.fretboard svg')?.getAttribute('data-frets')).toBe('2-5');
         await expect.element(page.getByRole('button', { name: /Lower/u })).not.toBeInTheDocument();

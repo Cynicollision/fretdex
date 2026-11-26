@@ -301,13 +301,14 @@ function twoOctaves(open: readonly number[], pcs: readonly number[], index: numb
 
 /**
  * One octave of the scale from a root fret, one finger a fret: the notes climb in a window of four frets (or five,
- * where four won't do) holding the root, each on the lowest string it fits from the root's string up. The window
- * with the root under the second finger is tried first, then the first, third and fourth.
+ * where four won't do, or six, where a string is tuned further than a 4th above the one below, as Drop D's low D is)
+ * holding the root, each on the lowest string it fits of the root's and the two above it. The window with the root
+ * under the second finger is tried first, then the first, third and fourth.
  */
 function octaveBox(open: readonly number[], pcs: readonly number[], index: number, fret: number): Spot[] | undefined {
     const from = (open[index] ?? 0) + fret;
-    for (const width of [4, 5]) {
-        for (const below of [1, 0, 2, 3, 4].filter(b => b < width)) {
+    for (const width of [4, 5, 6]) {
+        for (const below of [1, 0, 2, 3, 4, 5].filter(b => b < width)) {
             const low = fret - below;
             if (low < 0) continue;
             const spots = fit(open, pcs, index, from, low, low + width - 1);
@@ -330,7 +331,8 @@ function fit(
     for (let midi = from; midi <= from + 12; midi = nextNote(pcs, midi)) {
         while (string < open.length && midi - (open[string] ?? 0) > high) string++;
         const fret = midi - (open[string] ?? 0);
-        if (string >= open.length || fret < low) return undefined;
+        // Three strings at most, so a two-octave box is the same box twice.
+        if (string >= open.length || string > index + 2 || fret < low) return undefined;
         spots.push({ index: string, fret });
     }
     return spots;

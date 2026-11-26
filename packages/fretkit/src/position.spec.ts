@@ -199,6 +199,31 @@ describe('scalePositions', () => {
         expect(boxes[2]?.cells.filter(cell => cell.degree === 1)).toHaveLength(3);
     });
 
+    it('SCL-4.1 keeps a one-octave bass box on three strings, so its two octaves are the same box', () => {
+        const boxes = group(bass, 'D', 'dorian', 'bass', 'bass');
+        expect(frets(boxes[0], 4)).toBe('10 12 13 | 10 12 | 9 10 12 | ');
+        for (const root of autoRoots('dorian')) {
+            for (const box of group(bass, root, 'dorian', 'bass', 'bass')) {
+                const strings = new Set(box.cells.map(cell => cell.string));
+                expect(strings.size, `${root} ${String(box.number)}`).toBeLessThanOrEqual(box.octaves === 2 ? 4 : 3);
+            }
+        }
+    });
+
+    it('SCL-4.1 gives Drop D bass its boxes from the low D string too', () => {
+        const dropDBass = ['D1', 'A1', 'D2', 'G2'];
+        for (const id of ['major', 'natural-minor', 'dorian', 'minor-pentatonic']) {
+            for (const root of autoRoots(id)) {
+                const boxes = group(dropDBass, root, id, 'bass', 'bass');
+                expect(
+                    boxes.map(box => box.number),
+                    `${root} ${id}`
+                ).toEqual([1, 2, 3]);
+            }
+        }
+        expect(frets(group(dropDBass, 'D', 'major', 'bass', 'bass')[0], 4)).toBe('0 2 4 5 | 0 2 4 5 |  | ');
+    });
+
     it('SCL-4.1 offers a two-octave box from the second string where three strings sit above it (owner, 2026-11-25)', () => {
         const boxes = group(fiveString, 'C', 'major', 'bass', 'bass');
         expect(boxes.map(p => p.number)).toEqual([1, 2, 3, 4]);

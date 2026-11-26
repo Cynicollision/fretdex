@@ -39,7 +39,7 @@ Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, op
 
 | ID | Requirement | Status |
 |---|---|---|
-| SCL-4.1 | On bass, the card shall offer a one-octave box and a two-octave box from the root on each of the lowest two strings, the choice being `box`: 1 and 2 one octave from the lowest and next string, 3 and 4 two octaves from them (owner, 2026-11-25). A one-octave box climbs from the root one finger a fret; a two-octave box is that box, then a shift to the octave on the next string and the same box from there, so it needs three strings above its root's, and on a four-string bass box 4 isn't offered (owner, 2026-11-25). | Implemented |
+| SCL-4.1 | On bass, the card shall offer a one-octave box and a two-octave box from the root on each of the lowest two strings, the choice being `box`: 1 and 2 one octave from the lowest and next string, 3 and 4 two octaves from them (owner, 2026-11-25). A one-octave box climbs from the root one finger a fret on at most three strings (a sixth fret where a string is a 5th above the one below, as Drop D's low D is); a two-octave box is that box, then a shift to the octave on the next string and the same box from there, so it needs three strings above its root's, and on a four-string bass box 4 isn't offered (owner, 2026-11-25). | Implemented |
 | SCL-4.2 | Bass shall offer no CAGED positions or 3-notes-per-string patterns, which are guitar's (owner, 2026-11-25). | Implemented |
 
 ## SCL-5 A mode's card shows what makes it a mode
