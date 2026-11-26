@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AudioEngine } from './engine';
 import type { Track } from './scheduler';
 
@@ -7,6 +7,10 @@ class FakeParam {
     value = 1;
     readonly targets: [number, number][] = [];
     setTargetAtTime(value: number, at: number) {
+        this.targets.push([value, at]);
+        this.value = value;
+    }
+    setValueAtTime(value: number, at: number) {
         this.targets.push([value, at]);
         this.value = value;
     }
@@ -36,6 +40,10 @@ class FakeSource extends FakeNode {
     }
     start(when: number) {
         this.started = when;
+    }
+    /** Ends the note, as the context does when its buffer has played. */
+    end() {
+        this.onended?.();
     }
     stop(when: number) {
         this.stopped = when;
@@ -156,7 +164,8 @@ describe('AudioEngine', () => {
         audio.play({ midi: 52, voice: 'guitar', channel: 'string:4' });
 
         expect(run.playing).toBe(false);
-        expect(first?.stopped).toBeDefined();
+        // The first note, scheduled 50 ms ahead, never starts.
+        expect(first?.stopped).toBe(1);
     });
 
     it('MET-2.2 a run played under others is neither stopped by them nor stops them', () => {
@@ -171,5 +180,51 @@ describe('AudioEngine', () => {
         expect(metronome.playing).toBe(true);
         audio.stopAll();
         expect(metronome.playing).toBe(false);
+    });
+
+    describe('with the scheduler', () => {
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
+        it("AUD-1.3 stops a finished run's notes that are still ringing", () => {
+            vi.useFakeTimers();
+            const { audio, context } = engine();
+            const strum: Track<number> = { events: [{ beat: 0, event: 52 }], length: 0.25, loop: false };
+            let ended = false;
+            audio.run(strum, { bpm: 120, note: midi => ({ midi, voice: 'guitar' }), onend: () => (ended = true) });
+            const note = context()?.sources[0];
+
+            // The track has ended, but its note rings for seconds yet.
+            const clock = context();
+            if (clock) clock.currentTime = 1.5;
+            vi.advanceTimersByTime(50);
+            expect(ended).toBe(true);
+            expect(note?.stopped).toBeUndefined();
+
+            audio.play({ midi: 40, voice: 'guitar', channel: 'string:6' });
+
+            expect(note?.stopped).toBeCloseTo(1.56, 9);
+        });
+
+        it("AUD-1.3 cuts a run's note on a string with its next one there", () => {
+            const { audio, context } = engine();
+            const slide: Track<number> = {
+                events: [
+                    { beat: 0, event: 52 },
+                    { beat: 0.05, event: 53 }
+                ],
+                length: 1,
+                loop: false
+            };
+            audio.run(slide, { bpm: 120, note: midi => ({ midi, voice: 'guitar', channel: 'string:4' }) });
+
+            const [first, second] = context()?.sources ?? [];
+            expect(second?.started).toBeCloseTo(1.075, 9);
+            expect(first?.gain?.gain.targets.at(-1)?.[1]).toBeCloseTo(1.075, 9);
+            expect(first?.stopped).toBeCloseTo(1.135, 9);
+            expect(second?.stopped).toBeUndefined();
+            audio.stopAll();
+        });
     });
 });

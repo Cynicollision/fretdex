@@ -8,21 +8,31 @@ interface AudioSession {
     type: string;
 }
 
-/** Asks for audio that plays on silent. Called from the first tap, as playing a media element needs one. */
+/** The fallback's media element, made on the first sound. */
+let element: HTMLAudioElement | undefined;
+
+/**
+ * Asks for audio that plays on silent. Called on every sound, from a tap, as playing a media element needs one, and
+ * a phone may pause the element in the background.
+ */
 export function playThroughSilentSwitch(): void {
     if (typeof navigator === 'undefined') return;
     const session = (navigator as Navigator & { audioSession?: AudioSession }).audioSession;
     if (session !== undefined) {
-        session.type = 'playback';
+        if (session.type !== 'playback') session.type = 'playback';
         return;
     }
     // Only on iPhones and iPads: elsewhere the switch doesn't exist, and a playing element can show media controls.
     if (!isAppleTouchDevice() || typeof Audio === 'undefined') return;
-    const element = new Audio(URL.createObjectURL(new Blob([silentWav()], { type: 'audio/wav' })));
-    element.loop = true;
-    element.play().catch(() => {
-        // Without it, audio still plays when the switch is off.
-    });
+    if (!element) {
+        element = new Audio(URL.createObjectURL(new Blob([silentWav()], { type: 'audio/wav' })));
+        element.loop = true;
+    }
+    if (element.paused) {
+        element.play().catch(() => {
+            // Without it, audio still plays when the switch is off; the next sound tries again.
+        });
+    }
 }
 
 function isAppleTouchDevice(): boolean {

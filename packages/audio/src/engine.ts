@@ -40,11 +40,16 @@ const CUT_SECONDS = 0.01;
 interface Sounding {
     readonly source: AudioBufferSourceNode;
     readonly gain: GainNode;
+    /** When it starts, on the audio clock. */
+    readonly when: number;
 }
 
+/** A run, kept until its track has ended and its last note has stopped ringing, so it can be stopped till then. */
 interface Run {
-    readonly playback: Playback;
+    playback: Playback | undefined;
     readonly sounding: Set<Sounding>;
+    /** Its notes by channel, so a run's notes on one string cut each other as taps do. */
+    readonly channels: Map<string, Sounding>;
     readonly under: boolean;
 }
 
@@ -93,36 +98,37 @@ export class AudioEngine {
     play(note: NoteRequest): void {
         const context = this.#start();
         this.#stopRuns(false);
-        if (note.channel !== undefined) {
-            const previous = this.#channels.get(note.channel);
-            if (previous) this.#cut(previous, context.currentTime);
-        }
-        const sounding = this.#sound(context, note, context.currentTime, this.#taps);
-        if (note.channel !== undefined) this.#channels.set(note.channel, sounding);
+        this.#sound(context, note, context.currentTime, this.#taps, this.#channels);
     }
 
     /** Plays a track's notes on the beat, as a scale run does (AUD-3), stopping other sounds unless `under`. */
     run<E>(track: Track<E>, options: RunOptions<E>): Playback {
         const context = this.#start();
         if (!options.under) this.#stopAll(false);
-        const sounding = new Set<Sounding>();
         const scheduler = this.#scheduler ?? new Scheduler(context);
         this.#scheduler = scheduler;
-        const playback = scheduler.play(track, {
+        const run: Run = {
+            playback: undefined,
+            sounding: new Set(),
+            channels: new Map(),
+            under: options.under ?? false
+        };
+        this.#runs.add(run);
+        run.playback = scheduler.play(track, {
             bpm: options.bpm,
             onevent: (event, time) => {
                 const note = options.note(event);
-                if (note) this.#sound(context, note, time, sounding);
+                if (note) this.#sound(context, note, time, run.sounding, run.channels, () => this.#settle(run));
                 options.onevent?.(event, time);
             },
             onend: () => {
-                // The run is known by its notes, since a short track can end before `play` returns.
-                for (const run of this.#runs) if (run.sounding === sounding) this.#runs.delete(run);
+                this.#settle(run);
                 options.onend?.();
             }
         });
-        const run: Run = { playback, sounding, under: options.under ?? false };
-        if (playback.playing) this.#runs.add(run);
+        // A short track can end while `play` hands over its first events, before `playback` is set.
+        this.#settle(run);
+        const playback = run.playback;
         const stop = () => this.#stopRun(run, context.currentTime);
         return {
             setTempo: bpm => playback.setTempo(bpm),
@@ -139,8 +145,9 @@ export class AudioEngine {
     }
 
     #start(): AudioContext {
+        // On every sound, as a phone may pause the silent-switch fallback's media element in the background (AUD-1.4).
+        playThroughSilentSwitch();
         if (!this.#context) {
-            playThroughSilentSwitch();
             const context = this.#createContext();
             const master = context.createGain();
             master.gain.value = this.#level();
@@ -168,23 +175,37 @@ export class AudioEngine {
         return this.#muted ? 0 : (this.#volume / 100) ** 2;
     }
 
-    #sound(context: AudioContext, note: NoteRequest, when: number, into: Set<Sounding>): Sounding {
+    /**
+     * Starts a note at `when`, kept in `into` until it ends. A note with a channel first cuts the one sounding on it
+     * (AUD-1.3).
+     */
+    #sound(
+        context: AudioContext,
+        note: NoteRequest,
+        when: number,
+        into: Set<Sounding>,
+        channels: Map<string, Sounding>,
+        onended?: () => void
+    ): void {
+        if (note.channel !== undefined) {
+            const previous = channels.get(note.channel);
+            if (previous) this.#cut(previous, when);
+        }
         const source = context.createBufferSource();
         source.buffer = this.#buffer(context, note);
         const gain = context.createGain();
         source.connect(gain);
         if (this.#master) gain.connect(this.#master);
-        const sounding: Sounding = { source, gain };
+        const sounding: Sounding = { source, gain, when };
         into.add(sounding);
+        if (note.channel !== undefined) channels.set(note.channel, sounding);
         source.onended = () => {
             into.delete(sounding);
-            if (note.channel !== undefined && this.#channels.get(note.channel) === sounding) {
-                this.#channels.delete(note.channel);
-            }
+            if (note.channel !== undefined && channels.get(note.channel) === sounding) channels.delete(note.channel);
             gain.disconnect();
+            onended?.();
         };
         source.start(when);
-        return sounding;
     }
 
     #buffer(context: AudioContext, note: NoteRequest): AudioBuffer {
@@ -199,16 +220,27 @@ export class AudioEngine {
         return buffer;
     }
 
+    /** Stops a note at `at`: one sounding by then fades out, so it doesn't click, and a later one never starts. */
     #cut(sounding: Sounding, at: number): void {
         sounding.gain.gain.cancelScheduledValues(at);
+        if (sounding.when >= at) {
+            sounding.gain.gain.setValueAtTime(0, at);
+            sounding.source.stop(at);
+            return;
+        }
         sounding.gain.gain.setTargetAtTime(0, at, CUT_SECONDS);
-        // A note scheduled for later than `at` never starts.
         sounding.source.stop(at + CUT_SECONDS * 6);
     }
 
+    /** Lets a run go once its track has ended and its last note has stopped ringing. */
+    #settle(run: Run): void {
+        if (run.playback !== undefined && !run.playback.playing && run.sounding.size === 0) this.#runs.delete(run);
+    }
+
     #stopRun(run: Run, at: number): void {
-        run.playback.stop();
+        run.playback?.stop();
         for (const sounding of run.sounding) this.#cut(sounding, at);
+        run.channels.clear();
         this.#runs.delete(run);
     }
 

@@ -2,7 +2,7 @@
     "name": "@fretdex/audio",
     "version": "0.0.0",
     "private": true,
-    "description": "Audio engine: Web Audio voices, the scheduler and the drone. Framework-free.",
+    "description": "Audio engine: Web Audio voices and the scheduler. Framework-free.",
     "type": "module",
     "exports": {
         ".": "./src/index.ts"
