@@ -1,6 +1,6 @@
 # Scales and Positions (`SCL`)
 
-The scales module: any scale on any root, on the full neck and in positions, with degrees highlighted. Positions are what make it a guitar reference rather than a theory chart: five CAGED shapes and seven 3-notes-per-string patterns on guitar, one- and two-octave boxes on bass.
+The scales module: any scale on any root, the modes included, on the full neck and in positions, with degrees highlighted. Positions are what make it a guitar reference rather than a theory chart: five CAGED shapes and seven 3-notes-per-string patterns on guitar, one- and two-octave boxes on bass.
 
 Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, options `pos` 1–5 CAGED or `nps` 1–7, `labels`).
 
@@ -8,7 +8,7 @@ Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, op
 
 | ID | Requirement | Status |
 |---|---|---|
-| SCL-1.1 | The list shall offer a root picker and about 20 scales, grouped as **Major and minor** (major, natural minor, harmonic minor, melodic minor ascending), **Pentatonic and blues** (major and minor pentatonic, major and minor blues), **Modes** (the seven modes of the major scale, linking to MODE) and **Other** (Phrygian dominant, Lydian dominant, altered, whole tone, half-whole and whole-half diminished). | Planned |
+| SCL-1.1 | The list shall offer a root picker and about 20 scales, grouped as **Major and minor** (major, natural minor, harmonic minor, melodic minor ascending), **Pentatonic and blues** (major and minor pentatonic, major and minor blues), **Modes** (the seven modes of the major scale, brightest first, SCL-5, with a link to the Modes overview, MODE-1) and **Other** (Phrygian dominant, Lydian dominant, altered, whole tone, half-whole and whole-half diminished). | Planned |
 | SCL-1.2 | With a current key, the list shall open each scale on the key's root, with the key's own scale first. | Planned |
 | SCL-1.3 | Pinned scales shall be listed first (PIN-3). | Planned |
 
@@ -40,3 +40,13 @@ Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, op
 | ID | Requirement | Status |
 |---|---|---|
 | SCL-4.1 | On bass, the card shall offer a one-octave box and a two-octave box from the root on each of the lowest two strings. | Planned |
+
+## SCL-5 A mode's card shows what makes it a mode
+
+For the seven modes of the major scale (MODE-1.7), which have no card of their own (owner, 2026-11-25).
+
+| ID | Requirement | Status |
+|---|---|---|
+| SCL-5.1 | The card shall show the mode's parent scale and key ("D Dorian is the 2nd mode of C major") and its characteristic note (Dorian's natural 6), highlighted on the neck. | Planned |
+| SCL-5.2 | The card shall show the mode's place in the brightness order as a row of the seven modes with this one marked, each a link to that mode's card on the same root, and a link to the Modes overview on this root (MODE-1). | Planned |
+| SCL-5.3 | The card shall list the mode's diatonic triads and sevenths with roman numerals relative to the mode (`i ii bIII IV v vi° bVII` for Dorian), linking to chord cards. | Planned |

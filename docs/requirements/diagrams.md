@@ -53,5 +53,5 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 
 - **DIAG-1.6:** a tapped fret plays its note, a dot or an empty fret alike, but nothing names it on screen until the scale card (M01 T9).
 - **DIAG-1.10:** upright, the fretboard shows a stretch with Lower and Higher over the strip, and in landscape the whole range; showing the chosen position comes with positions (M01 T9).
-- **DIAG-3.1:** the keyboard marks the notes, enlarges when tapped and plays its keys, on the scale and mode cards.
+- **DIAG-3.1:** the keyboard marks the notes, enlarges when tapped and plays its keys, on the scale cards, the modes' included.
 - **DIAG-5.1:** the fretboard has its compact form (`FretboardMini.svelte`); the chord box's comes in M02, and the pin tiles that show them in M01 T12.

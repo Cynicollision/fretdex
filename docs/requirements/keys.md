@@ -23,4 +23,4 @@ Screens: **Keys**, which opens on the circle (`/circle`, option `key`; `/keys` r
 | KEY-2.5 | The card shall list borrowed chords, each with where it's from: for a major key, the parallel minor's `iv`, `bIII`, `bVI`, `bVII` and `ii°`, and the secondary dominants `V/ii` to `V/vi`; for a minor key, the parallel major's `IV` and `I` (picardy third). Modal interchange beyond the parallel key is later. | Planned |
 | KEY-2.6 | The card shall offer **Set as current key** (CTX-1.1). | Planned |
 | KEY-2.7 | The card shall link to the key's scale card (SCL) and to the progressions library in this key (PROG-1.2). | Planned |
-| KEY-2.8 | Key cards shall be major and minor only. With a mode as the current key (CTX-2.6), links and buttons that would open a key card shall open the mode card (MODE-1.5). | Planned |
+| KEY-2.8 | Key cards shall be major and minor only. With a mode as the current key (CTX-2.6), links and buttons that would open a key card shall open the mode's scale card (SCL-5). | Planned |

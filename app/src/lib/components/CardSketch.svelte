@@ -1,5 +1,5 @@
 <!--
-    A card until its own arrives (scales M01 T9, modes T10): its name, notes and intervals, its notes on a fretboard and
+    A card until its own arrives (M01 T9): its name, notes and intervals, its notes on a fretboard and
     keyboard, which play their notes when tapped, the instrument and tuning it's shown for, and its labels option, so every route opens from its URL with
     its full state (APP-3.1).
 -->
@@ -29,7 +29,7 @@
     const options = $derived(readViewOptions(card.kind, page.url.searchParams));
     const view = $derived(viewContext(settings.current, readOverride(page.url.searchParams, settings.current)));
 
-    const set = $derived(spellScale(card.root, card.kind === 'scale' ? card.scale : card.mode));
+    const set = $derived(spellScale(card.root, card.scale));
     const labels: Labels = $derived(options.labels ?? settings.current.labels);
     const tuningText = $derived(tuningName(view.instrument, view.tuning, customTunings.current));
     const diagramTitle = $derived(

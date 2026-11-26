@@ -56,8 +56,8 @@ test('after the first load every route opens from its URL with no network (APP-4
     for (const [path, heading] of [
         ['/scales', 'Scales'],
         ['/scales/Ab/minor-blues?labels=notes', 'A♭ minor blues'],
-        ['/modes/F%23/lydian', 'F♯ Lydian'],
-        ['/modes/Bb/aeolian', 'B♭ Aeolian'],
+        ['/modes', 'Modes'],
+        ['/scales/F%23/lydian', 'F♯ Lydian'],
         ['/scales/C/bebop', 'Not found']
     ] as const) {
         await page.goto(path);
