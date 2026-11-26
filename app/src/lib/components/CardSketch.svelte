@@ -1,14 +1,16 @@
 <!--
     A card until its own arrives (scales M01 T9, modes T10): its name, notes and intervals, its notes on a fretboard and
-    keyboard, the instrument and tuning it's shown for, and its labels option, so every route opens from its URL with
+    keyboard, which play their notes when tapped, the instrument and tuning it's shown for, and its labels option, so every route opens from its URL with
     its full state (APP-3.1).
 -->
 <script lang="ts">
     import { intervalLabel, noteLabel, spellScale } from '@fretdex/fretkit';
+    import { playFret, playKey } from '#lib/audio/sound.ts';
     import Choice from '#lib/components/Choice.svelte';
     import Fretboard from '#lib/components/Fretboard.svelte';
     import Keyboard from '#lib/components/Keyboard.svelte';
     import Screen from '#lib/components/Screen.svelte';
+    import type { TappedFret } from '#lib/diagrams/fretboard.ts';
     import type { Labels } from '#lib/settings/settings.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { tuningName } from '#lib/settings/tunings.ts';
@@ -47,8 +49,9 @@
         handedness={settings.current.handedness}
         accidentals={settings.current.accidentals}
         title={diagramTitle}
+        ontap={(tapped: TappedFret) => playFret(tapped, view.instrument)}
     />
-    <Keyboard {set} {labels} title={cardTitle(card)} />
+    <Keyboard {set} {labels} title={cardTitle(card)} ontap={playKey} />
     <p class="muted">
         For {view.instrument === 'guitar' ? 'guitar' : 'bass'}, {tuningText} tuning{view.capo === 0
             ? ''
@@ -75,7 +78,7 @@
                 labels === settings.current.labels ? undefined : labels
             )}
     />
-    <p class="muted">The full card, with positions and sound, is coming.</p>
+    <p class="muted">The full card, with positions and scale runs, is coming.</p>
 </Screen>
 
 <style>

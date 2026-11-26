@@ -1,6 +1,7 @@
 <!--
     The context bar's sheet (APP-2.1): the current key, instrument, tuning and capo (CTX-1), each applied as it's
-    chosen so the screen behind updates in place (APP-2.2), and the way to the rest of the settings (APP-1.1). A new custom tuning is entered here (THY-3.3, CTX-2.7).
+    chosen so the screen behind updates in place (APP-2.2), the master volume and mute (AUD-1.2), and the way to the
+    rest of the settings (APP-1.1). A new custom tuning is entered here (THY-3.3, CTX-2.7).
     On a card whose URL overrides the instrument, tuning or capo, changing one of them here also clears the override,
     so the card follows the choice (APP-2.3).
 -->
@@ -9,6 +10,7 @@
     import Choice from '#lib/components/Choice.svelte';
     import KeyPicker from '#lib/components/KeyPicker.svelte';
     import Stepper from '#lib/components/Stepper.svelte';
+    import Switch from '#lib/components/Switch.svelte';
     import TuningEditor from '#lib/components/TuningEditor.svelte';
     import { sameTuning, switchInstrument } from '#lib/settings/settings.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
@@ -192,6 +194,27 @@
                     <Stepper label="Capo" min={0} max={MAX_CAPO} value={current.capo} onchange={chooseCapo} />
                 </section>
 
+                <section aria-labelledby="context-sound">
+                    <h3 id="context-sound">Sound</h3>
+                    <label class="volume">
+                        <span>Volume</span>
+                        <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="5"
+                            value={current.volume}
+                            aria-valuetext="{current.volume} percent"
+                            oninput={event => void settings.update({ volume: Number(event.currentTarget.value) })}
+                        />
+                    </label>
+                    <Switch
+                        label="Mute"
+                        checked={current.muted}
+                        onchange={(muted: boolean) => void settings.update({ muted })}
+                    />
+                </section>
+
                 <a class="all-settings" href={resolve('/settings')} onclick={() => dialog?.close()}>All settings ›</a>
             {/if}
         </div>
@@ -211,6 +234,22 @@
         background: var(--surface);
         color: var(--text);
         box-sizing: border-box;
+    }
+
+    .volume {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 16px;
+        min-height: var(--tap);
+        font-weight: 600;
+    }
+
+    .volume input {
+        width: 100%;
+        min-height: var(--tap);
+        margin: 0;
+        accent-color: var(--accent);
     }
 
     .override {

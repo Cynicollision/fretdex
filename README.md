@@ -11,7 +11,7 @@ A personal, ad-free, offline reference for guitar and bass: chords, scales and p
 - **Name what you're playing**: set frets on a chord box and see every chord name they fit.
 - **Play with a capo**: shapes named as you play them, with what they sound.
 - **Pin anything** to a home board, with live mini diagrams, groups and recents.
-- **Hear what's on screen**: strummed chords, scales played up and down, progressions looped at a tempo, and a drone.
+- **Hear what's on screen**: strummed chords, scales played up and down, and progressions looped at a tempo.
 - **Work offline and stay private**: an installable web app with no accounts, no analytics and no network after the first load.
 
 Guitar (6 strings) and bass (4 strings), in standard and alternate tunings, right- or left-handed. A tuner and a metronome follow version 1.

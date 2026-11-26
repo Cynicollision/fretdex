@@ -4,7 +4,9 @@
 -->
 <script lang="ts">
     import { noteLabel, scaleType, spellPitchClass, spellScale } from '@fretdex/fretkit';
+    import { playFret } from '#lib/audio/sound.ts';
     import Fretboard from '#lib/components/Fretboard.svelte';
+    import type { TappedFret } from '#lib/diagrams/fretboard.ts';
     import { KEY_MODES, type Settings } from '#lib/settings/settings.ts';
     import { NO_CUSTOM_TUNINGS, tuningName, type CustomTunings } from '#lib/settings/tunings.ts';
 
@@ -57,6 +59,8 @@
         <dd>{settings.keepAwake ? 'On' : 'Off'}</dd>
         <dt>Tempo</dt>
         <dd>{settings.tempo} bpm</dd>
+        <dt>Volume</dt>
+        <dd>{settings.volume}{settings.muted ? ', muted' : ''}</dd>
     </dl>
 
     <Fretboard
@@ -68,6 +72,7 @@
         handedness={settings.handedness}
         accidentals={settings.accidentals}
         title="{noteLabel(scale.root)} {scale.type.name} on the fretboard"
+        ontap={(tapped: TappedFret) => playFret(tapped, settings.instrument)}
     />
 </section>
 

@@ -183,6 +183,19 @@ describe('the context bar', () => {
         await expect.poll(() => onclear.mock.calls.length).toBe(1);
     });
 
+    it('AUD-1.2 sets the master volume and mute from the sheet', async () => {
+        await openSheet();
+
+        const volume = sheet().getByRole('slider', { name: 'Volume' });
+        await expect.element(volume).toHaveValue('80');
+        await volume.fill('35');
+        await expect.poll(() => settings.current.volume).toBe(35);
+
+        await sheet().getByRole('switch', { name: 'Mute' }).click();
+        await expect.poll(() => settings.current.muted).toBe(true);
+        expect(settings.current.volume).toBe(35);
+    });
+
     it('closes with Done', async () => {
         await openSheet();
 

@@ -30,7 +30,7 @@ npm workspaces in one repository (M01, decision 8):
 |---|---|---|---|
 | `app/` | `fretdex` | The SvelteKit app: routes, diagrams, stores, storage, PWA | `fretkit`, `audio` |
 | `packages/fretkit/` | `@fretdex/fretkit` | Theory engine: wraps Tonal.js and adds tunings, fretboard mapping, positions, voicing search and the chord-voicing dataset | Tonal.js |
-| `packages/audio/` | `@fretdex/audio` | Audio engine: voices (plucked string, bass, electric piano), strum and sequence scheduling, drone, click and metronome, master volume; later pitch detection for the tuner | Web Audio API only |
+| `packages/audio/` | `@fretdex/audio` | Audio engine: voices (plucked string, bass, electric piano), strum and sequence scheduling, click and metronome, master volume; later pitch detection for the tuner | Web Audio API only |
 
 Neither package imports Svelte or touches the DOM beyond Web Audio (the app opens the microphone and hands the audio package its stream), so both run under Vitest without a browser.
 
@@ -94,7 +94,7 @@ So far the routes of M01 are built, with the module lists and cards as text unti
 - **Back.** `BackLink.svelte` goes back in the browser's history when the previous entry is one of the app's (the Navigation API's `canGoBack`, or else any history at all), and otherwise follows its link, the card's module list (APP-1.3).
 - **The wake lock** (`wake-lock.ts`) is held while **Keep screen awake** is on and taken again each time the app is shown, as the browser drops it when the app is hidden (APP-5.5).
 
-The root layout puts the context bar (`ContextBar.svelte` in `app/src/lib/components/`) at the top of every route: a Home link, then the context, which opens its sheet. There's no bottom bar (APP-1.1). The sheet (`ContextSheet.svelte`) sets the key, instrument, tuning and capo straight into the settings, so whatever screen is open follows at once (APP-2.2), and links to Settings; custom tunings are entered there (`TuningEditor.svelte`) and managed on Settings.
+The root layout puts the context bar (`ContextBar.svelte` in `app/src/lib/components/`) at the top of every route: a Home link, then the context, which opens its sheet. There's no bottom bar (APP-1.1). The sheet (`ContextSheet.svelte`) sets the key, instrument, tuning and capo straight into the settings, so whatever screen is open follows at once (APP-2.2), holds the master volume and mute (AUD-1.2), and links to Settings; custom tunings are entered there (`TuningEditor.svelte`) and managed on Settings.
 
 ## Storage
 
@@ -124,9 +124,15 @@ The service worker precaches the whole build (app, voicing dataset, icons, fonts
 
 ## Audio
 
-`@fretdex/audio` builds voices from oscillators and noise (a Karplus–Strong plucked string for guitar, sine-plus-saw for bass, a simple electric piano for keys) and schedules notes ahead of time on the audio clock, so strums, scale runs and progression loops stay in time. Audio starts only after a user tap (mobile browsers require one), which the first play button provides.
+`@fretdex/audio` synthesizes everything; there are no sample files (AUD-7.2).
 
-One scheduler runs everything that keeps time: scale runs, progression loops, the click and count-in, and the metronome (M04), which plays under other sounds. The tuner (M04) adds an input side: the app opens the microphone only on the tuner screen and passes its stream to the audio package, whose pitch detector runs on the phone (autocorrelation in an AudioWorklet). Nothing is recorded.
+- **Voices** (`voices.ts`): `renderNote` renders a note of a voice into samples, by plain functions that the package's Node tests check for pitch, level and decay. Guitar is a Karplus–Strong plucked string: seeded noise, notched as a pick near the bridge does, round a delay line one period long, with an allpass making up the period's fraction of a sample so every fret is in tune, and a loss set so low strings ring longer. Bass is a sine with a saw's harmonics over it that fade faster the higher they are. The keyboard is a two-operator FM electric piano with a short tine. Each note is scaled to the same peak, with headroom for six strings ringing.
+- **The engine** (`AudioEngine` in `engine.ts`) makes its `AudioContext` on the first sound, so nothing plays before a tap (AUD-1.1), and resumes it whenever a sound finds it suspended. Each rendered note is cached as an `AudioBuffer` by voice and MIDI note and played through its own gain, then the master gain (the volume squared, or 0 when muted) and a limiter. A note given a channel (`string:3`, `key:60`) cuts the one sounding on that channel with a 10 ms fade and leaves the rest ringing (AUD-1.3). `run` plays a track through the scheduler and stops every other sound, unless it's marked `under`, as the metronome will be; any new sound stops a run that isn't.
+- **The scheduler** (`Scheduler` in `scheduler.ts`) runs everything that keeps time: scale runs, progression loops, the click and count-in, and the metronome. A timer wakes it every 25 ms and it hands over each event due in the next 100 ms with its time on the audio clock, worked out from its beat and the tempo's anchor rather than by adding up gaps, so a loop never drifts and a tempo change takes effect from the next beat. Events it wakes more than 50 ms late for, as after the tab slept, are skipped. Several tracks can play at once.
+- **The iPhone silent switch** (`silent-switch.ts`): on the first sound the engine sets `navigator.audioSession.type` to `playback` where Safari has it (16.4 and later), which lets Web Audio play on silent; an older iPhone or iPad gets a silent WAV made in code, looped in a media element, which does the same (AUD-1.4).
+- **In the app**, `app/src/lib/audio/sound.ts` holds the one engine, and `playFret` and `playKey`, which the cards' fretboard and keyboard and the home page's fretboard call from their taps: a fret in the instrument's voice at the pitch it sounds, capo included (`fretMidi`, THY-4.1, CTX-3.5), on its string's channel, and a key in the electric piano on its own. The root layout keeps the engine's volume and mute in step with the settings.
+
+The tuner (M04) adds an input side: the app opens the microphone only on the tuner screen and passes its stream to the audio package, whose pitch detector runs on the phone (autocorrelation in an AudioWorklet). Nothing is recorded.
 
 ## To confirm
 
@@ -134,7 +140,7 @@ Assumptions from the brief and from what the libraries are known to offer, not y
 
 - Tonal.js's chord dictionary and roman numerals cover what M02 and M03 need. (T4 confirmed it spells notes, intervals, scales, keys and modes, double sharps and flats included, and has no tunings or fretboard, position or voicing logic.)
 - The chord dataset's voicings are for standard tuning only, so alternate tunings need computed voicings.
-- On iPhones, Web Audio is silenced by the ring/silent switch unless the page plays through a media element; check what an installed PWA does.
+- An installed Fretdex plays on an iPhone with the ring/silent switch on silent, through `navigator.audioSession` or the silent media element ([Audio](#audio)). Checked on the owner's phone once M01 T8 is deployed.
 - GitHub Pages serves `404.html` for a card's path on a fresh load as `app/scripts/serve-build.ts` does in the smoke tests, which also check that every route opens offline. Checked on the owner's phone once T6 is deployed. (T2 confirmed that `@vite-pwa/sveltekit` 2 works with SvelteKit 3 and precaches the `adapter-static` build.)
 - Tonal.js's chord detection names inversions and slash chords well enough for Identify, or `fretkit` adds the ranking.
 - chords-db covers the qualities in CHD-1.1, has fingerings, and its licence and notice are as expected.

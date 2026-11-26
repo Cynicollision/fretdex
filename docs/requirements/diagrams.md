@@ -33,7 +33,7 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 | ID | Requirement | Status |
 |---|---|---|
 | DIAG-3.1 | A small keyboard of at least two octaves shall mark the notes shown, the root distinct, and enlarge to full width when tapped. | Partial |
-| DIAG-3.2 | Tapping a key on the enlarged keyboard shall play it (AUD-4.1). | Partial |
+| DIAG-3.2 | Tapping a key on the enlarged keyboard shall play it (AUD-4.1). | Implemented |
 
 ## DIAG-4 Circle of fifths and staff
 
@@ -51,7 +51,7 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 
 ## Known gaps
 
-- **DIAG-1.6, DIAG-3.2:** a tapped fret or enlarged key is reported with its note, spelled as a lone note where the set has none, but nothing plays it until the audio engine (M01 T8), and nothing names it on screen until the scale card (M01 T9).
+- **DIAG-1.6:** a tapped fret plays its note, a dot or an empty fret alike, but nothing names it on screen until the scale card (M01 T9).
 - **DIAG-1.10:** upright, the fretboard shows a stretch with Lower and Higher over the strip, and in landscape the whole range; showing the chosen position comes with positions (M01 T9).
-- **DIAG-3.1:** the keyboard marks the notes and enlarges when tapped, on the scale and mode cards; it plays with T8.
+- **DIAG-3.1:** the keyboard marks the notes, enlarges when tapped and plays its keys, on the scale and mode cards.
 - **DIAG-5.1:** the fretboard has its compact form (`FretboardMini.svelte`); the chord box's comes in M02, and the pin tiles that show them in M01 T12.
