@@ -5,8 +5,8 @@ const ROUTES: readonly [path: string, heading: string][] = [
     ['/scales', 'Scales'],
     ['/scales/G/harmonic-minor', 'G harmonic minor'],
     ['/modes', 'Modes'],
-    ['/modes/Fs/dorian', 'F♯ Dorian'],
-    ['/modes/Eb/locrian', 'E♭ Locrian'],
+    ['/scales/Fs/dorian', 'F♯ Dorian'],
+    ['/scales/Eb/locrian', 'E♭ Locrian'],
     ['/settings', 'Settings']
 ];
 
@@ -36,22 +36,18 @@ test('APP-3.1 opens a card with its options and override, dropping what it canno
     await expect.poll(() => where(page)).toBe('/scales/G/major?nps=3&labels=notes&inst=bass&tuning=drop-d&capo=2');
 });
 
-test('APP-3.4 rewrites %23 to s, and MODE-1.7 a mode under Scales to its card under Modes', async ({ page }) => {
+test('APP-3.4 rewrites %23 to s', async ({ page }) => {
     await page.goto('/scales/F%23/major?pos=2');
     await expect(heading(page)).toHaveText('F♯ major');
     await expect.poll(() => where(page)).toBe('/scales/Fs/major?pos=2');
-
-    await page.goto('/scales/Bb/dorian');
-    await expect(heading(page)).toHaveText('B♭ Dorian');
-    await expect.poll(() => where(page)).toBe('/modes/Bb/dorian');
 });
 
 test("APP-3.5 shows Not found, with a link to the module's list, for a URL it can't read", async ({ page }) => {
-    await page.goto('/modes/H/dorian');
+    await page.goto('/scales/H/dorian');
     await expect(heading(page)).toHaveText('Not found');
     await expect(page).toHaveTitle('Not found · Fretdex');
-    await page.getByRole('link', { name: 'See all modes' }).click();
-    await expect(heading(page)).toHaveText('Modes');
+    await page.getByRole('link', { name: 'See all scales' }).click();
+    await expect(heading(page)).toHaveText('Scales');
 
     await page.goto('/nowhere');
     await expect(heading(page)).toHaveText('Not found');
@@ -92,9 +88,9 @@ test('APP-1.3 goes back where the user came from, by the back control and the br
 });
 
 test("APP-1.3 goes to the card's list from a card opened with nothing to go back to", async ({ page }) => {
-    await page.goto('/modes/A/phrygian');
+    await page.goto('/scales/A/phrygian');
     await page.getByRole('link', { name: '‹ Back' }).click();
-    await expect(heading(page)).toHaveText('Modes');
+    await expect(heading(page)).toHaveText('Scales');
 });
 
 test('APP-3.2 changes a view option in place, so back leaves the card', async ({ page }) => {
@@ -121,7 +117,7 @@ test("APP-2.3 shows a card's override in the context bar, and clears it", async 
 });
 
 test('APP-2.3 clears the override when the sheet changes the instrument, tuning or capo', async ({ page }) => {
-    await page.goto('/modes/D/dorian?tuning=dadgad');
+    await page.goto('/scales/D/dorian?tuning=dadgad');
     const banner = page.getByRole('banner');
     await expect(banner).toContainText('Guitar · DADGAD · this card');
 
@@ -132,5 +128,5 @@ test('APP-2.3 clears the override when the sheet changes the instrument, tuning 
     await sheet.getByRole('button', { name: 'Done' }).click();
 
     await expect(banner).toContainText('Guitar · Standard · Capo 1');
-    await expect.poll(() => where(page)).toBe('/modes/D/dorian');
+    await expect.poll(() => where(page)).toBe('/scales/D/dorian');
 });

@@ -37,16 +37,13 @@ export const MODULES: readonly ModuleEntry[] = [
 export const TOOLS: readonly ModuleEntry[] = [{ name: 'Identify' }, { name: 'Tuner' }, { name: 'Metronome' }];
 
 /** What a card's path names (APP-3.1). */
-export type Card =
-    | { readonly kind: 'scale'; readonly root: NoteName; readonly scale: ScaleType }
-    | { readonly kind: 'mode'; readonly root: NoteName; readonly mode: ScaleType };
+export type Card = { readonly kind: 'scale'; readonly root: NoteName; readonly scale: ScaleType };
 
 export type CardKind = Card['kind'];
 
 /** Each card's route, as SvelteKit names it. */
 export const CARD_ROUTES: Readonly<Record<string, CardKind>> = {
-    '/scales/[root]/[scale]': 'scale',
-    '/modes/[root]/[mode]': 'mode'
+    '/scales/[root]/[scale]': 'scale'
 };
 
 /**
@@ -59,30 +56,19 @@ export function readRoot(slug: string): NoteName | undefined {
     return note !== undefined && notePitchName(note) === note ? note : undefined;
 }
 
-/** A scale card, or a mode's, since each mode has one card, under Modes (MODE-1.7): `/scales/G/dorian` is G Dorian. */
+/** A scale card, the modes' included (SCL-1.1): `/scales/G/dorian` is G Dorian. */
 export function readScaleCard(root: string, scale: string): Card | undefined {
     const note = readRoot(root);
     const type = scaleType(scale);
     if (note === undefined || type === undefined) return undefined;
-    return type.group === 'modes'
-        ? { kind: 'mode', root: note, mode: type }
-        : { kind: 'scale', root: note, scale: type };
+    return { kind: 'scale', root: note, scale: type };
 }
 
-export function readModeCard(root: string, mode: string): Card | undefined {
-    const note = readRoot(root);
-    const type = scaleType(mode);
-    if (note === undefined || type?.group !== 'modes') return undefined;
-    return { kind: 'mode', root: note, mode: type };
-}
-
-/** A card's path, as the app writes it (APP-3.4): `/scales/Fs/major`, `/modes/Fs/dorian`. */
+/** A card's path, as the app writes it (APP-3.4): `/scales/Fs/major`, `/scales/Fs/dorian`. */
 export function cardPath(card: Card): string {
     switch (card.kind) {
         case 'scale':
             return `/scales/${noteSlug(card.root)}/${card.scale.id}`;
-        case 'mode':
-            return `/modes/${noteSlug(card.root)}/${card.mode.id}`;
     }
 }
 
@@ -91,8 +77,6 @@ export function cardModule(kind: CardKind): ListPath {
     switch (kind) {
         case 'scale':
             return '/scales';
-        case 'mode':
-            return '/modes';
     }
 }
 
@@ -114,8 +98,6 @@ export function cardTitle(card: Card): string {
     switch (card.kind) {
         case 'scale':
             return `${noteLabel(card.root)} ${lowerName(card.scale.name)}`;
-        case 'mode':
-            return `${noteLabel(card.root)} ${card.mode.name}`;
     }
 }
 
@@ -132,14 +114,11 @@ export interface ViewOptions {
     readonly nps?: number;
     /** The labels setting for this card alone (CTX-2.4). */
     readonly labels?: Labels;
-    /** The mode compared against, by id (MODE-2.1). */
-    readonly compare?: string;
 }
 
 /** The options each card takes, in the order its URL writes them. */
 const CARD_OPTIONS: Readonly<Record<CardKind, readonly (keyof ViewOptions)[]>> = {
-    scale: ['pos', 'nps', 'labels'],
-    mode: ['pos', 'nps', 'labels', 'compare']
+    scale: ['pos', 'nps', 'labels']
 };
 
 const LABELS: readonly Labels[] = ['notes', 'intervals', 'degrees', 'none'];
@@ -159,13 +138,10 @@ export function readViewOptions(kind: CardKind, params: QueryParams): ViewOption
     const pos = whole('pos', 5);
     const nps = pos === undefined ? whole('nps', 7) : undefined;
     const labels = takes.includes('labels') ? LABELS.find(label => label === params.get('labels')) : undefined;
-    const compareType = takes.includes('compare') ? scaleType(params.get('compare') ?? '') : undefined;
-    const compare = compareType?.group === 'modes' ? compareType.id : undefined;
     return {
         ...(pos === undefined ? {} : { pos }),
         ...(nps === undefined ? {} : { nps }),
-        ...(labels === undefined ? {} : { labels }),
-        ...(compare === undefined ? {} : { compare })
+        ...(labels === undefined ? {} : { labels })
     };
 }
 

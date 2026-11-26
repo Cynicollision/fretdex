@@ -1,6 +1,6 @@
 <!--
     Scales (SCL-1.1), as a plain list on the current key's root, or C (CTX-2.8), until the list with its root picker
-    (M01 T9). The modes open their own cards, under Modes (MODE-1.7).
+    (M01 T9).
 -->
 <script lang="ts">
     import { SCALE_TYPES, type ScaleGroup } from '@fretdex/fretkit';
@@ -20,7 +20,7 @@
 
     function items(group: ScaleGroup): { card: Card }[] {
         return SCALE_TYPES.filter(type => type.group === group).map(type => ({
-            card: type.group === 'modes' ? { kind: 'mode', root, mode: type } : { kind: 'scale', root, scale: type }
+            card: { kind: 'scale', root, scale: type }
         }));
     }
 </script>
