@@ -53,14 +53,13 @@
         degreesOf,
         readViewOptions,
         writeDegrees,
-        type Card
+        type ScaleCardRef
     } from '#lib/url/routes.ts';
     import { page } from '$app/state';
-    import { resolve } from '$app/paths';
     import { untrack } from 'svelte';
 
     interface Props {
-        card: Card;
+        card: ScaleCardRef;
     }
 
     let { card }: Props = $props();
@@ -359,7 +358,7 @@
                 </ol>
             </nav>
             <p class="muted">Brightest to darkest.</p>
-            <a class="link" href={resolve('/modes')}>All seven modes side by side</a>
+            <a class="link" href={cardHref({ kind: 'modes', root: card.root })}>All seven modes side by side</a>
             <h3>Chords</h3>
             <table>
                 <thead>

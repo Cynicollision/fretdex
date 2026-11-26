@@ -24,7 +24,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 | ID | Requirement | Status |
 |---|---|---|
-| APP-3.1 | Every card and filtered list shall have a URL that holds its full state: what it shows (path) and how (query: position, voicing, inversion, labels, string set, comparison, tempo). Opening that URL in a fresh install shall show the same view. | Partial |
+| APP-3.1 | Every card and filtered list shall have a URL that holds its full state: what it shows (path) and how (query: position, voicing, inversion, labels, string set, tempo). Opening that URL in a fresh install shall show the same view. | Partial |
 | APP-3.2 | Changing a view option (swiping to another voicing, choosing a position) shall replace the current history entry rather than add one, so back leaves the card rather than stepping through options. | Implemented |
 | APP-3.3 | Any URL may carry `inst`, `tuning` and `capo`, which override the global setting for that view only. | Implemented |
 | APP-3.4 | Sharps in paths shall be written `s` (`/scales/Fs/major`), and `%23` shall be accepted and rewritten to `s`. | Implemented |
@@ -82,7 +82,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 - **APP-1.1:** the context bar has Home; Search joins it in M03. The modules and tools later milestones build are in Home's grid, marked as coming later.
 - **APP-1.2:** Home shows the modules, so any card is two taps away through its list; pins arrive with the home board (M01 T12).
 - **APP-1.4:** the context bar is at the top of every screen; search comes in M03.
-- **APP-3.1:** every route of M01 opens from its URL with its options and override, but Modes is a list until T10 builds its overview (`/modes/[root]`, with `mode` and `compare`). The Scales list takes its root (`root`).
+- **APP-3.1:** every route of M01 opens from its URL with its options and override, and the Scales list takes its root (`root`); the chord, triad and progression options come with their modules (M02, M03).
 - **APP-4.1:** the app opens at a placeholder page until the home board (PIN-2, M01 T12).
 - **APP-5.3, APP-6.2:** the three themes' colours and the type scale are design tokens, and a unit test checks every text pair's contrast, but most of the screens and diagrams that use them come with M01's later tasks.
-- **APP-6.4:** the fretboard, its compact form and the keyboard have text alternatives; the chord box (M02), circle and staff (M03) will need theirs.
+- **APP-6.4:** the fretboard, its compact form, the Modes overview's necks and the keyboard have text alternatives; the chord box (M02), circle and staff (M03) will need theirs.

@@ -14,7 +14,7 @@
     import { replaceQuery } from '#lib/url/navigate.ts';
     import { readListRoot, writeListQuery } from '#lib/url/routes.ts';
     import { page } from '$app/state';
-    import { resolve } from '$app/paths';
+    import { cardHref } from '#lib/url/href.ts';
     import { onMount } from 'svelte';
 
     // The query is read once the page has hydrated: the list is prerendered, with no query (architecture's Routes).
@@ -63,8 +63,10 @@
         <section aria-labelledby="group-{group.id}">
             <h2 id="group-{group.id}">{group.name}</h2>
             <CardList items={group.cards.map(card => ({ card }))} />
-            {#if group.id === 'modes'}
-                <a class="link" href={resolve('/modes')}>All seven modes side by side</a>
+            {#if group.id === 'modes' && group.cards[0]}
+                <a class="link" href={cardHref({ kind: 'modes', root: group.cards[0].root })}>
+                    All seven modes side by side
+                </a>
             {/if}
         </section>
     {/each}

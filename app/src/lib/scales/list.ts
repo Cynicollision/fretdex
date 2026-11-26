@@ -8,7 +8,7 @@ import {
 } from '@fretdex/fretkit';
 import { modeScale } from '#lib/settings/key.ts';
 import type { CurrentKey } from '#lib/settings/settings.ts';
-import type { Card } from '#lib/url/routes.ts';
+import type { ScaleCardRef } from '#lib/url/routes.ts';
 
 /** The Scales list's groups, in order (SCL-1.1). */
 export const SCALE_GROUPS: readonly { readonly id: ScaleGroup; readonly name: string }[] = [
@@ -23,8 +23,12 @@ export interface ScaleList {
     /** The root's pitch class, which the picker shows chosen. */
     readonly pitchClass: number;
     /** The current key's own scale, listed first, when the list is on the key's root (SCL-1.2). */
-    readonly keyCard?: Card;
-    readonly groups: readonly { readonly id: ScaleGroup; readonly name: string; readonly cards: readonly Card[] }[];
+    readonly keyCard?: ScaleCardRef;
+    readonly groups: readonly {
+        readonly id: ScaleGroup;
+        readonly name: string;
+        readonly cards: readonly ScaleCardRef[];
+    }[];
 }
 
 /**
@@ -36,7 +40,7 @@ export function scaleList(root: NoteName | undefined, key: CurrentKey | null, ac
     const pitchClass = notePitchClass(root ?? key?.root ?? 'C');
     const onKey = key !== null && notePitchClass(key.root) === pitchClass;
     const keyType = onKey ? modeScale(key.mode) : undefined;
-    const card = (type: (typeof SCALE_TYPES)[number]): Card => ({
+    const card = (type: (typeof SCALE_TYPES)[number]): ScaleCardRef => ({
         kind: 'scale',
         root: onKey && type === keyType ? key.root : rootChoices(pitchClass, type, accidentals).root,
         scale: type

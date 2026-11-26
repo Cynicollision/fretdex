@@ -55,11 +55,13 @@ export {
 export { mapKeyboard, mapScale, type FretboardCell, type FretRange, type MappedNote } from './fretboard';
 export {
     BRIGHTNESS,
+    changedFrom,
     diatonicChords,
     modeInfo,
     parentRoot,
     stepFormula,
     type DiatonicChord,
+    type ModeChange,
     type ModeInfo
 } from './mode';
 export { scalePositions, type CagedShape, type Position, type PositionGroup, type PositionKind } from './position';

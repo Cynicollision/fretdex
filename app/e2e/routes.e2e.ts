@@ -4,7 +4,8 @@ import { expect, test, type Page } from '@playwright/test';
 const ROUTES: readonly [path: string, heading: string][] = [
     ['/scales', 'Scales'],
     ['/scales/G/harmonic-minor', 'G harmonic minor'],
-    ['/modes', 'Modes'],
+    ['/modes', 'Modes on C'],
+    ['/modes/Fs', 'Modes on F♯'],
     ['/scales/Fs/dorian', 'F♯ Dorian'],
     ['/scales/Eb/locrian', 'E♭ Locrian'],
     ['/settings', 'Settings']
@@ -82,7 +83,7 @@ test('APP-1.3 goes back where the user came from, by the back control and the br
     await expect(heading(page)).toHaveText('C Dorian');
 
     await page.getByRole('link', { name: '‹ Back' }).click();
-    await expect(heading(page)).toHaveText('Modes');
+    await expect(heading(page)).toHaveText('Modes on C');
     await page.goBack();
     await expect(heading(page)).toHaveText('Fretdex');
 });
