@@ -59,7 +59,18 @@ test('MODE-1.10 changes the key in place, and /modes opens on C with no key', as
     await expect(rows(page).nth(1)).toContainText('A♭ Dorian');
 });
 
+test('THY-2.5 offers the usual spelling of a key the picker does not offer', async ({ page }) => {
+    await page.goto('/modes/Gs');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Modes of G♯ major');
+    await page.getByText('Key: G♯ major').click();
+    await expect(page.getByRole('radio', { checked: true, name: 'A♭' })).toHaveCount(0);
+    await page.getByRole('link', { name: 'Open Modes of A♭ major' }).click();
+    await expect.poll(() => where(page)).toBe('/modes/Ab');
+});
+
 test('APP-3.5 shows Not found for a key it cannot read', async ({ page }) => {
     await page.goto('/modes/H');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Not found');
+    await page.goto('/modes/Gss');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Not found');
 });

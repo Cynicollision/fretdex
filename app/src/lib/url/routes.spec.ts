@@ -70,6 +70,10 @@ describe('the Modes overview', () => {
         expect(path(readModesCard('bb'))).toBe('/modes/Bb');
         expect(title(readModesCard('Fs'))).toBe('Modes of F♯ major');
         expect(readModesCard('H')).toBeUndefined();
+        // G𝄪 major's 7th, and so its Locrian's root, would be F♯𝄪.
+        expect(readModesCard('Gss')).toBeUndefined();
+        expect(readModesCard('Fbb')).toBeUndefined();
+        expect(path(readModesCard('Gs'))).toBe('/modes/Gs');
         expect(readModesCard('E2')).toBeUndefined();
     });
 

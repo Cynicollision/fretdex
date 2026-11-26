@@ -5,7 +5,15 @@
     (`/modes/Db`), or on `/modes` the current key's parent major, or C (MODE-1.10).
 -->
 <script lang="ts">
-    import { intervalLabel, noteLabel, notePitchClass, rootChoices, scaleType, type NoteName } from '@fretdex/fretkit';
+    import {
+        intervalLabel,
+        noteLabel,
+        notePitchClass,
+        rootChoices,
+        scaleType,
+        simplerRoot,
+        type NoteName
+    } from '@fretdex/fretkit';
     import Choice from '#lib/components/Choice.svelte';
     import ModeNeck from '#lib/components/ModeNeck.svelte';
     import Screen from '#lib/components/Screen.svelte';
@@ -26,7 +34,7 @@
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { readOverride, viewContext } from '#lib/url/context.ts';
     import { cardHref } from '#lib/url/href.ts';
-    import { replaceCard } from '#lib/url/navigate.ts';
+    import { replaceCard, setViewOption } from '#lib/url/navigate.ts';
     import { cardPath, cardTitle, readViewOptions, withViewOption, writeQuery, type Card } from '#lib/url/routes.ts';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
@@ -63,17 +71,22 @@
     const buttons = rootButtons(major);
     const keyOptions = buttons.map(button => ({ value: String(button.pitchClass), label: button.label }));
     const pitchClass = $derived(notePitchClass(key));
+    // A linked key the picker doesn't offer (G♯ major) leaves every button unchosen, so A♭ is one tap (THY-2.5).
+    const chosenKey = $derived(buttons.some(button => button.spellings.includes(key)) ? String(pitchClass) : '');
     const otherSpelling = $derived(
         buttons.find(button => button.pitchClass === pitchClass)?.spellings.find(spelling => spelling !== key)
     );
+    const simpler = $derived(simplerRoot(key, major));
     function openKey(next: NoteName) {
         void replaceCard({ kind: 'modes', root: next }, mounted ? page.url.search : '');
     }
 
-    // Labels for every row at once (MODE-1.15). On `/modes` this moves to the key's own path, which holds options.
+    // Labels for every row at once (MODE-1.15), changed in place, keeping scroll and focus (APP-3.2). On `/modes`
+    // this moves to the key's own path, as only a card route holds options.
     function setLabels(next: Labels) {
         const value = next === settings.current.labels ? undefined : next;
-        void replaceCard(card, withViewOption('modes', params, settings.current, 'labels', value));
+        if (root !== undefined) void setViewOption(page.url, 'modes', settings.current, 'labels', value);
+        else void replaceCard(card, withViewOption('modes', params, settings.current, 'labels', value));
     }
 
     /** A row's link: the mode's card on the position the row shows, keeping the override (MODE-1.7, APP-1.5). */
@@ -86,6 +99,17 @@
 <Screen {title} back="/">
     <p class="muted">The same notes from each degree of {noteLabel(key)} major. Tap a mode to open it.</p>
 
+    {#if simpler}
+        <div class="note">
+            <p>
+                {noteLabel(key)} major needs a double sharp or flat; it's usually written as {noteLabel(simpler)} major.
+            </p>
+            <a class="link" href={cardHref({ kind: 'modes', root: simpler })}>
+                Open {cardTitle({ kind: 'modes', root: simpler })}
+            </a>
+        </div>
+    {/if}
+
     <details class="key">
         <summary>Key: {noteLabel(key)} major <span class="change">Change</span></summary>
         <div class="key-picker">
@@ -93,7 +117,7 @@
                 legend="Key"
                 name="modes-key"
                 options={keyOptions}
-                value={String(pitchClass)}
+                value={chosenKey}
                 columns={4}
                 hideLegend
                 onchange={value => openKey(rootChoices(Number(value), major, settings.current.accidentals).root)}
@@ -127,7 +151,7 @@
             {@const slice = stepSlice(row)}
             <li>
                 <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- a resolved card path, with its query -->
-                <a href={rowHref(row, position !== undefined)} aria-describedby="{id}-neck">
+                <a href={rowHref(row, position !== undefined)} aria-describedby={position ? `${id}-neck` : undefined}>
                     <span class="head">
                         <span class="name"><span class="numeral">{row.numeral}</span> {name}</span>
                         <span class="muted">{characteristicLine(row)}</span>
@@ -175,6 +199,22 @@
 
     .muted {
         color: var(--muted);
+    }
+
+    .note {
+        display: grid;
+        padding: 8px 12px;
+        border-left: 3px solid var(--accent);
+        background: var(--surface);
+    }
+
+    .link {
+        display: inline-flex;
+        align-items: center;
+        min-height: var(--tap);
+        justify-self: start;
+        color: var(--accent);
+        font-size: var(--text-m);
     }
 
     .key summary {

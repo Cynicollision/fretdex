@@ -1,4 +1,5 @@
 import {
+    noteAlteration,
     noteLabel,
     notePitchName,
     noteSlug,
@@ -70,10 +71,13 @@ export function readScaleCard(root: string, scale: string): ScaleCardRef | undef
     return { kind: 'scale', root: note, scale: type };
 }
 
-/** The Modes overview of a major key (MODE-1.10): `/modes/Db` shows the modes of D♭ major. */
+/**
+ * The Modes overview of a major key (MODE-1.10): `/modes/Db` shows the modes of D♭ major. A key with a double sharp
+ * or flat isn't read, as some of its modes' roots would need a triple one, which no card can open.
+ */
 export function readModesCard(root: string): Card | undefined {
     const note = readRoot(root);
-    return note === undefined ? undefined : { kind: 'modes', root: note };
+    return note === undefined || Math.abs(noteAlteration(note)) > 1 ? undefined : { kind: 'modes', root: note };
 }
 
 /** A card's path, as the app writes it (APP-3.4): `/scales/Fs/major`, `/scales/Fs/dorian`, `/modes/Fs`. */
