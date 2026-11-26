@@ -408,4 +408,21 @@ describe('FretboardMini', () => {
         expect(svg.element().querySelectorAll('.root')).toHaveLength(cells.filter(cell => cell.degree === 1).length);
         expect(svg.element().querySelectorAll('.note')).toHaveLength(cells.filter(cell => cell.degree !== 1).length);
     });
+
+    it("DIAG-5.1 draws only a position's notes when given them", async () => {
+        cleanup();
+        const set = noteSet('A', ['1P', '3m', '5P']);
+        const cells = mapScale(STANDARD, set, { from: 5, to: 8 }).filter(cell => cell.string >= 5);
+        await render(FretboardMini, {
+            tuning: STANDARD,
+            set,
+            range: { from: 5, to: 8 },
+            cells,
+            handedness: 'right',
+            title: 'A minor triad on the low strings'
+        });
+
+        const svg = page.getByRole('img', { name: 'A minor triad on the low strings' }).element();
+        expect(svg.querySelectorAll('.root, .note')).toHaveLength(cells.length);
+    });
 });

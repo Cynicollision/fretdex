@@ -10,7 +10,7 @@ Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, op
 |---|---|---|
 | SCL-1.1 | The list shall offer a root picker and about 20 scales, grouped as **Major and minor** (major, natural minor, harmonic minor, melodic minor ascending), **Pentatonic and blues** (major and minor pentatonic, major and minor blues), **Modes** (the seven modes of the major scale, brightest first, SCL-5, with a link to the Modes overview, MODE-1) and **Other** (Phrygian dominant, Lydian dominant, altered, whole tone, half-whole and whole-half diminished). | Implemented |
 | SCL-1.2 | With a current key, the list shall open each scale on the key's root, with the key's own scale first. | Implemented |
-| SCL-1.3 | Pinned scales shall be listed first (PIN-3). | Planned |
+| SCL-1.3 | Pinned scales shall be listed first (PIN-3). | Implemented |
 
 ## SCL-2 The card shows the scale on the whole neck
 
@@ -54,5 +54,4 @@ For the seven modes of the major scale (MODE-1.7), which have no card of their o
 
 ## Known gaps
 
-- **SCL-1.3:** pinned scales aren't listed first until pins exist (M01 T12).
 - **SCL-5.3:** the chords are listed by name, without links, until chord cards exist (M02).

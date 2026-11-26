@@ -71,9 +71,25 @@ function readPin(value: unknown): Pin | undefined {
     if (typeof value !== 'object' || value === null) return undefined;
     const { id, url, label } = value as { id?: unknown; url?: unknown; label?: unknown };
     if (typeof id !== 'string' || id === '' || typeof url !== 'string' || typeof label !== 'string') return undefined;
-    if (!url.startsWith('/') || url.startsWith('//') || url.length > MAX_PIN_URL) return undefined;
+    if (!isOwnPath(url)) return undefined;
     const trimmed = cleanLabel(label);
     return trimmed === '' ? undefined : { id, url, label: trimmed };
+}
+
+const ORIGIN = 'https://fretdex.invalid';
+
+/**
+ * Whether a URL is a path on this site: from `/`, and with no backslash or control character, which a browser reads
+ * past (`/\evil.example` and `/<tab>/evil.example` open another site), so a stored or imported pin can't link away.
+ */
+function isOwnPath(url: string): boolean {
+    // eslint-disable-next-line no-control-regex -- control characters are what it looks for
+    if (url.length > MAX_PIN_URL || !url.startsWith('/') || /[\u0000-\u001f\u007f\\]/u.test(url)) return false;
+    try {
+        return new URL(url, ORIGIN).origin === ORIGIN;
+    } catch {
+        return false;
+    }
 }
 
 /** A label as a pin keeps it: trimmed, and cut to `MAX_PIN_LABEL`. */

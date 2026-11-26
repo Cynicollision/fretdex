@@ -10,10 +10,23 @@
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { cardHref } from '#lib/url/href.ts';
     import { resolve } from '$app/paths';
+    import { untrack } from 'svelte';
     import FretboardMini from './FretboardMini.svelte';
     import Sheet from './Sheet.svelte';
 
     const board = $derived(pins.current.pins);
+
+    // A tile reads only the instrument, tuning and capo of the settings (`pinTile`), so the tiles are drawn again
+    // when those change, not when the volume slides or the theme changes.
+    const tileContext = $derived(
+        [settings.current.instrument, settings.current.tuning.join('-'), String(settings.current.capo)].join(' ')
+    );
+    const tiles = $derived.by(() => {
+        void tileContext;
+        const saved = customTunings.current;
+        const current = untrack(() => settings.current);
+        return new Map(board.map(pin => [pin.id, pinTile(pin.url, current, saved)]));
+    });
 
     /** Where a tile goes: its view's path, resolved against its route, with the pin's query. */
     function href(pin: Pin): string {
@@ -44,7 +57,7 @@
 
 <ul class="board">
     {#each board as pin (pin.id)}
-        {@const tile = pinTile(pin.url, settings.current, customTunings.current)}
+        {@const tile = tiles.get(pin.id) ?? {}}
         <li class="tile">
             <!-- The pin's own path and query, resolved against its route where this version knows it (`href`). -->
             <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- see above -->

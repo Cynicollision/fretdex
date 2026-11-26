@@ -17,19 +17,27 @@
     let { view }: Props = $props();
 
     const target = $derived(pinTarget(view, page.url.searchParams, settings.current));
-    const mine = $derived(pins.of(pinIdentity(target.url)));
+    const identity = $derived(pinIdentity(target.url));
+    const mine = $derived(pins.of(identity));
     const exact = $derived(mine.find(pin => pin.url === target.url));
     // Unpin takes this view's pin, or the card's only one, or else all of them.
     const unpinning = $derived(exact ? [exact] : mine);
     const noun = $derived(view.kind === 'card' ? 'card' : 'list');
     let open = $state(false);
 
+    // The sheet is about one card: it closes when the screen moves to another, as back does on the same route.
+    $effect(() => {
+        void identity;
+        return () => (open = false);
+    });
+
     function pin() {
         void pins.add(target);
     }
 </script>
 
-{#if pins.loaded}
+<!-- Once the settings have loaded too, as a pin takes their instrument, tuning and capo (PIN-1.4). -->
+{#if pins.loaded && settings.loaded}
     {#if mine.length === 0}
         <button type="button" class="pin" onclick={pin}>
             <span class="icon" aria-hidden="true">☆</span> Pin
@@ -41,7 +49,7 @@
     {/if}
 {/if}
 
-<Sheet {open} title="Pinned" onclose={() => (open = false)}>
+<Sheet open={open && mine.length > 0} title="Pinned" onclose={() => (open = false)}>
     <p>
         {#if exact}
             This view is on Home.
