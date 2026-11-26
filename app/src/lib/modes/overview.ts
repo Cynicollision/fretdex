@@ -107,7 +107,7 @@ export function characteristicLine(row: ModeRow): string {
 }
 
 /**
- * A mode's parent major key, as the key picker would spell it (MODE-1.10): C for D Dorian, and G♯ Dorian's B, not A♯.
+ * A mode's parent major key, as the key picker would spell it (MODE-1.10): C for D Dorian, and for A♯ Dorian A♭, not G♯.
  * A scale that isn't a mode of the major scale is taken as Ionian.
  */
 export function parentKey(root: NoteName, mode: ScaleType, accidentals: Accidentals): NoteName {

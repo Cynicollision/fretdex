@@ -18,7 +18,7 @@ A domain may end with **Open questions**, each with a **default**: what gets bui
 | `SCL` | Scales and positions: full neck, CAGED, 3-notes-per-string, bass boxes | [scales.md](scales.md) |
 | `ARP` | Arpeggios (retired) | [arpeggios.md](arpeggios.md) |
 | `TRI` | Triads and string sets | [triads.md](triads.md) |
-| `MODE` | Modes side by side from one root | [modes.md](modes.md) |
+| `MODE` | The seven modes of a major scale, side by side | [modes.md](modes.md) |
 | `KEY` | Keys and the circle of fifths | [keys.md](keys.md) |
 | `PROG` | Progressions | [progressions.md](progressions.md) |
 | `INT` | Intervals and notes (retired) | [intervals.md](intervals.md) |
