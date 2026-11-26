@@ -17,10 +17,10 @@ What every module relies on from the theory engine (`fretkit`): notes spelled co
 | ID | Requirement | Status |
 |---|---|---|
 | THY-2.1 | With accidentals on **Auto**, a key or scale on a black-key root shall use the spelling with fewer accidentals in its signature: Db major (5 flats), not C# major (7 sharps). A mode is read in its parent key; harmonic and melodic minor and the minor pentatonic and blues in the minor key on their root; the major pentatonic and blues in the major key; scales with no key of their own (Phrygian dominant, Lydian dominant, altered, whole tone, the diminished scales) by their own notes. At a tie, sharps for a scale read in a key with a major 3rd and flats for one with a minor 3rd: at the tie of six, F# major and Eb minor, the spellings guitar charts use most, and likewise C# Mixolydian and Ab Dorian. A root the user typed or linked to is kept as written. | Implemented |
-| THY-2.2 | Root pickers shall offer the 12 roots as C, C#/Db, D, D#/Eb, E, F, F#/Gb, G, G#/Ab, A, A#/Bb, B, each opening the spelling **Auto** prefers, with the other spelling one tap away. A black key's button shows both names, so what opens is always a name that was tapped (owner, 2026-11-25). | Partial |
+| THY-2.2 | Root pickers shall offer the 12 roots as C, C#/Db, D, D#/Eb, E, F, F#/Gb, G, G#/Ab, A, A#/Bb, B, each opening the spelling **Auto** prefers, with the other spelling one tap away. A black key's button shows both names, so what opens is always a name that was tapped (owner, 2026-11-25). | Implemented |
 | THY-2.3 | **Prefer sharps** and **Prefer flats** shall decide the spelling of roots and of lone notes (fretboard note names with no key), never respelling a key's own notes. On **Auto** a lone black-key note is C#, Eb, F#, Ab or Bb. | Implemented |
 | THY-2.4 | Every note shall show its enharmonic equivalent where asked (INT-3). Retired 2026-11-25: the note card that asked went with Intervals and notes (INT); a root's other spelling is THY-2.2's and THY-2.5's. | Retired |
-| THY-2.5 | A root whose key would need double sharps or flats (A# Dorian, whose parent is G# major) shall never be offered in a root picker when its other spelling's key wouldn't. Reached by a link or search, its card shall show as asked, with a note offering the enharmonic (Bb Dorian). Where both spellings of a black key need them (C# or Db altered), only the one **Auto** prefers is offered, whatever the accidentals setting, and its card says why (SCL-2.6); a white key's letter is always offered, as its button's only spelling. | Partial |
+| THY-2.5 | A root whose key would need double sharps or flats (A# Dorian, whose parent is G# major) shall never be offered in a root picker when its other spelling's key wouldn't. Reached by a link or search, its card shall show as asked, with a note offering the enharmonic (Bb Dorian). Where both spellings of a black key need them (C# or Db altered), only the one **Auto** prefers is offered, whatever the accidentals setting, and its card says why (SCL-2.6); a white key's letter is always offered, as its button's only spelling. | Implemented |
 
 ## THY-3 Tunings are lists of strings
 
@@ -41,8 +41,7 @@ What every module relies on from the theory engine (`fretkit`): notes spelled co
 ## Known gaps
 
 - **THY-1.2:** `fretkit` spells any chord formula from its root, but its chord qualities come with chords in M02.
-- **THY-1.5:** `fretkit` reads typed notes and writes them with ♯ ♭ 𝄪 𝄫, and the app bundles a font that has them, and the context bar shows keys and tunings with them, but nothing takes typed notes yet: cards come in M01 T9, search in M03.
-- **THY-2.2 and THY-2.5:** the context bar's key picker offers roots this way; the cards' root pickers come with the cards (M01 T9).
+- **THY-1.5:** `fretkit` reads typed notes and writes them with ♯ ♭ 𝄪 𝄫, and the app bundles a font that has them, and the context bar shows keys and tunings with them, but nothing takes typed notes yet: search comes in M03.
 
 ## Notes
 

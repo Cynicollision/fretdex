@@ -49,6 +49,8 @@
         dimmed?: (cell: FretboardCell) => boolean;
         /** Notes to draw outlined, such as a scale's notes outside a chord (DIAG-1.7). */
         outlined?: (cell: FretboardCell) => boolean;
+        /** Notes to ring, such as a mode's characteristic note (SCL-5.1), leaving the rest as they are. */
+        marked?: (cell: FretboardCell) => boolean;
         ontap?: (tapped: TappedFret) => void;
     }
 
@@ -63,6 +65,7 @@
         accidentals = 'auto',
         dimmed,
         outlined,
+        marked,
         ontap
     }: Props = $props();
 
@@ -281,15 +284,20 @@
                     {@const r = SIZES.dot / 2}
                     {@const root = cell.degree === 1}
                     {@const ring = !root && (outlined?.(cell) ?? false)}
+                    {@const mark = marked?.(cell) ?? false}
                     <g
                         class="dot"
                         class:root
                         class:ring
+                        class:marked={mark}
                         class:dim={dimmed?.(cell) ?? false}
                         data-string={cell.string}
                         data-fret={cell.fret}
                         data-note={cell.note}
                     >
+                        {#if mark}
+                            <circle class="mark" cx={x} cy={y} r={r + 4} />
+                        {/if}
                         {#if root}
                             <rect x={x - r} y={y - r} width={SIZES.dot} height={SIZES.dot} rx="4" />
                         {:else if ring}
@@ -402,6 +410,12 @@
 
     .dot.ring text {
         fill: var(--note);
+    }
+
+    .dot circle.mark {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 3;
     }
 
     .dot.dim {

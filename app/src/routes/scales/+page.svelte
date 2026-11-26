@@ -1,35 +1,71 @@
 <!--
-    Scales (SCL-1.1), as a plain list on the current key's root, or C (CTX-2.8), until the list with its root picker
-    (M01 T9).
+    Scales (SCL-1.1): a root picker, then every scale in its group on that root, with the current key's own scale
+    first when the list is on the key's root (SCL-1.2). The root is the query's (`?root=Eb`), else the key's, else C
+    (CTX-2.8).
 -->
 <script lang="ts">
-    import { SCALE_TYPES, type ScaleGroup } from '@fretdex/fretkit';
+    import { PICKER_ROOTS, noteLabel, spellPitchClass } from '@fretdex/fretkit';
     import CardList from '#lib/components/CardList.svelte';
+    import Choice from '#lib/components/Choice.svelte';
     import Screen from '#lib/components/Screen.svelte';
+    import { scaleList } from '#lib/scales/list.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
-    import type { Card } from '#lib/url/routes.ts';
+    import { readOverride } from '#lib/url/context.ts';
+    import { replaceQuery } from '#lib/url/navigate.ts';
+    import { readListRoot, writeListQuery } from '#lib/url/routes.ts';
+    import { page } from '$app/state';
+    import { resolve } from '$app/paths';
+    import { onMount } from 'svelte';
 
-    const GROUPS: readonly { id: ScaleGroup; name: string }[] = [
-        { id: 'major-and-minor', name: 'Major and minor' },
-        { id: 'pentatonic-and-blues', name: 'Pentatonic and blues' },
-        { id: 'modes', name: 'Modes' },
-        { id: 'other', name: 'Other' }
-    ];
+    // The query is read once the page has hydrated: the list is prerendered, with no query (architecture's Routes).
+    let mounted = $state(false);
+    onMount(() => {
+        mounted = true;
+    });
+    const root = $derived(mounted ? readListRoot(page.url.searchParams) : undefined);
+    const list = $derived(scaleList(root, settings.current.key, settings.current.accidentals));
+    const rootOptions = PICKER_ROOTS.map(root => ({
+        value: String(root.pitchClass),
+        label: root.spellings.map(noteLabel).join('/')
+    }));
 
-    const root = $derived(settings.current.key?.root ?? 'C');
-
-    function items(group: ScaleGroup): { card: Card }[] {
-        return SCALE_TYPES.filter(type => type.group === group).map(type => ({
-            card: { kind: 'scale', root, scale: type }
-        }));
+    function setRoot(value: string) {
+        const pitchClass = Number(value);
+        const key = settings.current.key;
+        // The key's root needs no query: the list opens there (SCL-1.2).
+        const root =
+            key !== null && PICKER_ROOTS[pitchClass]?.spellings.some(spelling => spelling === key.root)
+                ? undefined
+                : spellPitchClass(pitchClass, settings.current.accidentals);
+        void replaceQuery(
+            page.url,
+            writeListQuery('/scales', root, readOverride(page.url.searchParams, settings.current))
+        );
     }
 </script>
 
 <Screen title="Scales" back="/">
-    {#each GROUPS as group (group.id)}
+    <Choice
+        legend="Root"
+        name="scales-root"
+        options={rootOptions}
+        value={String(list.pitchClass)}
+        columns={4}
+        onchange={setRoot}
+    />
+    {#if list.keyCard}
+        <section aria-labelledby="group-key">
+            <h2 id="group-key">Current key</h2>
+            <CardList items={[{ card: list.keyCard }]} />
+        </section>
+    {/if}
+    {#each list.groups as group (group.id)}
         <section aria-labelledby="group-{group.id}">
             <h2 id="group-{group.id}">{group.name}</h2>
-            <CardList items={items(group.id)} />
+            <CardList items={group.cards.map(card => ({ card }))} />
+            {#if group.id === 'modes'}
+                <a class="link" href={resolve('/modes')}>All seven modes side by side</a>
+            {/if}
         </section>
     {/each}
 </Screen>
@@ -38,5 +74,14 @@
     section {
         display: grid;
         gap: 8px;
+    }
+
+    .link {
+        display: inline-flex;
+        align-items: center;
+        min-height: var(--tap);
+        justify-self: start;
+        color: var(--accent);
+        font-size: var(--text-m);
     }
 </style>

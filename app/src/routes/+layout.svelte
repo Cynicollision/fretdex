@@ -11,7 +11,7 @@
     import { isInstalled, requestPersistence } from '#lib/storage/persist.ts';
     import { readOverride, type ContextOverride } from '#lib/url/context.ts';
     import { clearOverride, replaceQuery } from '#lib/url/navigate.ts';
-    import { CARD_ROUTES, canonicalQuery } from '#lib/url/routes.ts';
+    import { CARD_ROUTES, LIST_ROUTES, canonicalQuery } from '#lib/url/routes.ts';
     import { keepScreenAwake } from '#lib/wake-lock.ts';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
@@ -40,7 +40,8 @@
     $effect(() => {
         if (!ready || page.error) return;
         const kind = page.route.id === null ? undefined : CARD_ROUTES[page.route.id];
-        const query = canonicalQuery(kind, page.url.searchParams, settings.current);
+        const list = page.route.id === null ? undefined : LIST_ROUTES[page.route.id];
+        const query = canonicalQuery(kind, page.url.searchParams, settings.current, list);
         if (query !== page.url.search) void replaceQuery(page.url, query);
     });
 

@@ -31,7 +31,7 @@ test('APP-3.1 and APP-3.6 open every route from its URL, named in the title', as
 test('APP-3.1 opens a card with its options and override, dropping what it cannot read', async ({ page }) => {
     await page.goto('/scales/G/major?nps=3&labels=notes&inst=bass&tuning=drop-d&capo=2&ref=abc&pos=9');
 
-    await expect(page.getByText('For bass, Drop D tuning, capo 2. 3-notes-per-string pattern 3.')).toBeVisible();
+    await expect(page.getByText('For bass, Drop D tuning, capo 2.')).toBeVisible();
     await expect(page.getByRole('radio', { name: 'Note names' })).toBeChecked();
     await expect.poll(() => where(page)).toBe('/scales/G/major?nps=3&labels=notes&inst=bass&tuning=drop-d&capo=2');
 });

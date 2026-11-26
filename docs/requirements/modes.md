@@ -15,7 +15,7 @@ Screens: **Modes** (`/modes`, on the current key's root, and `/modes/[root]`, op
 | MODE-1.5 | Retired 2026-11-25: the diatonic chords are on the mode's scale card (SCL-5.3). | Retired |
 | MODE-1.6 | Retired 2026-11-25: the overview keeps the brightness order; a mode is pinned from its scale card, and pinned scales are listed first (SCL-1.3). | Retired |
 | MODE-1.7 | Each mode shall have one card, its scale card (`/scales/[root]/dorian`): the overview's rows and the Scales list's **Modes** group link to it. | Implemented |
-| MODE-1.8 | Modes of harmonic and melodic minor (Phrygian dominant, Lydian dominant, altered) shall be scales (SCL-1.1), not in the overview, and their cards without SCL-5. | Planned |
+| MODE-1.8 | Modes of harmonic and melodic minor (Phrygian dominant, Lydian dominant, altered) shall be scales (SCL-1.1), not in the overview, and their cards without SCL-5. | Implemented |
 | MODE-1.9 | Each row shall mark the note that changes from the row above (Ionian's 4 against Lydian's #4) and name the mode's characteristic note (Dorian's natural 6). | Planned |
 | MODE-1.10 | The overview shall offer a root picker, the root being the path's (`/modes/Fs`). `/modes` opens on the current key's root, or C (CTX-2.8). | Planned |
 | MODE-1.11 | The user can select a row (`mode`), and the overview shows that mode under the grid, across the fret range on the current tuning (DIAG-1), with its characteristic note highlighted. With none chosen, it's the current key's mode when that's on this root, else Ionian. | Planned |
