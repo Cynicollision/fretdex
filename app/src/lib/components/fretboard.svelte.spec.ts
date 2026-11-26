@@ -166,6 +166,28 @@ describe('Fretboard', () => {
         expect(dot(5, 3)?.classList.contains('ring')).toBe(false); // C, the root, never outlined
     });
 
+    it('AUD-3.2 lights the playing note, even where it is dimmed, leaving the rest as they are', async () => {
+        cleanup();
+        await page.viewport(WIDE, 800);
+        await render(Fretboard, {
+            tuning: STANDARD,
+            set: scale('C', 'major'),
+            range: { from: 0, to: 5 },
+            labels: 'notes',
+            handedness: 'right',
+            title: 'C major',
+            dimmed: (cell: FretboardCell) => cell.fret > 3,
+            playing: { string: 6, fret: 5 }
+        });
+
+        const lit = dot(6, 5);
+        expect(lit?.classList.contains('playing')).toBe(true);
+        expect(lit?.classList.contains('dim')).toBe(false);
+        expect(lit?.querySelector('circle.halo')).not.toBeNull();
+        expect(document.querySelectorAll('.dot.playing')).toHaveLength(1);
+        expect(dot(5, 5)?.classList.contains('dim')).toBe(true);
+    });
+
     it('SCL-5.1 rings a mode’s characteristic note, dimming nothing', async () => {
         cleanup();
         await page.viewport(WIDE, 800);

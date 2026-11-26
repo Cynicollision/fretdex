@@ -31,7 +31,7 @@ Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, op
 | SCL-3.2 | For seven-note scales, the card shall offer seven 3-notes-per-string patterns, one starting on each degree on the lowest string, numbered by that degree and stepped through up the neck, the choice being `nps`. | Implemented |
 | SCL-3.3 | For pentatonic and blues scales in standard tuning, the card shall offer the five pentatonic boxes, two notes on each string, with the blue note added in the blues scales wherever it falls within the box's frets. They're numbered as traditionally taught, Box 1 having the minor pentatonic's root on the lowest string and the rest following up the neck, the major pentatonic sharing its relative minor's numbers, and named by their relative major's CAGED shape (owner, 2026-11-25). Each is placed as low as it fits and they're stepped through up the neck; the choice is `pos`. | Implemented |
 | SCL-3.4 | Each position shall name its shape ("Position 2 · E shape"; for a mode, "Position 3 · G shape of C major"; a 3-notes-per-string pattern, "Pattern 3 · from the ♭3"). Its frets are read off the neck's numbers, and named in the fretboard's text alternative (owner, 2026-11-25). | Implemented |
-| SCL-3.5 | The user can step through positions with previous and next, and each position plays on its own (AUD-3). The choice is above the neck: **Full neck**, then the kinds the scale offers (**CAGED** or **Boxes**, and **3 per string**), then Previous, the position's name and Next (owner, 2026-11-25). Highlighted degrees (SCL-2.3) work within the position. | Partial |
+| SCL-3.5 | The user can step through positions with previous and next, and each position plays on its own (AUD-3). The choice is above the neck: **Full neck**, then the kinds the scale offers (**CAGED** or **Boxes**, and **3 per string**), then Previous, the position's name and Next (owner, 2026-11-25). Highlighted degrees (SCL-2.3) work within the position. | Implemented |
 | SCL-3.6 | In tunings other than standard, CAGED positions and pentatonic boxes shall be hidden, leaving the 3-notes-per-string patterns and the full neck. A capo isn't another tuning: positions move up with it, so only those at or above the capo are offered. | Implemented |
 | SCL-3.7 | Scales that are neither seven-note nor pentatonic (whole tone, the diminished scales) shall show the full neck only, on bass too. | Implemented |
 
@@ -55,6 +55,5 @@ For the seven modes of the major scale (MODE-1.7), which have no card of their o
 ## Known gaps
 
 - **SCL-1.3:** pinned scales aren't listed first until pins exist (M01 T12).
-- **SCL-3.5:** a position doesn't play on its own until scale runs (M01 T9c).
 - **SCL-5.2:** the link to the Modes overview opens `/modes`, on the current key's root, until the overview takes a root (`/modes/[root]`, M01 T10).
 - **SCL-5.3:** the chords are listed by name, without links, until chord cards exist (M02).

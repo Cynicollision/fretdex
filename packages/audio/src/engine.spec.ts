@@ -153,7 +153,12 @@ describe('AudioEngine', () => {
         audio.play({ midi: 40, voice: 'guitar', channel: 'string:6' });
         const tap = context()?.sources[0];
 
-        const run = audio.run(track, { bpm: 120, note: midi => ({ midi, voice: 'guitar' }) });
+        let stopped = 0;
+        const run = audio.run(track, {
+            bpm: 120,
+            note: midi => ({ midi, voice: 'guitar' }),
+            onstop: () => (stopped += 1)
+        });
 
         expect(tap?.stopped).toBeDefined();
         expect(run.playing).toBe(true);
@@ -164,8 +169,11 @@ describe('AudioEngine', () => {
         audio.play({ midi: 52, voice: 'guitar', channel: 'string:4' });
 
         expect(run.playing).toBe(false);
+        expect(stopped).toBe(1);
         // The first note, scheduled 50 ms ahead, never starts.
         expect(first?.stopped).toBe(1);
+        run.stop();
+        expect(stopped).toBe(1);
     });
 
     it('MET-2.2 a run played under others is neither stopped by them nor stops them', () => {
@@ -192,7 +200,13 @@ describe('AudioEngine', () => {
             const { audio, context } = engine();
             const strum: Track<number> = { events: [{ beat: 0, event: 52 }], length: 0.25, loop: false };
             let ended = false;
-            audio.run(strum, { bpm: 120, note: midi => ({ midi, voice: 'guitar' }), onend: () => (ended = true) });
+            let stopped = false;
+            audio.run(strum, {
+                bpm: 120,
+                note: midi => ({ midi, voice: 'guitar' }),
+                onend: () => (ended = true),
+                onstop: () => (stopped = true)
+            });
             const note = context()?.sources[0];
 
             // The track has ended, but its note rings for seconds yet.
@@ -205,6 +219,8 @@ describe('AudioEngine', () => {
             audio.play({ midi: 40, voice: 'guitar', channel: 'string:6' });
 
             expect(note?.stopped).toBeCloseTo(1.56, 9);
+            // It had ended, so cutting its last note doesn't count as stopping it early.
+            expect(stopped).toBe(false);
         });
 
         it("AUD-1.3 cuts a run's note on a string with its next one there", () => {

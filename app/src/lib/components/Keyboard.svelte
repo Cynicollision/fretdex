@@ -15,10 +15,12 @@
         title: string;
         /** Starts enlarged, as in a test. */
         enlarged?: boolean;
+        /** The key sounding in a scale run, its mark lit in the accent colour (AUD-3.2). */
+        playing?: number;
         ontap?: (midi: number, note?: MappedNote) => void;
     }
 
-    let { set, labels, title, enlarged = $bindable(false), ontap }: Props = $props();
+    let { set, labels, title, enlarged = $bindable(false), playing, ontap }: Props = $props();
 
     let measured = $state(0);
     const width = $derived(enlarged ? (measured > 0 ? measured : 343) : Math.min(measured > 0 ? measured : 240, 240));
@@ -44,8 +46,10 @@
                 <g
                     class="key"
                     class:black={key.black}
+                    class:playing={key.midi === playing}
                     data-midi={key.midi}
                     data-marked={note ? 'true' : undefined}
+                    data-playing={key.midi === playing ? 'true' : undefined}
                     onclick={enlarged ? () => tap(key.midi) : undefined}
                 >
                     <rect x={key.x} y="0" width={key.width} height={key.height} />
@@ -160,6 +164,11 @@
 
     .key.black .mark.root {
         stroke: none;
+    }
+
+    /* The key sounding in a run, the whole key lit so it shows on either key colour and under the root's mark. */
+    .key.playing > rect {
+        fill: var(--accent);
     }
 
     .label {

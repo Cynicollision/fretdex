@@ -11,7 +11,7 @@ Tap to hear anything on screen, synthesized in the browser with no sample files:
 | AUD-1.3 | Starting any sound shall stop the previous one, except the metronome (MET), which plays under everything until stopped. A tapped note (AUD-4.1) stops only the note sounding on the same string, so notes tapped on other strings, or other keys, ring on as on the instrument (owner, 2026-11-25). | Implemented |
 | AUD-1.4 | Audio shall play on iPhones with the ring/silent switch on silent, by routing it through a media element. If that proves impossible, the app shall say once: "Turn off silent mode to hear audio." | Partial |
 | AUD-1.5 | Scale runs and progressions shall offer an optional click and a one-bar count-in, both off by default and remembered, using the metronome's click (MET). | Planned |
-| AUD-1.6 | Scale runs and the metronome shall use one global tempo (CTX-1.11); progressions keep their own in the URL (`bpm`, PROG-3.1). | Planned |
+| AUD-1.6 | Scale runs and the metronome shall use one global tempo (CTX-1.11); progressions keep their own in the URL (`bpm`, PROG-3.1). | Partial |
 
 ## AUD-2 Chords
 
@@ -24,8 +24,8 @@ Tap to hear anything on screen, synthesized in the browser with no sample files:
 
 | ID | Requirement | Status |
 |---|---|---|
-| AUD-3.1 | **Play** shall run the shown position's notes (or one octave from the lowest root on the full neck) ascending then descending at the tempo setting, default 100 bpm in eighth notes. | Planned |
-| AUD-3.2 | The playing note shall be highlighted on the fretboard and keyboard as it sounds. | Planned |
+| AUD-3.1 | **Play** shall run the shown position's notes, lowest to highest (or one octave up from the lowest root on the full neck, each note on the lowest fret it falls on), ascending then descending, once, at the tempo setting, default 100 bpm in eighth notes. **Play** is a small ▶ button, ■ while playing, at the end of the line under the neck, and the tempo is set on Settings, as runs are a minor feature that shouldn't take a row of the card (owner, 2026-11-26). A run stops when the card closes, when what it plays changes (the position, root, instrument, tuning or capo), and with any other sound (AUD-1.3). | Implemented |
+| AUD-3.2 | The playing note shall be highlighted on the fretboard and keyboard as it sounds: its dot filled in the accent colour and ringed, its key filled, with every other note left as drawn (owner, 2026-11-26). On the keyboard's two octaves, the run's lowest note is lit in the lower one and a note above the top an octave down. | Implemented |
 
 ## AUD-4 Taps play notes
 
@@ -57,5 +57,6 @@ Tap to hear anything on screen, synthesized in the browser with no sample files:
 ## Known gaps
 
 - **AUD-1.4:** where Safari has `navigator.audioSession` (16.4 and later) the app asks for playback audio, and on older iPhones it plays a silent media element; neither has been checked on the owner's iPhone with the switch on silent yet.
-- **AUD-1.3:** the engine stops a run when a sound starts and plays a run marked `under` beneath the rest, but nothing runs yet: scale runs come with M01 T9, the metronome with M04.
+- **AUD-1.3:** the engine plays a run marked `under` beneath the rest, but nothing uses it until the metronome (M04).
+- **AUD-1.6:** scale runs play at the tempo setting; the metronome that shares it comes in M04.
 - **AUD-7.1:** the voices wait for the owner to judge them on the phone (M01 T8's *Done when*).

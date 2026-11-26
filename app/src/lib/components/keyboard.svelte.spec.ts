@@ -67,4 +67,13 @@ describe('Keyboard', () => {
         await userEvent.click(document.querySelector('.key[data-midi="49"] rect') as Element);
         expect(ontap).toHaveBeenLastCalledWith(49, undefined);
     });
+
+    it('AUD-3.2 lights the key that is playing', async () => {
+        cleanup();
+        await render(Keyboard, { set: C_MAJOR_7, labels: 'notes', title: 'C major seventh', playing: 52 });
+
+        const lit = document.querySelectorAll<SVGGElement>('.key[data-playing]');
+        expect(Array.from(lit, key => Number(key.dataset.midi))).toEqual([52]);
+        expect(lit[0]?.classList.contains('playing')).toBe(true);
+    });
 });

@@ -2,12 +2,14 @@
     A scale card (SCL-2, SCL-5): the scale's notes, intervals and steps; its root picker (THY-2.2); its notes on the
     neck and a keyboard, which play a tapped note and name a tapped fret (DIAG-1.6); its positions, chosen above the
     neck and stepped through with Previous and Next (SCL-3, SCL-4); degrees to highlight (SCL-2.3); and, for the
-    seven modes, what makes it a mode (SCL-5). Its options are the URL's (APP-3.1).
+    seven modes, what makes it a mode (SCL-5). Play runs the position, or an octave of the full neck, at the tempo
+    setting, lighting the note that sounds (AUD-3). Its options are the URL's (APP-3.1).
 -->
 <script lang="ts">
     import {
         diatonicChords,
         intervalLabel,
+        mapScale,
         modeInfo,
         noteLabel,
         notePitchClass,
@@ -20,7 +22,8 @@
         type FretboardCell,
         type PositionKind
     } from '@fretdex/fretkit';
-    import { playFret, playKey } from '#lib/audio/sound.ts';
+    import type { Playback } from '@fretdex/audio';
+    import { instrumentVoice, playFret, playKey, sound } from '#lib/audio/sound.ts';
     import Choice from '#lib/components/Choice.svelte';
     import Fretboard from '#lib/components/Fretboard.svelte';
     import Keyboard from '#lib/components/Keyboard.svelte';
@@ -34,6 +37,7 @@
         positionName,
         positionTitle
     } from '#lib/scales/positions.ts';
+    import { runNotes, runTrack, type RunNote } from '#lib/scales/run.ts';
     import { rootButtons } from '#lib/settings/key.ts';
     import type { Labels } from '#lib/settings/settings.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
@@ -53,6 +57,7 @@
     } from '#lib/url/routes.ts';
     import { page } from '$app/state';
     import { resolve } from '$app/paths';
+    import { untrack } from 'svelte';
 
     interface Props {
         card: Card;
@@ -130,6 +135,64 @@
     const triads = $derived(mode ? diatonicChords(card.root, type, 3) : []);
     const sevenths = $derived(mode ? diatonicChords(card.root, type, 4) : []);
     const row = $derived(mode ? brightnessRow(card.root, settings.current.accidentals) : []);
+
+    // A scale run (AUD-3): the position's notes, or an octave of the full neck, up and back down at the tempo setting.
+    const runCells = $derived(
+        runNotes(chosen ? [] : mapScale(view.tuning, set, settings.current.fretRange, view.capo), chosen?.position)
+    );
+    let playback: Playback | undefined;
+    let lit: RunNote | undefined = $state();
+    let running = $state(false);
+    /** Notes handed over ahead of their time, lit once the audio clock reaches it (AUD-3.2). */
+    let due: { readonly note: RunNote; readonly time: number }[] = [];
+    let frame: number | undefined;
+
+    // Read from the audio clock on each frame rather than timed by the page's, as the clock stands still while a
+    // phone starts audio on the first sound.
+    function light() {
+        const now = sound.currentTime;
+        while (due[0] && due[0].time <= now) lit = due.shift()?.note;
+        frame = requestAnimationFrame(light);
+    }
+
+    function play() {
+        stopRun();
+        if (runCells.length === 0) return;
+        const voice = instrumentVoice(view.instrument);
+        running = true;
+        playback = sound.run(runTrack(runCells), {
+            bpm: settings.current.tempo,
+            note: ({ cell }) => ({ midi: cell.midi, voice, channel: `string:${String(cell.string)}` }),
+            onevent: (note, time) => due.push({ note, time }),
+            onend: finished,
+            // Stopped by a tap or another sound (AUD-1.3).
+            onstop: finished
+        });
+        frame = requestAnimationFrame(light);
+    }
+
+    function finished() {
+        if (frame !== undefined) cancelAnimationFrame(frame);
+        frame = undefined;
+        due = [];
+        playback = undefined;
+        lit = undefined;
+        running = false;
+    }
+
+    function stopRun() {
+        if (playback) playback.stop();
+        else finished();
+    }
+
+    // A run stops when its notes change (the card, the position, the neck) and when the card closes.
+    const runKey = $derived(
+        [cardPath(card), view.instrument, view.tuning.join('-'), String(view.capo), chosenName ?? 'neck'].join(' ')
+    );
+    $effect(() => {
+        void runKey;
+        return () => untrack(stopRun);
+    });
 
     // The last fret tapped, named under the neck (DIAG-1.6); cleared when the card or the neck it was tapped on changes.
     const neck = $derived(
@@ -240,9 +303,22 @@
         {...dimmed ? { dimmed } : {}}
         {...marked ? { marked } : {}}
         {...chosen ? { focus: chosen.position } : {}}
+        {...lit ? { playing: lit.cell } : {}}
         ontap={tap}
     />
-    <p class="tapped" aria-live="polite">{tappedText ?? 'Tap a fret to hear and name it.'}</p>
+    <div class="under-neck">
+        <p class="tapped" aria-live="polite">{tappedText ?? 'Tap a fret to hear and name it.'}</p>
+        <!-- Play is a small extra, so it sits at the end of this line rather than taking a row (owner, 2026-11-26). -->
+        <button
+            type="button"
+            class="play"
+            aria-label={running ? 'Stop playing the scale' : 'Play the scale'}
+            disabled={!running && runCells.length === 0}
+            onclick={() => (running ? stopRun() : play())}
+        >
+            <span aria-hidden="true">{running ? '■' : '▶'}</span>
+        </button>
+    </div>
 
     <div class="highlight" role="group" aria-labelledby="highlight-label">
         <span id="highlight-label">Highlight</span>
@@ -262,7 +338,7 @@
         {/if}
     </div>
 
-    <Keyboard {set} {labels} {title} ontap={playKey} />
+    <Keyboard {set} {labels} {title} {...lit ? { playing: lit.key } : {}} ontap={playKey} />
 
     {#if mode && characteristic}
         <section class="mode" aria-labelledby="mode-heading">
@@ -398,6 +474,18 @@
     .positions {
         display: grid;
         gap: 8px;
+    }
+
+    .under-neck {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .play {
+        flex: none;
+        padding: 0;
     }
 
     .steps {

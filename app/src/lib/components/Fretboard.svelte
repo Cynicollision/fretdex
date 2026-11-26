@@ -61,6 +61,8 @@
         marked?: (cell: FretboardCell) => boolean;
         /** A position (SCL-3): its frets and its notes; the other notes are dimmed, and the neck shows past `range` to hold it. */
         focus?: Focus;
+        /** The note sounding in a scale run, lit in the accent colour over whatever else it is (AUD-3.2). */
+        playing?: { readonly string: number; readonly fret: number };
         ontap?: (tapped: TappedFret) => void;
     }
 
@@ -77,6 +79,7 @@
         outlined,
         marked,
         focus,
+        playing,
         ontap
     }: Props = $props();
 
@@ -315,18 +318,24 @@
                     {@const root = cell.degree === 1}
                     {@const ring = !root && (outlined?.(cell) ?? false)}
                     {@const mark = marked?.(cell) ?? false}
+                    {@const lit = playing?.string === cell.string && playing.fret === cell.fret}
                     <g
                         class="dot"
                         class:root
                         class:ring
                         class:marked={mark}
-                        class:dim={faded(cell)}
+                        class:dim={!lit && faded(cell)}
+                        class:playing={lit}
                         data-string={cell.string}
                         data-fret={cell.fret}
                         data-note={cell.note}
                     >
                         {#if mark}
                             <circle class="mark" cx={x} cy={y} r={r + 4} />
+                        {/if}
+                        {#if lit}
+                            <!-- A ring too, as the root is already in the accent colour in two themes. -->
+                            <circle class="halo" cx={x} cy={y} r={r + 7} />
                         {/if}
                         {#if root}
                             <rect x={x - r} y={y - r} width={SIZES.dot} height={SIZES.dot} rx="4" />
@@ -450,6 +459,22 @@
 
     .dot.dim {
         opacity: 0.3;
+    }
+
+    .dot.playing circle:not(.mark, .halo),
+    .dot.playing rect {
+        fill: var(--accent);
+        stroke: none;
+    }
+
+    .dot.playing text {
+        fill: var(--accent-ink);
+    }
+
+    .dot circle.halo {
+        fill: none;
+        stroke: var(--text);
+        stroke-width: 3;
     }
 
     .stretch {

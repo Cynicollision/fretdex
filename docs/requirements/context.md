@@ -48,4 +48,3 @@ With a capo, the app treats it as the nut: chords are named and drawn as the sha
 
 - **CTX-2.6:** the context bar's key picker shows major and minor first, with the other modes one tap away, but there are no key-relative views to follow a mode yet (M03).
 - **CTX-3.1:** the context bar shows the capo and fretboards draw it (DIAG-1.9); chord boxes come in M02.
-- **CTX-1.11:** the tempo can be set on Settings, but nothing plays at it until scale runs (M01 T9).
