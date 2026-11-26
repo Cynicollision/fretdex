@@ -37,6 +37,12 @@ describe('the context bar', () => {
         await expect.element(page.getByText('Guitar · Drop D · Capo 2')).toBeVisible();
     });
 
+    it('APP-2.1 leaves the key out on a card, which it never changes (CTX-2.8)', async () => {
+        await render(ContextBar, { card: true });
+        await expect.element(page.getByText('Guitar · Standard')).toBeVisible();
+        await expect.element(page.getByText('No key')).not.toBeInTheDocument();
+    });
+
     it('CTX-1.1 and THY-2.2 pick a key, opening the spelling Auto prefers with the other one tap away', async () => {
         await openSheet();
 

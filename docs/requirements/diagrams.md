@@ -15,7 +15,7 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 | DIAG-1.7 | The root shall be a square and other notes circles; where a card highlights chord tones within a scale, chord tones shall be filled and other notes outlined. Color adds to these and never replaces them. The design task may refine the look, not these distinctions. | Implemented |
 | DIAG-1.8 | Frets shall narrow gently up the neck, each 0.98 the width of the one below it rather than a real guitar's 0.944, so the neck reads as a neck while the highest frets stay readable and easy to tap. Where that would make a fret narrower than the tap target (APP-5.1), the narrowing eases toward even. Decided 2026-11-25, replacing evenly spaced frets. | Implemented |
 | DIAG-1.9 | With a capo (CTX-3), the fretboard shall draw it as a bar across the strings at its fret, with the frets below it dimmed and empty. | Implemented |
-| DIAG-1.10 | With the phone upright, the fretboard shall show at most six frets across the width: the chosen position, or a stretch of the neck when the card has none, with previous and next to move along it. A strip of the whole fret range below it shall mark that stretch and the roots, and tapping the strip shall move to that part of the neck. In landscape it shows the whole fret range (APP-5.4). | Partial |
+| DIAG-1.10 | With the phone upright, the fretboard shall show at most six frets across the width: the chosen position (with previous and next along it only where it's wider than that), or a stretch of the neck when the card has none, with previous and next to move along it. A strip of the whole fret range below it shall mark that stretch and the roots, and tapping the strip shall move to that part of the neck. In landscape it shows the whole fret range (APP-5.4). | Implemented |
 
 ## DIAG-2 Chord box
 
@@ -51,6 +51,5 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 
 ## Known gaps
 
-- **DIAG-1.10:** upright, the fretboard shows a stretch with Lower and Higher over the strip, and in landscape the whole range; showing the chosen position comes with positions (M01 T9b).
 - **DIAG-3.1:** the keyboard marks the notes, enlarges when tapped and plays its keys, on the scale cards, the modes' included.
 - **DIAG-5.1:** the fretboard has its compact form (`FretboardMini.svelte`); the chord box's comes in M02, and the pin tiles that show them in M01 T12.

@@ -16,7 +16,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 | ID | Requirement | Status |
 |---|---|---|
-| APP-2.1 | A context bar on every screen shall show the current key (or "No key"), the instrument, the tuning and the capo when one is set, and open a sheet to change them (CTX-1). | Implemented |
+| APP-2.1 | A context bar on every screen shall show the current key (or "No key"), the instrument, the tuning and the capo when one is set, and open a sheet to change them (CTX-1). On a card it leaves the key out: a card's URL decides what it shows (CTX-2.8), and a key beside a card in another root read as the card's name (owner, 2026-11-25). | Implemented |
 | APP-2.2 | Changing the context shall update the screen in place, without leaving it. | Implemented |
 | APP-2.3 | When the current card's URL overrides the instrument or tuning (APP-3.3), the context bar shall show the override and offer to clear it. Changing the instrument, tuning or capo in the sheet changes the setting and clears the override, so the card follows the choice (owner, 2026-11-25). | Implemented |
 
@@ -82,7 +82,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 - **APP-1.1:** the context bar has Home; Search joins it in M03. The modules and tools later milestones build are in Home's grid, marked as coming later.
 - **APP-1.2:** Home shows the modules, so any card is two taps away through its list; pins arrive with the home board (M01 T12).
 - **APP-1.4:** the context bar is at the top of every screen; search comes in M03.
-- **APP-3.1:** every route of M01 opens from its URL with its options and override, but the scale card's positions (`pos`, `nps`) come in T9b, and Modes is a list until T10 builds its overview (`/modes/[root]`, with `mode` and `compare`). The Scales list takes its root (`root`).
+- **APP-3.1:** every route of M01 opens from its URL with its options and override, but Modes is a list until T10 builds its overview (`/modes/[root]`, with `mode` and `compare`). The Scales list takes its root (`root`).
 - **APP-4.1:** the app opens at a placeholder page until the home board (PIN-2, M01 T12).
 - **APP-5.3, APP-6.2:** the three themes' colours and the type scale are design tokens, and a unit test checks every text pair's contrast, but most of the screens and diagrams that use them come with M01's later tasks.
 - **APP-6.4:** the fretboard, its compact form and the keyboard have text alternatives; the chord box (M02), circle and staff (M03) will need theirs.

@@ -108,10 +108,12 @@ export function pageTitle(name: string): string {
 
 /** How a card is shown, from its URL's query (APP-3.1). Absent options take their defaults. */
 export interface ViewOptions {
-    /** A CAGED position, 1–5 (SCL-3.1). */
+    /** A CAGED position or pentatonic box, 1–5 (SCL-3.1, SCL-3.3). */
     readonly pos?: number;
-    /** A 3-notes-per-string pattern, 1–7 (SCL-3.3); never with `pos`. */
+    /** A 3-notes-per-string pattern, 1–7, by the degree it starts on (SCL-3.2); never with `pos`. */
     readonly nps?: number;
+    /** A bass box, 1–4 (SCL-4.1); never with `pos` or `nps`. */
+    readonly box?: number;
     /** The labels setting for this card alone (CTX-2.4). */
     readonly labels?: Labels;
     /** The degrees highlighted, the rest dimmed (SCL-2.3): their numbers from the root in order, `135`. */
@@ -120,18 +122,21 @@ export interface ViewOptions {
 
 /** The options each card takes, in the order its URL writes them. */
 const CARD_OPTIONS: Readonly<Record<CardKind, readonly (keyof ViewOptions)[]>> = {
-    scale: ['pos', 'nps', 'deg', 'labels']
+    scale: ['pos', 'nps', 'box', 'deg', 'labels']
 };
+
+/** The options that choose a position, of which a card shows one at most, in the order the first present wins. */
+const POSITION_OPTIONS = ['pos', 'nps', 'box'] as const;
 
 const LABELS: readonly Labels[] = ['notes', 'intervals', 'degrees', 'none'];
 
 /**
- * Reads a card's options from its query, ignoring any the card doesn't take or can't read: `pos` and `nps` are
- * whole numbers in range, and with both, `pos` wins.
+ * Reads a card's options from its query, ignoring any the card doesn't take or can't read: `pos`, `nps` and `box`
+ * are whole numbers in range, and with more than one, the first of them wins.
  */
 export function readViewOptions(kind: CardKind, params: QueryParams): ViewOptions {
     const takes = CARD_OPTIONS[kind];
-    const whole = (name: 'pos' | 'nps', max: number) => {
+    const whole = (name: (typeof POSITION_OPTIONS)[number], max: number) => {
         const text = params.get(name);
         if (!takes.includes(name) || text === null || !/^\d$/u.test(text)) return undefined;
         const value = Number(text);
@@ -139,11 +144,13 @@ export function readViewOptions(kind: CardKind, params: QueryParams): ViewOption
     };
     const pos = whole('pos', 5);
     const nps = pos === undefined ? whole('nps', 7) : undefined;
+    const box = pos === undefined && nps === undefined ? whole('box', 4) : undefined;
     const labels = takes.includes('labels') ? LABELS.find(label => label === params.get('labels')) : undefined;
     const deg = takes.includes('deg') ? readDegrees(params.get('deg')) : undefined;
     return {
         ...(pos === undefined ? {} : { pos }),
         ...(nps === undefined ? {} : { nps }),
+        ...(box === undefined ? {} : { box }),
         ...(deg === undefined ? {} : { deg }),
         ...(labels === undefined ? {} : { labels })
     };
@@ -210,7 +217,7 @@ export function writeQuery(kind: CardKind | undefined, options: ViewOptions, ove
 
 /**
  * A card's query with one option changed, or removed with `undefined`, written as the app writes it. Choosing a
- * position clears the 3-notes-per-string pattern and the other way round, as a card shows one or the other.
+ * position, pattern or bass box clears the others, as a card shows one at most.
  */
 export function withViewOption<K extends keyof ViewOptions>(
     kind: CardKind,
@@ -220,10 +227,13 @@ export function withViewOption<K extends keyof ViewOptions>(
     value: ViewOptions[K] | undefined
 ): string {
     const options: ViewOptions = { ...readViewOptions(kind, params), [name]: value };
-    const { pos, nps, ...others } = options;
-    // One of the two: the one just chosen, else the one already there.
-    const position =
-        name === 'nps' && nps !== undefined ? { nps } : pos !== undefined ? { pos } : nps !== undefined ? { nps } : {};
+    const { pos, nps, box, ...others } = options;
+    const positions = { pos, nps, box };
+    // One at most: the one just chosen, else the first already there.
+    const chosen =
+        POSITION_OPTIONS.find(option => option === name && value !== undefined) ??
+        POSITION_OPTIONS.find(option => positions[option] !== undefined);
+    const position = chosen === undefined ? {} : { [chosen]: positions[chosen] };
     // `writeQuery` leaves out an option that's undefined.
     return writeQuery(kind, { ...others, ...position }, readOverride(params, settings));
 }
