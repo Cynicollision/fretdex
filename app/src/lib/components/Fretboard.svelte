@@ -412,7 +412,7 @@
         fill: var(--note);
     }
 
-    .dot .mark {
+    .dot circle.mark {
         fill: none;
         stroke: var(--accent);
         stroke-width: 3;

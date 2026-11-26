@@ -79,6 +79,10 @@ describe('parentRoot', () => {
     it('is undefined for other scales', () => {
         expect(parentRoot('C', type('harmonic-minor'))).toBeUndefined();
     });
+
+    it("throws for a root that isn't a note", () => {
+        expect(() => parentRoot('H', type('dorian'))).toThrow('Not a note: H');
+    });
 });
 
 describe('diatonicChords', () => {
@@ -127,6 +131,27 @@ describe('diatonicChords', () => {
     it("SCL-5.3 spells chord tones as the mode spells them: C# Dorian's bIII is E G# B", () => {
         expect(triads('C#', 'dorian')[2]?.notes).toEqual(['E', 'G#', 'B']);
         expect(sevenths('Bb', 'locrian')[0]?.notes).toEqual(['Bb', 'Db', 'Fb', 'Ab']);
+    });
+
+    it("names harmonic minor's augmented chords apart from major ones", () => {
+        expect(triads('C', 'harmonic-minor').map(c => c.numeral)).toEqual([
+            'i',
+            'ii°',
+            'bIII+',
+            'iv',
+            'V',
+            'bVI',
+            'vii°'
+        ]);
+        expect(sevenths('C', 'harmonic-minor').map(c => `${c.numeral} ${c.root}${c.suffix}`)).toEqual([
+            'imaj7 CmMaj7',
+            'iiø7 Dm7b5',
+            'bIII+maj7 Ebmaj7#5',
+            'iv7 Fm7',
+            'V7 G7',
+            'bVImaj7 Abmaj7',
+            'vii°7 Bdim7'
+        ]);
     });
 
     it('is empty for scales without seven notes', () => {

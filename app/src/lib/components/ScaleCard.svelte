@@ -65,6 +65,8 @@
     const buttons = $derived(rootButtons(type));
     const rootOptions = $derived(buttons.map(button => ({ value: String(button.pitchClass), label: button.label })));
     const pitchClass = $derived(notePitchClass(card.root));
+    // A linked root this scale doesn't offer (A♯ Dorian) leaves every button unchosen, so B♭ is one tap (THY-2.5).
+    const chosenRoot = $derived(buttons.some(button => button.spellings.includes(card.root)) ? String(pitchClass) : '');
     const otherSpelling = $derived(
         buttons.find(button => button.pitchClass === pitchClass)?.spellings.find(spelling => spelling !== card.root)
     );
@@ -95,12 +97,15 @@
     const sevenths = $derived(mode ? diatonicChords(card.root, type, 4) : []);
     const row = $derived(mode ? brightnessRow(card.root, settings.current.accidentals) : []);
 
-    // The last fret tapped, named under the neck (DIAG-1.6); cleared when the card changes.
-    let tapped: { readonly path: string; readonly line: string } | undefined = $state();
-    const tappedText = $derived(tapped?.path === cardPath(card) ? tapped.line : undefined);
+    // The last fret tapped, named under the neck (DIAG-1.6); cleared when the card or the neck it was tapped on changes.
+    const neck = $derived(
+        [cardPath(card), view.tuning.join('-'), String(view.capo), settings.current.accidentals].join(' ')
+    );
+    let tapped: { readonly neck: string; readonly line: string } | undefined = $state();
+    const tappedText = $derived(tapped?.neck === neck ? tapped.line : undefined);
     function tap(fret: TappedFret) {
         playFret(fret, view.instrument);
-        tapped = { path: cardPath(card), line: tappedLine(fret) };
+        tapped = { neck, line: tappedLine(fret) };
     }
 </script>
 
@@ -121,10 +126,15 @@
     </dl>
 
     {#if simpler}
-        <p class="note">
-            {title}'s key needs a double sharp or flat; it's usually written
-            <a href={cardHref({ ...card, root: simpler })}>{cardTitle({ ...card, root: simpler })}</a>.
-        </p>
+        <div class="note">
+            <p>
+                {title}'s key needs a double sharp or flat; it's usually written as {cardTitle({
+                    ...card,
+                    root: simpler
+                })}.
+            </p>
+            <a class="link" href={cardHref({ ...card, root: simpler })}>Open {cardTitle({ ...card, root: simpler })}</a>
+        </div>
     {:else if doubles}
         <p class="note">
             The notes are named by their intervals from the root ({type.intervals.map(intervalLabel).join(' ')}), and on
@@ -139,7 +149,7 @@
                 legend="Root"
                 name="card-root"
                 options={rootOptions}
-                value={String(pitchClass)}
+                value={chosenRoot}
                 columns={4}
                 hideLegend
                 onchange={value => openRoot(rootChoices(Number(value), type, settings.current.accidentals).root)}
@@ -205,7 +215,8 @@
                     {/each}
                 </ol>
             </nav>
-            <p class="muted">Brightest to darkest. <a href={resolve('/modes')}>All seven modes side by side</a></p>
+            <p class="muted">Brightest to darkest.</p>
+            <a class="link" href={resolve('/modes')}>All seven modes side by side</a>
             <h3>Chords</h3>
             <table>
                 <thead>
@@ -280,7 +291,17 @@
         font-weight: 600;
     }
 
+    .link {
+        display: inline-flex;
+        align-items: center;
+        min-height: var(--tap);
+        justify-self: start;
+        color: var(--accent);
+        font-size: var(--text-m);
+    }
+
     .note {
+        display: grid;
         padding: 8px 12px;
         border-left: 3px solid var(--accent);
         background: var(--surface);

@@ -9,6 +9,7 @@ function where(page: Page): string {
 test('SCL-1.1 lists every scale on the root picked, kept in the URL', async ({ page }) => {
     await page.goto('/scales');
     await expect(page.getByRole('link', { name: 'C Dorian' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'All seven modes side by side' })).toBeVisible();
     await page.getByText('C♯/D♭', { exact: true }).click();
     await expect.poll(() => where(page)).toBe('/scales?root=Cs');
     await expect(page.getByRole('link', { name: 'D♭ major', exact: true })).toBeVisible();
@@ -42,7 +43,12 @@ test('THY-2.2 changes the root in place from the card', async ({ page }) => {
 
 test('THY-2.5 and SCL-2.6 explain roots that need double sharps or flats', async ({ page }) => {
     await page.goto('/scales/As/dorian');
-    await expect(page.getByRole('link', { name: 'B♭ Dorian' }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Open B♭ Dorian' })).toBeVisible();
+    // A♯ isn't offered in Dorian, so no root button is chosen and B♭ is one tap.
+    await page.getByText('Root: A♯').click();
+    await expect(page.getByRole('radio', { checked: true, name: 'B♭' })).toHaveCount(0);
+    await page.getByText('B♭', { exact: true }).click();
+    await expect.poll(() => where(page)).toBe('/scales/Bb/dorian');
     await page.goto('/scales/Cs/altered');
     await expect(page.getByText(/named by their intervals from the root/u)).toBeVisible();
 });

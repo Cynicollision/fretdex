@@ -35,13 +35,15 @@ const MAJOR_DEGREES: readonly IntervalCode[] = ['1P', '2M', '3M', '4P', '5P', '6
 
 /**
  * The root of a mode's parent major scale (SCL-5.1): D Dorian's is C, and A♯ Dorian's G♯. `undefined` for a scale
- * that isn't a mode of the major scale.
+ * that isn't a mode of the major scale. Throws for a root that isn't a note.
  */
 export function parentRoot(root: NoteName, type: ScaleType): NoteName | undefined {
     const mode = modeInfo(type);
     const up = mode === undefined ? undefined : MAJOR_DEGREES[mode.degree - 1];
     if (up === undefined) return undefined;
-    return Note.transpose(root, `-${up}`);
+    const parent = Note.transpose(root, `-${up}`);
+    if (parent === '') throw new Error(`Not a note: ${root}`);
+    return parent;
 }
 
 /** A chord built on a degree of a seven-note scale from its own notes (SCL-5.3). */
@@ -72,7 +74,7 @@ const QUALITIES: readonly { readonly steps: string; readonly suffix: string; rea
     { steps: '3,6,10', suffix: 'm7b5', numeral: 'ø7' },
     { steps: '3,6,9', suffix: 'dim7', numeral: '°7' },
     { steps: '3,7,11', suffix: 'mMaj7', numeral: 'maj7' },
-    { steps: '4,8,11', suffix: 'maj7#5', numeral: 'maj7' }
+    { steps: '4,8,11', suffix: 'maj7#5', numeral: '+maj7' }
 ];
 
 /**
