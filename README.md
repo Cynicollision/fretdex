@@ -2,7 +2,7 @@
 
 A personal, ad-free, offline reference for guitar and bass: chords, scales and positions, triads, modes, keys and the circle of fifths, and progressions, in every key and tuning, with pins for what you reach for most. It's a lookup tool for a working player, not a course.
 
-> **Status:** early development. So far there's the repository and CI, and a placeholder page. Version 1 is built in three milestones, starting with [M01](docs/planning/milestones/M01-foundation-and-scales.md); what the app does is in [docs/requirements/](docs/requirements/README.md). It will live at `fretdex.seannormoyle.net`.
+> **Status:** early development. So far there are scales and modes, with pins on the home board. Version 1 is built in three milestones, starting with [M01](docs/planning/milestones/M01-foundation-and-scales.md); what the app does is in [docs/requirements/](docs/requirements/README.md). It lives at `fretdex.seannormoyle.net`.
 
 ## What it will do
 

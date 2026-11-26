@@ -80,6 +80,22 @@ export function readModesCard(root: string): Card | undefined {
     return note === undefined || Math.abs(noteAlteration(note)) > 1 ? undefined : { kind: 'modes', root: note };
 }
 
+/** The card a path names, read as its route reads it (`/scales/Fs/dorian`, `/modes/Db`), or `undefined`. */
+export function readCardPath(pathname: string): Card | undefined {
+    const [first, ...rest] = pathname.split('/').slice(1).map(decodeSegment);
+    if (first === 'scales' && rest.length === 2) return readScaleCard(rest[0] ?? '', rest[1] ?? '');
+    if (first === 'modes' && rest.length === 1) return readModesCard(rest[0] ?? '');
+    return undefined;
+}
+
+function decodeSegment(segment: string): string {
+    try {
+        return decodeURIComponent(segment);
+    } catch {
+        return segment;
+    }
+}
+
 /** A card's path, as the app writes it (APP-3.4): `/scales/Fs/major`, `/scales/Fs/dorian`, `/modes/Fs`. */
 export function cardPath(card: Card): string {
     switch (card.kind) {

@@ -7,6 +7,7 @@ import {
     cardPath,
     cardTitle,
     moduleOfPath,
+    readCardPath,
     readModesCard,
     readScaleCard,
     degreesOf,
@@ -52,6 +53,15 @@ describe('card paths', () => {
     it('MODE-1.7 gives each mode one card, its scale card', () => {
         expect(readScaleCard('G', 'dorian')).toMatchObject({ kind: 'scale', scale: { id: 'dorian' } });
         expect(path(readScaleCard('G', 'ionian'))).toBe('/scales/G/ionian');
+    });
+
+    it('APP-3.1 reads a card from its whole path, as its route does', () => {
+        expect(path(readCardPath('/scales/Fs/dorian'))).toBe('/scales/Fs/dorian');
+        expect(path(readCardPath('/scales/F%23/dorian'))).toBe('/scales/Fs/dorian');
+        expect(path(readCardPath('/modes/Db'))).toBe('/modes/Db');
+        expect(readCardPath('/scales')).toBeUndefined();
+        expect(readCardPath('/scales/G/major/extra')).toBeUndefined();
+        expect(readCardPath('/chords/G/major')).toBeUndefined();
     });
 
     it("APP-3.5 reads nothing for a root or scale it doesn't know", () => {

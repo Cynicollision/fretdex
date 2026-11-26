@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cardTitle } from '#lib/url/routes.ts';
-import { scaleList } from './list';
+import { pinnedCards, scaleList } from './list';
 
 const titles = (list: ReturnType<typeof scaleList>) => list.groups.flatMap(group => group.cards.map(cardTitle));
 
@@ -45,5 +45,14 @@ describe('scaleList', () => {
 
     it("SCL-1.2 has no key's scale first on another root", () => {
         expect(scaleList('E', { root: 'D', mode: 'major' }, 'auto').keyCard).toBeUndefined();
+    });
+});
+
+describe('pinnedCards', () => {
+    it("PIN-3.1 lists the root's pinned scales first, matched by path, in the list's order", () => {
+        const list = scaleList('D', { root: 'D', mode: 'dorian' }, 'auto');
+        const pinned = pinnedCards(list, new Set(['/scales/D/major', '/scales/D/dorian', '/scales/E/major']));
+
+        expect(pinned.map(cardTitle)).toEqual(['D Dorian', 'D major']);
     });
 });

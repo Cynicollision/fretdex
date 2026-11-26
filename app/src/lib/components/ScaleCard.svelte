@@ -2,7 +2,7 @@
     A scale card (SCL-2, SCL-5): the scale's notes, intervals and steps; its root picker (THY-2.2); its notes on the
     neck and a keyboard, which play a tapped note and name a tapped fret (DIAG-1.6); its positions, chosen above the
     neck and stepped through with Previous and Next (SCL-3, SCL-4); degrees to highlight (SCL-2.3); and, for the
-    seven modes, what makes it a mode (SCL-5). Play runs the position, or an octave of the full neck, at the tempo
+    seven modes, what makes it a mode (SCL-5). Pin beside its heading pins the view (PIN-1.1). Play runs the position, or an octave of the full neck, at the tempo
     setting, lighting the note that sounds (AUD-3). Its options are the URL's (APP-3.1).
 -->
 <script lang="ts">
@@ -27,6 +27,7 @@
     import Choice from '#lib/components/Choice.svelte';
     import Fretboard from '#lib/components/Fretboard.svelte';
     import Keyboard from '#lib/components/Keyboard.svelte';
+    import PinButton from '#lib/components/PinButton.svelte';
     import Screen from '#lib/components/Screen.svelte';
     import type { TappedFret } from '#lib/diagrams/fretboard.ts';
     import { parentKey } from '#lib/modes/overview.ts';
@@ -209,6 +210,9 @@
 </script>
 
 <Screen {title} back={cardModule(card.kind)} wide>
+    {#snippet actions()}
+        <PinButton view={{ kind: 'card', card }} />
+    {/snippet}
     <dl class="facts">
         <div>
             <dt>Notes</dt>

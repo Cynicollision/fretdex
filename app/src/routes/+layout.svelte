@@ -5,6 +5,7 @@
     import '#lib/styles/base.css';
     import { sound } from '#lib/audio/sound.ts';
     import ContextBar from '#lib/components/ContextBar.svelte';
+    import { pins } from '#lib/pins/store.svelte.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { applyTheme } from '#lib/settings/theme.ts';
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
@@ -27,6 +28,7 @@
         mounted = true;
         void settings.ready();
         void customTunings.ready();
+        void pins.ready();
     });
 
     // The URL's instrument, tuning and capo, for the context bar (APP-2.3, APP-3.3). Read once the page has
