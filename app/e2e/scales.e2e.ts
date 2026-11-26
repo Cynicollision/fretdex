@@ -9,7 +9,7 @@ function where(page: Page): string {
 test('SCL-1.1 lists every scale on the root picked, kept in the URL', async ({ page }) => {
     await page.goto('/scales');
     await expect(page.getByRole('link', { name: 'C Dorian' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'All seven modes side by side' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'The seven modes of C major' })).toBeVisible();
     await page.getByText('C♯/D♭', { exact: true }).click();
     await expect.poll(() => where(page)).toBe('/scales?root=Cs');
     await expect(page.getByRole('link', { name: 'D♭ major', exact: true })).toBeVisible();

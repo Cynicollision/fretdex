@@ -4,7 +4,8 @@ import { expect, test, type Page } from '@playwright/test';
 const ROUTES: readonly [path: string, heading: string][] = [
     ['/scales', 'Scales'],
     ['/scales/G/harmonic-minor', 'G harmonic minor'],
-    ['/modes', 'Modes'],
+    ['/modes', 'Modes of C major'],
+    ['/modes/Fs', 'Modes of F♯ major'],
     ['/scales/Fs/dorian', 'F♯ Dorian'],
     ['/scales/Eb/locrian', 'E♭ Locrian'],
     ['/settings', 'Settings']
@@ -61,8 +62,8 @@ test('APP-1.1 and APP-1.2 reach a card in two taps from Home, and the context ba
     await expect(page.getByRole('main').getByText('Chords')).toBeVisible();
     await expect(page.getByRole('main').getByRole('link', { name: 'Chords' })).toHaveCount(0);
     await page.getByRole('main').getByRole('link', { name: 'Modes' }).click();
-    await page.getByRole('link', { name: 'C Lydian' }).click();
-    await expect(heading(page)).toHaveText('C Lydian');
+    await page.getByRole('link', { name: 'F Lydian' }).click();
+    await expect(heading(page)).toHaveText('F Lydian');
 
     const banner = page.getByRole('banner');
     await banner.getByRole('link', { name: 'Home' }).click();
@@ -78,11 +79,11 @@ test('APP-1.1 and APP-1.2 reach a card in two taps from Home, and the context ba
 test('APP-1.3 goes back where the user came from, by the back control and the browser', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('main').getByRole('link', { name: 'Modes' }).click();
-    await page.getByRole('link', { name: 'C Dorian' }).click();
-    await expect(heading(page)).toHaveText('C Dorian');
+    await page.getByRole('link', { name: 'D Dorian' }).click();
+    await expect(heading(page)).toHaveText('D Dorian');
 
     await page.getByRole('link', { name: '‹ Back' }).click();
-    await expect(heading(page)).toHaveText('Modes');
+    await expect(heading(page)).toHaveText('Modes of C major');
     await page.goBack();
     await expect(heading(page)).toHaveText('Fretdex');
 });

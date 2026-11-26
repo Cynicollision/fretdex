@@ -7,6 +7,7 @@ import {
     cardPath,
     cardTitle,
     moduleOfPath,
+    readModesCard,
     readScaleCard,
     degreesOf,
     readListRoot,
@@ -59,6 +60,28 @@ describe('card paths', () => {
         expect(readScaleCard('E2', 'major')).toBeUndefined();
         expect(readScaleCard('Fsss', 'major')).toBeUndefined();
         expect(readScaleCard('', 'major')).toBeUndefined();
+    });
+});
+
+describe('the Modes overview', () => {
+    it('MODE-1.10 reads its root from the path and writes it as the app does', () => {
+        expect(path(readModesCard('Fs'))).toBe('/modes/Fs');
+        expect(path(readModesCard('F#'))).toBe('/modes/Fs');
+        expect(path(readModesCard('bb'))).toBe('/modes/Bb');
+        expect(title(readModesCard('Fs'))).toBe('Modes of F♯ major');
+        expect(readModesCard('H')).toBeUndefined();
+        // G𝄪 major's 7th, and so its Locrian's root, would be F♯𝄪.
+        expect(readModesCard('Gss')).toBeUndefined();
+        expect(readModesCard('Fbb')).toBeUndefined();
+        expect(path(readModesCard('Gs'))).toBe('/modes/Gs');
+        expect(readModesCard('E2')).toBeUndefined();
+    });
+
+    it('APP-1.3 goes back Home, and MODE-1.15 takes the labels and the override', () => {
+        expect(cardModule('modes')).toBe('/');
+        const modes = (query: string) => canonicalQuery('modes', new URLSearchParams(query), DEFAULT_SETTINGS);
+        expect(modes('mode=dorian&compare=lydian&capo=2')).toBe('?capo=2');
+        expect(modes('capo=2&nps=1&labels=notes')).toBe('?labels=notes&capo=2');
     });
 });
 

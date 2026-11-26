@@ -1,4 +1,5 @@
 import {
+    noteAlteration,
     noteLabel,
     notePitchName,
     noteSlug,
@@ -36,14 +37,20 @@ export const MODULES: readonly ModuleEntry[] = [
 /** The tools (APP-1.1): Identify in M02, the tuner and metronome after version 1. */
 export const TOOLS: readonly ModuleEntry[] = [{ name: 'Identify' }, { name: 'Tuner' }, { name: 'Metronome' }];
 
-/** What a card's path names (APP-3.1). */
-export type Card = { readonly kind: 'scale'; readonly root: NoteName; readonly scale: ScaleType };
+/** What a card's path names (APP-3.1): a scale card, or the Modes overview of a major key (MODE-1). */
+export type Card =
+    | { readonly kind: 'scale'; readonly root: NoteName; readonly scale: ScaleType }
+    | { readonly kind: 'modes'; readonly root: NoteName };
 
 export type CardKind = Card['kind'];
 
+/** A scale card, the modes' included. */
+export type ScaleCardRef = Extract<Card, { readonly kind: 'scale' }>;
+
 /** Each card's route, as SvelteKit names it. */
 export const CARD_ROUTES: Readonly<Record<string, CardKind>> = {
-    '/scales/[root]/[scale]': 'scale'
+    '/scales/[root]/[scale]': 'scale',
+    '/modes/[root]': 'modes'
 };
 
 /**
@@ -57,26 +64,42 @@ export function readRoot(slug: string): NoteName | undefined {
 }
 
 /** A scale card, the modes' included (SCL-1.1): `/scales/G/dorian` is G Dorian. */
-export function readScaleCard(root: string, scale: string): Card | undefined {
+export function readScaleCard(root: string, scale: string): ScaleCardRef | undefined {
     const note = readRoot(root);
     const type = scaleType(scale);
     if (note === undefined || type === undefined) return undefined;
     return { kind: 'scale', root: note, scale: type };
 }
 
-/** A card's path, as the app writes it (APP-3.4): `/scales/Fs/major`, `/scales/Fs/dorian`. */
+/**
+ * The Modes overview of a major key (MODE-1.10): `/modes/Db` shows the modes of D♭ major. A key with a double sharp
+ * or flat isn't read, as some of its modes' roots would need a triple one, which no card can open.
+ */
+export function readModesCard(root: string): Card | undefined {
+    const note = readRoot(root);
+    return note === undefined || Math.abs(noteAlteration(note)) > 1 ? undefined : { kind: 'modes', root: note };
+}
+
+/** A card's path, as the app writes it (APP-3.4): `/scales/Fs/major`, `/scales/Fs/dorian`, `/modes/Fs`. */
 export function cardPath(card: Card): string {
     switch (card.kind) {
         case 'scale':
             return `/scales/${noteSlug(card.root)}/${card.scale.id}`;
+        case 'modes':
+            return `/modes/${noteSlug(card.root)}`;
     }
 }
 
-/** The list a card belongs to: where its back control goes when there's nothing to go back to (APP-1.3). */
-export function cardModule(kind: CardKind): ListPath {
+/**
+ * Where a card's back control goes when there's nothing to go back to (APP-1.3): a card's module list, or Home for
+ * the Modes overview, which is its module's screen on another root.
+ */
+export function cardModule(kind: CardKind): ScreenPath {
     switch (kind) {
         case 'scale':
             return '/scales';
+        case 'modes':
+            return '/';
     }
 }
 
@@ -93,11 +116,13 @@ function lowerName(name: string): string {
     return PROPER.test(name) ? name : name.charAt(0).toLowerCase() + name.slice(1);
 }
 
-/** A card's name, as its heading and title show it (APP-3.6): "G major", "D Dorian". */
+/** A card's name, as its heading and title show it (APP-3.6): "G major", "D Dorian", "Modes of C major". */
 export function cardTitle(card: Card): string {
     switch (card.kind) {
         case 'scale':
             return `${noteLabel(card.root)} ${lowerName(card.scale.name)}`;
+        case 'modes':
+            return `Modes of ${noteLabel(card.root)} major`;
     }
 }
 
@@ -122,7 +147,8 @@ export interface ViewOptions {
 
 /** The options each card takes, in the order its URL writes them. */
 const CARD_OPTIONS: Readonly<Record<CardKind, readonly (keyof ViewOptions)[]>> = {
-    scale: ['pos', 'nps', 'box', 'deg', 'labels']
+    scale: ['pos', 'nps', 'box', 'deg', 'labels'],
+    modes: ['labels']
 };
 
 /** The options that choose a position, of which a card shows one at most, in the order the first present wins. */

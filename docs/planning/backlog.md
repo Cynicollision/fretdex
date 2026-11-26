@@ -18,6 +18,7 @@ An item is one bullet: a bold title, what's wrong or wanted, and where (file and
 
 - **Licence notices in the built app.** The production build minifies Svelte's and SvelteKit's code into `app/build/_app/` without their MIT copyright notices, which the licence asks to travel with the code, and the same will go for Tonal.js and the chord dataset. Something should ship them, such as a generated third-party licences file in the build or a credits screen that shows `CREDITS.md`'s notices. (noticed in M01 T1)
 - **Keep a global current key, or pick the key in each module?** Vision principle 2 has one current key re-centering every module, but it never changes an open card (CTX-2.8), and its uses are lists and key-relative views: the Scales list's root (SCL-1.2), the Modes overview (MODE-1.10), chords in the key (CHD-1.3, CHD-2.3, CHD-2.5), keys, the circle and progressions (KEY-1.1, PROG-1.2, PROG-2.1), capo shapes (CTX-3.3), pins that follow the key (PIN-1.5) and **Show in E minor** (CTX-2.9). The owner asked whether a key picked inside Progressions (and the like) would do instead, dropping it from the context bar (`ContextBar.svelte`) and the sheet. Decide before M02's planning, as chords lean on it. (PR 18, owner's feedback on the context bar)
+- **A tap before a prerendered list hydrates is lost.** The Scales list smoke test (`SCL-1.1 lists every scale on the root picked` in `app/e2e/scales.e2e.ts`) failed once on Android: the root picker's tap left the URL at `/scales`, and 30 reruns passed. A tap on `Choice` in a prerendered page (`app/src/routes/scales/+page.svelte`, `/modes`) before hydration changes the radio but runs no handler, which a slow phone could hit too. Either the test waits for hydration or the lists read the checked radio once mounted. (noticed in PR 20)
 
 ---
 
@@ -46,7 +47,7 @@ Nothing yet.
 ## Ideas
 
 - **Spread triads and sus triads** on string sets.
-- **Modes of harmonic and melodic minor** with the brightness and comparison views.
+- **Modes of harmonic and melodic minor** with an overview like the major scale's (MODE-1).
 - **Modal interchange beyond the parallel key** in borrowed chords (KEY-2.5).
 - **Rhythm patterns and 3/4** for progression playback.
 - **Identify for scales**: which scales contain these notes.

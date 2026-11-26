@@ -12,7 +12,7 @@ import {
     type ScaleType
 } from '@fretdex/fretkit';
 import type { TappedFret } from '#lib/diagrams/fretboard.ts';
-import { cardTitle, type Card } from '#lib/url/routes.ts';
+import { cardTitle, type ScaleCardRef } from '#lib/url/routes.ts';
 
 /** Text written with `b` and `#`, as `fretkit` writes chord suffixes and numerals, as shown on screen (THY-1.5). */
 function symbols(text: string): string {
@@ -49,7 +49,7 @@ export function parentLine(root: NoteName, type: ScaleType): string | undefined 
  * The brightness row's cards (SCL-5.2): the seven modes on the same root, spelled as the card is where each mode
  * offers that spelling, and otherwise as its picker would (THY-2.5), so A♯ Dorian's row has B♭ Lydian.
  */
-export function brightnessRow(root: NoteName, accidentals: Accidentals): Card[] {
+export function brightnessRow(root: NoteName, accidentals: Accidentals): ScaleCardRef[] {
     return BRIGHTNESS.map(type => ({
         kind: 'scale',
         root: isOfferedRoot(root, type) ? root : rootChoices(notePitchClass(root), type, accidentals).root,

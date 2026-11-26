@@ -49,11 +49,10 @@ For the seven modes of the major scale (MODE-1.7), which have no card of their o
 | ID | Requirement | Status |
 |---|---|---|
 | SCL-5.1 | The card shall show the mode's parent scale and key ("D Dorian is the 2nd mode of C major") and its characteristic note (Dorian's natural 6), marked on the neck by a mark of its own with no other note dimmed (owner, 2026-11-25). Ionian's is its natural 4, the note that sets it apart from Lydian (owner, 2026-11-25). | Implemented |
-| SCL-5.2 | The card shall show the mode's place in the brightness order as a row of the seven modes with this one marked, each a link to that mode's card on the same root, and a link to the Modes overview on this root (MODE-1). | Partial |
+| SCL-5.2 | The card shall show the mode's place in the brightness order as a row of the seven modes with this one marked, each a link to that mode's card on the same root, and a link to the Modes overview of its parent major (MODE-1.10). | Implemented |
 | SCL-5.3 | The card shall list the mode's diatonic triads and sevenths with roman numerals relative to the mode (`i ii bIII IV v vi° bVII` for Dorian), linking to chord cards. | Partial |
 
 ## Known gaps
 
 - **SCL-1.3:** pinned scales aren't listed first until pins exist (M01 T12).
-- **SCL-5.2:** the link to the Modes overview opens `/modes`, on the current key's root, until the overview takes a root (`/modes/[root]`, M01 T10).
 - **SCL-5.3:** the chords are listed by name, without links, until chord cards exist (M02).

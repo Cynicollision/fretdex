@@ -29,6 +29,7 @@
     import Keyboard from '#lib/components/Keyboard.svelte';
     import Screen from '#lib/components/Screen.svelte';
     import type { TappedFret } from '#lib/diagrams/fretboard.ts';
+    import { parentKey } from '#lib/modes/overview.ts';
     import { brightnessRow, chordLabel, numeralLabel, parentLine, tappedLine } from '#lib/scales/card.ts';
     import {
         KIND_LABELS,
@@ -53,14 +54,13 @@
         degreesOf,
         readViewOptions,
         writeDegrees,
-        type Card
+        type ScaleCardRef
     } from '#lib/url/routes.ts';
     import { page } from '$app/state';
-    import { resolve } from '$app/paths';
     import { untrack } from 'svelte';
 
     interface Props {
-        card: Card;
+        card: ScaleCardRef;
     }
 
     let { card }: Props = $props();
@@ -135,6 +135,8 @@
     const triads = $derived(mode ? diatonicChords(card.root, type, 3) : []);
     const sevenths = $derived(mode ? diatonicChords(card.root, type, 4) : []);
     const row = $derived(mode ? brightnessRow(card.root, settings.current.accidentals) : []);
+    // The Modes overview of this mode's parent major (MODE-1.10).
+    const modesKey = $derived(parentKey(card.root, type, settings.current.accidentals));
 
     // A scale run (AUD-3): the position's notes, or an octave of the full neck, up and back down at the tempo setting.
     const runCells = $derived(
@@ -359,7 +361,9 @@
                 </ol>
             </nav>
             <p class="muted">Brightest to darkest.</p>
-            <a class="link" href={resolve('/modes')}>All seven modes side by side</a>
+            <a class="link" href={cardHref({ kind: 'modes', root: modesKey })}>
+                The seven modes of {noteLabel(modesKey)} major
+            </a>
             <h3>Chords</h3>
             <table>
                 <thead>

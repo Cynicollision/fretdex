@@ -6,7 +6,7 @@ import { cardPath, type Card } from './routes';
  * the path the way the app writes it (`%23` and `#` to `s`), keeping its query.
  * SvelteKit's redirect replaces the history entry, so back never returns to the old spelling.
  */
-export function cardLoad(card: Card | undefined, url: URL): { card: Card } {
+export function cardLoad<C extends Card>(card: C | undefined, url: URL): { card: C } {
     if (card === undefined) error(404, 'Not found');
     const path = cardPath(card);
     if (path !== url.pathname) redirect(308, path + url.search);
