@@ -53,3 +53,12 @@ export {
     type Tuning
 } from './tuning';
 export { mapKeyboard, mapScale, type FretboardCell, type FretRange, type MappedNote } from './fretboard';
+export {
+    BRIGHTNESS,
+    diatonicChords,
+    modeInfo,
+    parentRoot,
+    stepFormula,
+    type DiatonicChord,
+    type ModeInfo
+} from './mode';

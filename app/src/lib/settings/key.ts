@@ -33,7 +33,14 @@ export function modeScale(mode: KeyMode): ScaleType {
  * so a black key whose other spelling's key would need a double sharp or flat shows one name (B♭ in Dorian).
  */
 export function keyRootButtons(mode: KeyMode): KeyRootButton[] {
-    const type = modeScale(mode);
+    return rootButtons(modeScale(mode));
+}
+
+/**
+ * A root picker's 12 buttons for a scale (THY-2.2, THY-2.5): each shows the spellings `fretkit` offers for it, so
+ * a black key whose other spelling would need a double sharp or flat shows one name.
+ */
+export function rootButtons(type: ScaleType): KeyRootButton[] {
     return PICKER_ROOTS.map(({ pitchClass, spellings }) => {
         const offered = spellings.filter(spelling => isOfferedRoot(spelling, type));
         return { pitchClass, spellings: offered, label: offered.map(noteLabel).join('/') };

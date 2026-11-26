@@ -1,7 +1,8 @@
 import { goto } from '$app/navigation';
 import type { Settings } from '#lib/settings/settings.ts';
 import { OVERRIDE_PARAMS } from './context';
-import { withViewOption, type CardKind, type ViewOptions } from './routes';
+import { cardHref } from './href';
+import { withViewOption, type Card, type CardKind, type ViewOptions } from './routes';
 
 /** The parts of a URL these read; `page.url` is a read-only URL. */
 type ViewUrl = Pick<URL, 'pathname' | 'search' | 'hash'>;
@@ -30,6 +31,16 @@ export function setViewOption<K extends keyof ViewOptions>(
     value: ViewOptions[K] | undefined
 ): Promise<void> {
     return replaceQuery(url, withViewOption(kind, new URLSearchParams(url.search), settings, name, value));
+}
+
+/**
+ * Opens another card in place of this one, keeping the query, as the card's root picker does (THY-2.2): back leaves
+ * for where the card was opened from, not the root it showed before.
+ */
+export function replaceCard(card: Card, search: string): Promise<void> {
+    // A resolved card path, with the query it had.
+    // eslint-disable-next-line svelte/no-navigation-without-resolve -- see above
+    return goto(cardHref(card) + search, { replace: true });
 }
 
 /** Drops a URL's instrument, tuning and capo override, so the view follows the settings again (APP-2.3). */

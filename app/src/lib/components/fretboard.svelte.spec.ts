@@ -163,6 +163,25 @@ describe('Fretboard', () => {
         expect(dot(5, 3)?.classList.contains('ring')).toBe(false); // C, the root, never outlined
     });
 
+    it('SCL-5.1 rings a mode’s characteristic note, dimming nothing', async () => {
+        cleanup();
+        await page.viewport(WIDE, 800);
+        await render(Fretboard, {
+            tuning: STANDARD,
+            set: scale('D', 'dorian'),
+            range: { from: 0, to: 5 },
+            labels: 'notes',
+            handedness: 'right',
+            title: 'D Dorian',
+            marked: (cell: FretboardCell) => cell.code === '6M'
+        });
+
+        const ringed = dots().filter(dot => dot.classList.contains('marked'));
+        expect(ringed.map(dot => dot.dataset['note'])).toEqual(['B3', 'B3', 'B2']);
+        expect(ringed.every(dot => dot.querySelector('.mark') !== null)).toBe(true);
+        expect(dots().some(dot => dot.classList.contains('dim'))).toBe(false);
+    });
+
     it('DIAG-1.4 numbers the inlay frets, and the first fret away from the nut', async () => {
         await show({ range: { from: 4, to: 10 } });
 

@@ -114,11 +114,13 @@ export interface ViewOptions {
     readonly nps?: number;
     /** The labels setting for this card alone (CTX-2.4). */
     readonly labels?: Labels;
+    /** The degrees highlighted, the rest dimmed (SCL-2.3): their numbers from the root in order, `135`. */
+    readonly deg?: string;
 }
 
 /** The options each card takes, in the order its URL writes them. */
 const CARD_OPTIONS: Readonly<Record<CardKind, readonly (keyof ViewOptions)[]>> = {
-    scale: ['pos', 'nps', 'labels']
+    scale: ['pos', 'nps', 'deg', 'labels']
 };
 
 const LABELS: readonly Labels[] = ['notes', 'intervals', 'degrees', 'none'];
@@ -138,11 +140,60 @@ export function readViewOptions(kind: CardKind, params: QueryParams): ViewOption
     const pos = whole('pos', 5);
     const nps = pos === undefined ? whole('nps', 7) : undefined;
     const labels = takes.includes('labels') ? LABELS.find(label => label === params.get('labels')) : undefined;
+    const deg = takes.includes('deg') ? readDegrees(params.get('deg')) : undefined;
     return {
         ...(pos === undefined ? {} : { pos }),
         ...(nps === undefined ? {} : { nps }),
+        ...(deg === undefined ? {} : { deg }),
         ...(labels === undefined ? {} : { labels })
     };
+}
+
+/**
+ * Highlighted degrees as a URL writes them (SCL-2.3): each a digit from 1 to 8, at most once, in order. `undefined`
+ * for anything else, so a bad `deg` leaves the URL. A card ignores degrees its scale doesn't have.
+ */
+function readDegrees(text: string | null): string | undefined {
+    if (text === null || !/^[1-8]{1,8}$/u.test(text)) return undefined;
+    const digits = [...text];
+    return digits.every((digit, i) => i === 0 || digit > (digits[i - 1] ?? '')) ? text : undefined;
+}
+
+/** Degrees chosen on a card as `deg` writes them, or `undefined` for none (SCL-2.3). */
+export function writeDegrees(degrees: Iterable<number>): string | undefined {
+    const text = [...new Set(degrees)]
+        .filter(degree => Number.isInteger(degree) && degree >= 1 && degree <= 8)
+        .sort((a, b) => a - b)
+        .join('');
+    return text === '' ? undefined : text;
+}
+
+/** Degrees as `deg` writes them, read back into numbers. */
+export function degreesOf(deg: string | undefined): number[] {
+    return deg === undefined ? [] : [...deg].map(Number);
+}
+
+/** Each list's route, as SvelteKit names it, for the lists that take a filter. */
+export const LIST_ROUTES: Readonly<Record<string, ListPath>> = {
+    '/scales': '/scales'
+};
+
+/**
+ * The root a Scales list shows its scales on, from its query (`/scales?root=Eb`, SCL-1.1): a note without an
+ * octave, read as `readRoot` reads a path's. Absent, the list takes the current key's root (SCL-1.2).
+ */
+export function readListRoot(params: QueryParams): NoteName | undefined {
+    const text = params.get('root');
+    return text === null ? undefined : readRoot(text);
+}
+
+/** A list's query as the app writes it: its filter, then the override (APP-3.1, APP-3.3). */
+export function writeListQuery(list: ListPath, root: NoteName | undefined, override: ContextOverride): string {
+    const params = new URLSearchParams();
+    if (list === '/scales' && root !== undefined) params.set('root', noteSlug(root));
+    writeOverride(params, override);
+    const query = params.toString();
+    return query === '' ? '' : `?${query}`;
 }
 
 /** A query as the app writes it: the card's options in order, then the override (APP-3.3). Empty, or from `?`. */
@@ -179,9 +230,18 @@ export function withViewOption<K extends keyof ViewOptions>(
 
 /**
  * A URL's query as the app would write it: what it can read, in order, and nothing else, so a bad or unknown
- * option falls back to its default and leaves the URL. Lists (no card) take only the override so far.
+ * option falls back to its default and leaves the URL. A list takes its filter (`list`), and any other screen only
+ * the override.
  */
-export function canonicalQuery(kind: CardKind | undefined, params: QueryParams, settings: Settings): string {
+export function canonicalQuery(
+    kind: CardKind | undefined,
+    params: QueryParams,
+    settings: Settings,
+    list?: ListPath
+): string {
+    if (kind === undefined && list !== undefined) {
+        return writeListQuery(list, readListRoot(params), readOverride(params, settings));
+    }
     const options = kind === undefined ? {} : readViewOptions(kind, params);
     return writeQuery(kind, options, readOverride(params, settings));
 }

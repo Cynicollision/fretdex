@@ -8,7 +8,11 @@ import {
     cardTitle,
     moduleOfPath,
     readScaleCard,
+    degreesOf,
+    readListRoot,
     readViewOptions,
+    writeDegrees,
+    writeListQuery,
     withViewOption,
     type Card
 } from './routes';
@@ -91,6 +95,36 @@ describe('view options', () => {
         expect(options('scale', 'pos=6&nps=0&labels=frets&compare=dorian')).toEqual({});
         expect(options('scale', 'pos=2&nps=3')).toEqual({ pos: 2 });
     });
+
+    it('SCL-2.3 reads highlighted degrees as digits in order, each once', () => {
+        expect(options('scale', 'deg=135')).toEqual({ deg: '135' });
+        expect(options('scale', 'deg=6')).toEqual({ deg: '6' });
+        for (const bad of ['deg=531', 'deg=133', 'deg=09', 'deg=1,3', 'deg='])
+            expect(options('scale', bad)).toEqual({});
+    });
+});
+
+describe('degrees', () => {
+    it('SCL-2.3 writes chosen degrees in order, each once, and reads them back', () => {
+        expect(writeDegrees([5, 1, 3, 3])).toBe('135');
+        expect(writeDegrees([])).toBeUndefined();
+        expect(degreesOf('246')).toEqual([2, 4, 6]);
+        expect(degreesOf(undefined)).toEqual([]);
+    });
+});
+
+describe('list queries', () => {
+    it("SCL-1.1 reads the Scales list's root, any spelling", () => {
+        expect(readListRoot(new URLSearchParams('root=Fs'))).toBe('F#');
+        expect(readListRoot(new URLSearchParams('root=eb'))).toBe('Eb');
+        expect(readListRoot(new URLSearchParams('root=H'))).toBeUndefined();
+        expect(readListRoot(new URLSearchParams(''))).toBeUndefined();
+    });
+
+    it('APP-3.1 writes the root before the override, and only on the Scales list', () => {
+        expect(writeListQuery('/scales', 'F#', { capo: 2 })).toBe('?root=Fs&capo=2');
+        expect(writeListQuery('/modes', 'F#', {})).toBe('');
+    });
 });
 
 describe('canonicalQuery', () => {
@@ -101,6 +135,15 @@ describe('canonicalQuery', () => {
         expect(canonical('scale', 'capo=2&labels=notes&utm=x&pos=9&nps=2')).toBe('?nps=2&labels=notes&capo=2');
         expect(canonical(undefined, 'pos=2&tuning=drop-d')).toBe('?inst=guitar&tuning=drop-d');
         expect(canonical('scale', 'compare=dorian')).toBe('');
+        expect(canonical('scale', 'labels=notes&deg=35')).toBe('?deg=35&labels=notes');
+    });
+
+    it("keeps a list's filter and drops what it doesn't take", () => {
+        const list = (query: string) =>
+            canonicalQuery(undefined, new URLSearchParams(query), DEFAULT_SETTINGS, '/scales');
+        expect(list('pos=2&root=%23&root=fs')).toBe('');
+        expect(list('pos=2&root=fs')).toBe('?root=Fs');
+        expect(list('root=Bb&capo=3')).toBe('?root=Bb&capo=3');
     });
 
     it('keeps a query it wrote as it is', () => {
