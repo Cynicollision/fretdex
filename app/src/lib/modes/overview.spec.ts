@@ -1,112 +1,121 @@
-import { mapScale, TUNINGS } from '@fretdex/fretkit';
+import { scaleType } from '@fretdex/fretkit';
 import { describe, expect, it } from 'vitest';
-import { ghosts, markedInterval, modeRows, modeWindow, rowMarks } from './overview';
+import { STEP_STRIP, characteristicLine, modeRows, overviewKey, parentKey, rowPosition, stepSlice } from './overview';
 
 const STANDARD = ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'];
+const DADGAD = ['D2', 'A2', 'D3', 'G3', 'A3', 'D4'];
 const BASS = ['E1', 'A1', 'D2', 'G2'];
 
+/** The overview's row for a degree of a major key, 1 to 7. */
+function row(key: string, degree: number) {
+    const found = modeRows(key)[degree - 1];
+    if (!found) throw new Error(`No row ${String(degree)}`);
+    return found;
+}
+
+function type(id: string) {
+    const found = scaleType(id);
+    if (!found) throw new Error(`No scale ${id}`);
+    return found;
+}
+
 describe('modeRows', () => {
-    it('MODE-1.1 lists the seven modes on the root, brightest first', () => {
-        expect(modeRows('D', 'auto').map(row => row.card.scale.id)).toEqual([
-            'lydian',
-            'ionian',
-            'mixolydian',
-            'dorian',
-            'aeolian',
-            'phrygian',
-            'locrian'
+    it('MODE-1.1 lists the seven modes of a major scale by degree, spelled as the scale spells them', () => {
+        const rows = modeRows('C');
+        expect(rows.map(row => `${row.numeral} ${row.card.root} ${row.card.scale.id}`)).toEqual([
+            'I C ionian',
+            'ii D dorian',
+            'iii E phrygian',
+            'IV F lydian',
+            'V G mixolydian',
+            'vi A aeolian',
+            'viiø B locrian'
         ]);
-        expect(modeRows('D', 'auto').find(row => row.card.scale.id === 'dorian')?.set.notes).toEqual([
-            'D',
-            'E',
-            'F',
-            'G',
-            'A',
-            'B',
-            'C'
+        expect(modeRows('Db').map(row => row.card.root)).toEqual(['Db', 'Eb', 'F', 'Gb', 'Ab', 'Bb', 'C']);
+    });
+
+    it('MODE-1.1 gives every row the same notes', () => {
+        const notes = (degree: number) => [...row('A', degree).set.notes].sort();
+        for (let degree = 2; degree <= 7; degree++) expect(notes(degree)).toEqual(notes(1));
+    });
+});
+
+describe('rowPosition', () => {
+    it("MODE-1.12 shows each mode's 3-notes-per-string pattern from its root on the lowest string", () => {
+        for (const mode of modeRows('C')) {
+            const position = rowPosition(mode, STANDARD, 'guitar', 0);
+            const id = mode.card.scale.id;
+            expect(position?.kind, id).toBe('nps');
+            const lowest = position?.cells.filter(cell => cell.string === 6) ?? [];
+            expect(lowest, id).toHaveLength(3);
+            expect(lowest[0]?.degree, id).toBe(1);
+            expect(position?.cells, id).toHaveLength(18);
+        }
+        expect(rowPosition(row('C', 2), STANDARD, 'guitar', 0)).toMatchObject({ from: 10 });
+    });
+
+    it('MODE-1.12 works in other tunings, and on bass takes the one-octave box from the lowest string', () => {
+        expect(rowPosition(row('G', 1), DADGAD, 'guitar', 0)?.kind).toBe('nps');
+        const box = rowPosition(row('G', 1), BASS, 'bass', 0);
+        expect(box).toMatchObject({ kind: 'bass', number: 1, octaves: 1, rootString: 4 });
+    });
+
+    it('MODE-1.12 moves up with a capo', () => {
+        const open = rowPosition(row('C', 3), STANDARD, 'guitar', 0);
+        const capo = rowPosition(row('C', 3), STANDARD, 'guitar', 2);
+        expect(open?.from).toBe(0);
+        expect(capo?.from).toBeGreaterThanOrEqual(2);
+    });
+});
+
+describe('stepSlice', () => {
+    it('MODE-1.14 lights each mode one step further along the major scale', () => {
+        const slices = modeRows('C').map(mode => {
+            const slice = stepSlice(mode);
+            return STEP_STRIP.slice(slice.from, slice.to + 1).join(' ');
+        });
+        expect(slices).toEqual([
+            'W W H W W W H',
+            'W H W W W H W',
+            'H W W W H W W',
+            'W W W H W W H',
+            'W W H W W H W',
+            'W H W W H W W',
+            'H W W H W W W'
         ]);
-    });
-
-    it('MODE-1.1 spells each row as the brightness row does, so A♯ has B♭ Lydian', () => {
-        const roots = modeRows('A#', 'auto').map(row => row.card.root);
-        expect(roots[0]).toBe('Bb');
-        expect(roots).toContain('A#');
-    });
-
-    it('MODE-1.9 gives each row its characteristic note and what changed from the row above', () => {
-        const rows = modeRows('C', 'auto');
-        expect(rows[0]?.change).toBeUndefined();
-        expect(rows.map(row => row.characteristic)).toEqual(['4A', '4P', '7m', '6M', '6m', '2m', '5d']);
-        expect(rows.map(row => row.change?.to)).toEqual([undefined, '4P', '7m', '3m', '6m', '2m', '5d']);
+        expect(STEP_STRIP).toHaveLength(13);
     });
 });
 
-describe('modeWindow', () => {
-    it('MODE-1.1 starts a fret below the root on the lowest string', () => {
-        expect(modeWindow(STANDARD, 'D', 0)).toEqual({ from: 9, to: 14 });
-        expect(modeWindow(STANDARD, 'G', 0)).toEqual({ from: 2, to: 7 });
-        expect(modeWindow(STANDARD, 'F', 0)).toEqual({ from: 0, to: 5 });
-        expect(modeWindow(BASS, 'A', 0)).toEqual({ from: 4, to: 9 });
-    });
-
-    it('MODE-1.1 starts at the nut or the capo when the root is there', () => {
-        expect(modeWindow(STANDARD, 'E', 0)).toEqual({ from: 0, to: 5 });
-        expect(modeWindow(STANDARD, 'F#', 2)).toEqual({ from: 2, to: 7 });
-        expect(modeWindow(STANDARD, 'E', 2)).toEqual({ from: 11, to: 16 });
-        expect(modeWindow(TUNINGS.guitar[1]?.strings ?? STANDARD, 'D', 0).from).toBe(0);
-    });
-
-    it('MODE-1.1 is the same for every row, so only the changed note moves', () => {
-        const window = modeWindow(STANDARD, 'A', 0);
-        const rows = modeRows('A', 'auto');
-        for (let i = 1; i < rows.length; i++) {
-            const above = rows[i - 1];
-            const row = rows[i];
-            if (!above || !row) continue;
-            const key = (cell: { string: number; fret: number }) => `${String(cell.string)}:${String(cell.fret)}`;
-            const was = new Set(mapScale(STANDARD, above.set, window).map(key));
-            const now = new Set(mapScale(STANDARD, row.set, window).map(key));
-            const gone = [...was].filter(cell => !now.has(cell));
-            const added = [...now].filter(cell => !was.has(cell));
-            expect(gone.length, row.card.scale.id).toBeGreaterThan(0);
-            expect(added.length, row.card.scale.id).toBeLessThanOrEqual(gone.length);
-        }
-    });
-});
-
-describe('ghosts', () => {
-    it('MODE-1.9 marks where the changed note was, a fret above where it is now', () => {
-        const window = modeWindow(STANDARD, 'C', 0);
-        const ionian = modeRows('C', 'auto')[1];
-        if (!ionian) throw new Error('No Ionian');
-        const fours = mapScale(STANDARD, ionian.set, window).filter(cell => cell.code === '4P');
-        const marks = ghosts(ionian, STANDARD, window, 0);
-        expect(marks.length).toBeGreaterThan(0);
-        for (const mark of marks) {
-            expect(fours).toContainEqual(expect.objectContaining({ string: mark.string, fret: mark.fret - 1 }));
-            expect(mark.fret).toBeLessThanOrEqual(window.to);
-        }
-    });
-
-    it('MODE-1.9 has none for Lydian, the first row', () => {
-        const lydian = modeRows('C', 'auto')[0];
-        if (!lydian) throw new Error('No Lydian');
-        expect(ghosts(lydian, STANDARD, modeWindow(STANDARD, 'C', 0), 0)).toEqual([]);
-    });
-});
-
-describe('rowMarks', () => {
-    it('MODE-1.9 names the characteristic note and what changed', () => {
-        expect(modeRows('C', 'auto').map(rowMarks)).toEqual([
+describe('characteristicLine', () => {
+    it('MODE-1.13 names the characteristic note, with no "was"', () => {
+        expect(modeRows('C').map(characteristicLine)).toEqual([
+            '♮4 characteristic',
+            '♮6 characteristic',
+            '♭2 characteristic',
             '♯4 characteristic',
-            '♮4 characteristic, was ♯4',
-            '♭7 characteristic, was 7',
-            '♮6 characteristic · ♭3, was 3',
-            '♭6 characteristic, was 6',
-            '♭2 characteristic, was 2',
-            '♭5 characteristic, was 5'
+            '♭7 characteristic',
+            '♭6 characteristic',
+            '♭5 characteristic'
         ]);
-        expect(markedInterval('6M')).toBe('♮6');
-        expect(markedInterval('4A')).toBe('♯4');
+    });
+});
+
+describe('the key', () => {
+    it("MODE-1.10 opens on the current key's parent major, or C", () => {
+        expect(overviewKey(null, 'auto')).toBe('C');
+        expect(overviewKey({ root: 'D', mode: 'dorian' }, 'auto')).toBe('C');
+        expect(overviewKey({ root: 'A', mode: 'minor' }, 'auto')).toBe('C');
+        expect(overviewKey({ root: 'E', mode: 'major' }, 'auto')).toBe('E');
+        expect(overviewKey({ root: 'F#', mode: 'minor' }, 'auto')).toBe('A');
+    });
+
+    it("MODE-1.10 spells a parent the key picker wouldn't offer as it would", () => {
+        expect(parentKey('G#', type('dorian'), 'auto')).toBe('F#');
+        expect(parentKey('A#', type('phrygian'), 'auto')).toBe('F#');
+        expect(parentKey('D#', type('aeolian'), 'auto')).toBe('F#');
+        expect(parentKey('B', type('locrian'), 'auto')).toBe('C');
+        // A♯ Dorian's parent would be G♯ major, with F𝄪.
+        expect(parentKey('A#', type('dorian'), 'auto')).toBe('Ab');
     });
 });

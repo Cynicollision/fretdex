@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BRIGHTNESS, changedFrom, diatonicChords, modeInfo, parentRoot, stepFormula } from './mode';
+import { BRIGHTNESS, diatonicChords, modeInfo, parentRoot, stepFormula } from './mode';
 import { SCALE_TYPES, scaleType, spell, type ScaleType } from './scale';
 
 function type(id: string): ScaleType {
@@ -28,26 +28,6 @@ describe('BRIGHTNESS', () => {
             const changed = darker.filter((note, n) => note !== brighter[n]);
             expect(changed, BRIGHTNESS[i]?.id).toHaveLength(1);
         }
-    });
-});
-
-describe('changedFrom', () => {
-    it('MODE-1.9 gives the note each mode flattens from the one above it', () => {
-        const changes = Object.fromEntries(BRIGHTNESS.map(t => [t.id, changedFrom(t)]));
-        expect(changes).toEqual({
-            lydian: undefined,
-            ionian: { from: '4A', to: '4P' },
-            mixolydian: { from: '7M', to: '7m' },
-            dorian: { from: '3M', to: '3m' },
-            aeolian: { from: '6M', to: '6m' },
-            phrygian: { from: '2M', to: '2m' },
-            locrian: { from: '5P', to: '5d' }
-        });
-    });
-
-    it('MODE-1.9 has no change for a scale outside the brightness order', () => {
-        expect(changedFrom(type('major'))).toBeUndefined();
-        expect(changedFrom(type('harmonic-minor'))).toBeUndefined();
     });
 });
 

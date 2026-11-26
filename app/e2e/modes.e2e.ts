@@ -6,43 +6,60 @@ function where(page: Page): string {
     return url.pathname + url.search;
 }
 
-test('MODE-1.1 and MODE-1.9 show the seven modes on the root, with their marks', async ({ page }) => {
-    await page.goto('/modes/D');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Modes on D');
-    const rows = page.getByRole('main').getByRole('listitem');
-    await expect(rows).toHaveCount(7);
-    await expect(rows.first()).toContainText('D Lydian');
-    await expect(rows.last()).toContainText('D Locrian');
-    const dorian = rows.filter({ hasText: 'D Dorian' });
-    await expect(dorian).toContainText('♮6 characteristic · ♭3, was 3');
+function rows(page: Page) {
+    return page.getByRole('main').getByRole('listitem');
+}
+
+test("MODE-1.1, 1.13 and 1.14 show a major key's seven modes by degree, each with its marks and steps", async ({
+    page
+}) => {
+    await page.goto('/modes/C');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Modes of C major');
+    await expect(rows(page)).toHaveCount(7);
+    await expect(rows(page).first()).toContainText('I C Ionian');
+    await expect(rows(page).last()).toContainText('viiø B Locrian');
+    const dorian = rows(page).filter({ hasText: 'D Dorian' });
+    await expect(dorian).toContainText('♮6 characteristic');
+    await expect(dorian).not.toContainText('was');
     await expect(dorian).toContainText('1 2 ♭3 4 5 6 ♭7');
-    await expect(dorian.locator('.dot.changed').first()).toBeVisible();
-    await expect(dorian.locator('.ghost').first()).toBeVisible();
-    await expect(rows.first().locator('.dot.changed')).toHaveCount(0);
+    await expect(dorian).toContainText('Steps W H W W W H W.');
+    await expect(dorian.locator('.step.lit')).toHaveCount(7);
+    await expect(dorian.locator('.dot.dim').first()).toBeVisible();
+    await expect(dorian.locator('circle.mark').first()).toBeVisible();
 });
 
-test('MODE-1.7 opens a mode from its row, and its card links back to the overview', async ({ page }) => {
-    await page.goto('/modes/D');
-    await page.getByRole('link', { name: /^D Dorian/u }).click();
+test('MODE-1.7 and MODE-1.12 open a mode on its position, and its card links back to the overview', async ({
+    page
+}) => {
+    await page.goto('/modes/C');
+    await page.getByRole('link', { name: /D Dorian/u }).click();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('D Dorian');
-    await page.getByRole('link', { name: 'All seven modes side by side' }).click();
-    await expect.poll(() => where(page)).toBe('/modes/D');
+    await expect.poll(() => where(page)).toBe('/scales/D/dorian?nps=1');
+    await page.getByRole('link', { name: 'The seven modes of C major' }).click();
+    await expect.poll(() => where(page)).toBe('/modes/C');
 });
 
-test('MODE-1.10 changes the root in place, and /modes opens on C with no key', async ({ page }) => {
+test("MODE-1.15 changes every row's labels, kept in the URL", async ({ page }) => {
+    await page.goto('/modes/C');
+    await page.getByText('Note names', { exact: true }).click();
+    await expect.poll(() => where(page)).toBe('/modes/C?labels=notes');
+    await expect(rows(page).first().locator('.dot text').first()).toHaveText(/^[A-G]/u);
+});
+
+test('MODE-1.10 changes the key in place, and /modes opens on C with no key', async ({ page }) => {
     await page.goto('/modes');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Modes on C');
-    await page.getByText('Root: C').click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Modes of C major');
+    await page.getByText('Key: C major').click();
     await page.getByText('F♯/G♭', { exact: true }).click();
     await expect.poll(() => where(page)).toBe('/modes/Fs');
     // `/modes/Fs` is another route than `/modes`, so the picker opens closed there.
-    await page.getByText('Root: F♯').click();
+    await page.getByText('Key: F♯ major').click();
     await page.getByRole('button', { name: 'Spell as G♭' }).click();
     await expect.poll(() => where(page)).toBe('/modes/Gb');
-    await expect(page.getByRole('main').getByRole('listitem').first()).toContainText('G♭ Lydian');
+    await expect(rows(page).nth(1)).toContainText('A♭ Dorian');
 });
 
-test('APP-3.5 shows Not found for a root it cannot read', async ({ page }) => {
+test('APP-3.5 shows Not found for a key it cannot read', async ({ page }) => {
     await page.goto('/modes/H');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Not found');
 });

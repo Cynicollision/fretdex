@@ -63,10 +63,13 @@
         <section aria-labelledby="group-{group.id}">
             <h2 id="group-{group.id}">{group.name}</h2>
             <CardList items={group.cards.map(card => ({ card }))} />
-            {#if group.id === 'modes' && group.cards[0]}
-                <a class="link" href={cardHref({ kind: 'modes', root: group.cards[0].root })}>
-                    All seven modes side by side
-                </a>
+            {#if group.id === 'modes'}
+                {@const ionian = group.cards.find(card => card.scale.id === 'ionian')}
+                {#if ionian}
+                    <a class="link" href={cardHref({ kind: 'modes', root: ionian.root })}>
+                        The seven modes of {noteLabel(ionian.root)} major
+                    </a>
+                {/if}
             {/if}
         </section>
     {/each}

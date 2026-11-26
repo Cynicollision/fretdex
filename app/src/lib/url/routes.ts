@@ -36,7 +36,7 @@ export const MODULES: readonly ModuleEntry[] = [
 /** The tools (APP-1.1): Identify in M02, the tuner and metronome after version 1. */
 export const TOOLS: readonly ModuleEntry[] = [{ name: 'Identify' }, { name: 'Tuner' }, { name: 'Metronome' }];
 
-/** What a card's path names (APP-3.1): a scale card, or the Modes overview on a root (MODE-1). */
+/** What a card's path names (APP-3.1): a scale card, or the Modes overview of a major key (MODE-1). */
 export type Card =
     | { readonly kind: 'scale'; readonly root: NoteName; readonly scale: ScaleType }
     | { readonly kind: 'modes'; readonly root: NoteName };
@@ -70,7 +70,7 @@ export function readScaleCard(root: string, scale: string): ScaleCardRef | undef
     return { kind: 'scale', root: note, scale: type };
 }
 
-/** The Modes overview on a root (MODE-1.10): `/modes/Fs`. */
+/** The Modes overview of a major key (MODE-1.10): `/modes/Db` shows the modes of D♭ major. */
 export function readModesCard(root: string): Card | undefined {
     const note = readRoot(root);
     return note === undefined ? undefined : { kind: 'modes', root: note };
@@ -112,13 +112,13 @@ function lowerName(name: string): string {
     return PROPER.test(name) ? name : name.charAt(0).toLowerCase() + name.slice(1);
 }
 
-/** A card's name, as its heading and title show it (APP-3.6): "G major", "D Dorian", "Modes on D". */
+/** A card's name, as its heading and title show it (APP-3.6): "G major", "D Dorian", "Modes of C major". */
 export function cardTitle(card: Card): string {
     switch (card.kind) {
         case 'scale':
             return `${noteLabel(card.root)} ${lowerName(card.scale.name)}`;
         case 'modes':
-            return `Modes on ${noteLabel(card.root)}`;
+            return `Modes of ${noteLabel(card.root)} major`;
     }
 }
 
@@ -144,7 +144,7 @@ export interface ViewOptions {
 /** The options each card takes, in the order its URL writes them. */
 const CARD_OPTIONS: Readonly<Record<CardKind, readonly (keyof ViewOptions)[]>> = {
     scale: ['pos', 'nps', 'box', 'deg', 'labels'],
-    modes: []
+    modes: ['labels']
 };
 
 /** The options that choose a position, of which a card shows one at most, in the order the first present wins. */

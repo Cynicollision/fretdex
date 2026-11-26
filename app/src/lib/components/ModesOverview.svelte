@@ -1,122 +1,168 @@
 <!--
-    The Modes overview (MODE-1): the seven modes of the major scale on one root, brightest first, each row its name,
-    what it changed from the row above and its characteristic note, its intervals, and a small neck of it in the same
-    six frets as every other row, so only the changed note moves. A row opens the mode's scale card (MODE-1.7). The
-    root is the path's (`/modes/Fs`), or on `/modes` the current key's, or C (MODE-1.10).
+    The Modes overview (MODE-1): the seven modes of one major scale, Ionian to Locrian, each row its numeral and name,
+    its characteristic note, its intervals, its slice of the scale's step pattern, and one position of it on a small
+    neck. A row opens the mode's scale card on that position (MODE-1.7, MODE-1.12). The key is the path's
+    (`/modes/Db`), or on `/modes` the current key's parent major, or C (MODE-1.10).
 -->
 <script lang="ts">
-    import {
-        PICKER_ROOTS,
-        intervalLabel,
-        mapScale,
-        noteLabel,
-        notePitchClass,
-        spellPitchClass,
-        type NoteName
-    } from '@fretdex/fretkit';
+    import { intervalLabel, noteLabel, notePitchClass, rootChoices, scaleType, type NoteName } from '@fretdex/fretkit';
     import Choice from '#lib/components/Choice.svelte';
     import ModeNeck from '#lib/components/ModeNeck.svelte';
     import Screen from '#lib/components/Screen.svelte';
     import { describeFretboard } from '#lib/diagrams/fretboard.ts';
-    import { ghosts, modeRows, modeWindow, rowMarks } from '#lib/modes/overview.ts';
+    import {
+        STEP_STRIP,
+        characteristicLine,
+        modeRows,
+        overviewKey,
+        rowPosition,
+        stepSlice,
+        type ModeRow
+    } from '#lib/modes/overview.ts';
+    import { rootButtons } from '#lib/settings/key.ts';
+    import type { Labels } from '#lib/settings/settings.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { tuningName } from '#lib/settings/tunings.ts';
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { readOverride, viewContext } from '#lib/url/context.ts';
     import { cardHref } from '#lib/url/href.ts';
     import { replaceCard } from '#lib/url/navigate.ts';
-    import { cardPath, cardTitle, type Card } from '#lib/url/routes.ts';
+    import { cardPath, cardTitle, readViewOptions, withViewOption, writeQuery, type Card } from '#lib/url/routes.ts';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
 
     interface Props {
-        /** The path's root; on `/modes`, none, and the overview takes the current key's (MODE-1.10). */
+        /** The path's key; on `/modes`, none, and the overview takes the current key's parent major (MODE-1.10). */
         root?: NoteName;
     }
 
     let { root }: Props = $props();
 
-    const shown = $derived(root ?? settings.current.key?.root ?? 'C');
-    const card: Card = $derived({ kind: 'modes', root: shown });
+    const major = scaleType('major');
+    if (major === undefined) throw new Error('No major scale');
+
+    const key = $derived(root ?? overviewKey(settings.current.key, settings.current.accidentals));
+    const card: Card = $derived({ kind: 'modes', root: key });
     const title = $derived(cardTitle(card));
-    // `/modes` is prerendered, with no query, so the override is read once the page has mounted (architecture's Routes).
+
+    // `/modes` is prerendered, with no query, so the query is read once the page has mounted (architecture's Routes).
     let mounted = $state(false);
     onMount(() => {
         mounted = true;
     });
-    const override = $derived(mounted ? readOverride(page.url.searchParams, settings.current) : {});
+    const params = $derived(mounted ? page.url.searchParams : new URLSearchParams());
+    const override = $derived(readOverride(params, settings.current));
     const view = $derived(viewContext(settings.current, override));
-    const rows = $derived(modeRows(shown, settings.current.accidentals));
-    const window = $derived(modeWindow(view.tuning, shown, view.capo));
+    const labels: Labels = $derived(readViewOptions('modes', params).labels ?? settings.current.labels);
+
+    const rows = $derived(modeRows(key));
     const instrumentText = $derived(view.instrument === 'guitar' ? 'guitar' : 'bass');
     const tuningText = $derived(tuningName(view.instrument, view.tuning, customTunings.current));
 
-    // The root picker (MODE-1.10), as the Scales list's: a black key opens the spelling the accidentals setting
-    // gives a lone note, with the other one a tap away.
-    const rootOptions = PICKER_ROOTS.map(button => ({
-        value: String(button.pitchClass),
-        label: button.spellings.map(noteLabel).join('/')
-    }));
-    const pitchClass = $derived(notePitchClass(shown));
-    const otherSpelling = $derived(PICKER_ROOTS[pitchClass]?.spellings.find(spelling => spelling !== shown));
-    function openRoot(next: NoteName) {
-        void replaceCard({ kind: 'modes', root: next }, page.url.search);
+    // The key picker (MODE-1.10): the major keys the key picker offers, the other spelling a tap away.
+    const buttons = rootButtons(major);
+    const keyOptions = buttons.map(button => ({ value: String(button.pitchClass), label: button.label }));
+    const pitchClass = $derived(notePitchClass(key));
+    const otherSpelling = $derived(
+        buttons.find(button => button.pitchClass === pitchClass)?.spellings.find(spelling => spelling !== key)
+    );
+    function openKey(next: NoteName) {
+        void replaceCard({ kind: 'modes', root: next }, mounted ? page.url.search : '');
+    }
+
+    // Labels for every row at once (MODE-1.15). On `/modes` this moves to the key's own path, which holds options.
+    function setLabels(next: Labels) {
+        const value = next === settings.current.labels ? undefined : next;
+        void replaceCard(card, withViewOption('modes', params, settings.current, 'labels', value));
+    }
+
+    /** A row's link: the mode's card on the position the row shows, keeping the override (MODE-1.7, APP-1.5). */
+    function rowHref(row: ModeRow, hasPosition: boolean): string {
+        const option = view.instrument === 'bass' ? { box: 1 } : { nps: 1 };
+        return cardHref(row.card) + writeQuery('scale', hasPosition ? option : {}, override);
     }
 </script>
 
 <Screen {title} back="/">
-    <p class="muted">Brightest to darkest: each mode flattens one note of the one above. Tap a mode to open it.</p>
+    <p class="muted">The same notes from each degree of {noteLabel(key)} major. Tap a mode to open it.</p>
 
-    <details class="root">
-        <summary>Root: {noteLabel(shown)} <span class="change">Change</span></summary>
-        <div class="root-picker">
+    <details class="key">
+        <summary>Key: {noteLabel(key)} major <span class="change">Change</span></summary>
+        <div class="key-picker">
             <Choice
-                legend="Root"
-                name="modes-root"
-                options={rootOptions}
+                legend="Key"
+                name="modes-key"
+                options={keyOptions}
                 value={String(pitchClass)}
                 columns={4}
                 hideLegend
-                onchange={value => openRoot(spellPitchClass(Number(value), settings.current.accidentals))}
+                onchange={value => openKey(rootChoices(Number(value), major, settings.current.accidentals).root)}
             />
             {#if otherSpelling}
-                <button type="button" onclick={() => openRoot(otherSpelling)}>
+                <button type="button" onclick={() => openKey(otherSpelling)}>
                     Spell as {noteLabel(otherSpelling)}
                 </button>
             {/if}
         </div>
     </details>
 
+    <Choice
+        legend="Labels"
+        name="modes-labels"
+        options={[
+            { value: 'notes', label: 'Note names' },
+            { value: 'intervals', label: 'Intervals' },
+            { value: 'degrees', label: 'Scale degrees' },
+            { value: 'none', label: 'None' }
+        ]}
+        value={labels}
+        onchange={setLabels}
+    />
+
     <ol class="rows">
         {#each rows as row (cardPath(row.card))}
             {@const name = cardTitle(row.card)}
             {@const id = `mode-${row.card.scale.id}`}
+            {@const position = rowPosition(row, view.tuning, view.instrument, view.capo)}
+            {@const slice = stepSlice(row)}
             <li>
-                <a href={cardHref(row.card)} aria-describedby="{id}-neck">
+                <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- a resolved card path, with its query -->
+                <a href={rowHref(row, position !== undefined)} aria-describedby="{id}-neck">
                     <span class="head">
-                        <span class="name">{name}</span>
-                        <span class="marks">{rowMarks(row)}</span>
+                        <span class="name"><span class="numeral">{row.numeral}</span> {name}</span>
+                        <span class="muted">{characteristicLine(row)}</span>
                     </span>
                     <span class="intervals">{row.set.codes.map(intervalLabel).join(' ')}</span>
-                    <ModeNeck
-                        tuning={view.tuning}
-                        set={row.set}
-                        {window}
-                        capo={view.capo}
-                        handedness={settings.current.handedness}
-                        characteristic={row.characteristic}
-                        {...row.change ? { changed: row.change.to } : {}}
-                        ghosts={ghosts(row, view.tuning, window, view.capo)}
-                    />
+                    <span class="visually-hidden">Steps {STEP_STRIP.slice(slice.from, slice.to + 1).join(' ')}.</span>
+                    <span class="strip" aria-hidden="true">
+                        {#each STEP_STRIP as step, i (i)}
+                            <span class="step" class:lit={i >= slice.from && i <= slice.to}>
+                                {step}
+                            </span>
+                        {/each}
+                    </span>
+                    {#if position}
+                        <ModeNeck
+                            tuning={view.tuning}
+                            set={row.set}
+                            {position}
+                            capo={view.capo}
+                            {labels}
+                            handedness={settings.current.handedness}
+                            characteristic={row.characteristic}
+                        />
+                    {/if}
                 </a>
-                <span class="visually-hidden" id="{id}-neck">
-                    {describeFretboard(
-                        `${name} on ${instrumentText}, ${tuningText} tuning, frets ${String(window.from)} to ${String(window.to)}`,
-                        view.tuning,
-                        mapScale(view.tuning, row.set, window, view.capo),
-                        view.capo
-                    ).join(' ')}
-                </span>
+                {#if position}
+                    <span class="visually-hidden" id="{id}-neck">
+                        {describeFretboard(
+                            `${name} on ${instrumentText}, ${tuningText} tuning, frets ${String(position.from)} to ${String(position.to)}`,
+                            view.tuning,
+                            position.cells,
+                            view.capo
+                        ).join(' ')}
+                    </span>
+                {/if}
             </li>
         {/each}
     </ol>
@@ -131,7 +177,7 @@
         color: var(--muted);
     }
 
-    .root summary {
+    .key summary {
         min-height: var(--tap);
         display: flex;
         align-items: center;
@@ -139,16 +185,16 @@
         cursor: pointer;
     }
 
-    .root summary .change {
+    .key summary .change {
         margin-left: 12px;
         color: var(--accent);
     }
 
-    .root[open] summary .change {
+    .key[open] summary .change {
         display: none;
     }
 
-    .root-picker {
+    .key-picker {
         display: grid;
         gap: 8px;
         justify-items: start;
@@ -178,7 +224,7 @@
 
     .rows a {
         display: grid;
-        gap: 4px;
+        gap: 6px;
         padding: 8px 12px 4px;
         border: 1px solid var(--line);
         border-radius: var(--radius);
@@ -200,13 +246,41 @@
         font-weight: 600;
     }
 
+    .numeral {
+        display: inline-block;
+        min-width: 2.2em;
+        color: var(--muted);
+    }
+
     .name::after {
         content: ' ›';
         color: var(--accent);
     }
 
-    .marks,
     .intervals {
         color: var(--muted);
+    }
+
+    /* The major scale's steps, the mode's seven lit: read down the page, the lit slices step right (MODE-1.14). */
+    .strip {
+        display: grid;
+        grid-template-columns: repeat(13, 1fr);
+        gap: 2px;
+    }
+
+    .step {
+        padding: 1px 0;
+        border-radius: 3px;
+        color: var(--muted);
+        font-size: var(--text-xs);
+        text-align: center;
+        opacity: 0.6;
+    }
+
+    .step.lit {
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 700;
+        opacity: 1;
     }
 </style>

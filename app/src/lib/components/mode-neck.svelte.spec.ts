@@ -1,32 +1,38 @@
-import { mapScale } from '@fretdex/fretkit';
+import { mapScale, type Position } from '@fretdex/fretkit';
 import { afterEach, describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
-import { ghosts, modeRows, modeWindow, type ModeRow } from '#lib/modes/overview.ts';
+import { modeRows, rowPosition, type ModeRow } from '#lib/modes/overview.ts';
+import type { Labels } from '#lib/settings/settings.ts';
 import ModeNeck from './ModeNeck.svelte';
 
 const STANDARD = ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'];
 
-function row(root: string, id: string): ModeRow {
-    const found = modeRows(root, 'auto').find(candidate => candidate.card.scale.id === id);
-    if (!found) throw new Error(`No ${id}`);
+function row(key: string, degree: number): ModeRow {
+    const found = modeRows(key)[degree - 1];
+    if (!found) throw new Error(`No row ${String(degree)}`);
     return found;
 }
 
-async function show(mode: ModeRow, root: string, handedness: 'right' | 'left' = 'right') {
+function positionOf(mode: ModeRow): Position {
+    const position = rowPosition(mode, STANDARD, 'guitar', 0);
+    if (!position) throw new Error('No position');
+    return position;
+}
+
+async function show(mode: ModeRow, labels: Labels = 'intervals', handedness: 'right' | 'left' = 'right') {
     cleanup();
     await page.viewport(390, 800);
-    const window = modeWindow(STANDARD, root, 0);
+    const position = positionOf(mode);
     await render(ModeNeck, {
         tuning: STANDARD,
         set: mode.set,
-        window,
+        position,
+        labels,
         handedness,
-        characteristic: mode.characteristic,
-        ...(mode.change ? { changed: mode.change.to } : {}),
-        ghosts: ghosts(mode, STANDARD, window, 0)
+        characteristic: mode.characteristic
     });
-    return window;
+    return position;
 }
 
 function dots(selector = '.dot'): Element[] {
@@ -38,45 +44,43 @@ afterEach(() => {
 });
 
 describe('ModeNeck', () => {
-    it('MODE-1.1 draws the mode in its window, labelled by interval', async () => {
-        const dorian = row('D', 'dorian');
-        const window = await show(dorian, 'D');
-        const cells = mapScale(STANDARD, dorian.set, window);
-        expect(dots()).toHaveLength(cells.length);
-        expect(document.querySelector('svg')?.getAttribute('data-frets')).toBe('9-14');
-        const labels = new Set(dots().map(dot => dot.textContent.trim()));
-        expect(labels).toEqual(new Set(['1', '2', '♭3', '4', '5', '6', '♭7']));
-        expect(dots('.dot.root rect').length).toBe(cells.filter(cell => cell.degree === 1).length);
+    it("MODE-1.12 draws the position's frets, its notes at full strength and the scale's others there faded", async () => {
+        const dorian = row('C', 2);
+        const position = await show(dorian);
+        expect(document.querySelector('svg')?.getAttribute('data-frets')).toBe(
+            `${String(position.from)}-${String(position.to)}`
+        );
+        const all = mapScale(STANDARD, dorian.set, position);
+        expect(dots()).toHaveLength(all.length);
+        expect(dots('.dot:not(.dim)')).toHaveLength(position.cells.length);
+        expect(dots('.dot.dim')).toHaveLength(all.length - position.cells.length);
     });
 
-    it('MODE-1.9 fills the changed note, rings the characteristic one and marks where the change came from', async () => {
-        const dorian = row('D', 'dorian');
-        const window = await show(dorian, 'D');
-        const cells = mapScale(STANDARD, dorian.set, window);
-        const changed = dots('.dot.changed');
-        expect(changed).toHaveLength(cells.filter(cell => cell.code === '3m').length);
-        expect(changed.every(dot => dot.getAttribute('data-code') === '3m')).toBe(true);
+    it('MODE-1.15 labels its dots by the labels chosen', async () => {
+        await show(row('C', 2), 'intervals');
+        expect(new Set(dots().map(dot => dot.textContent.trim()))).toEqual(
+            new Set(['1', '2', '♭3', '4', '5', '6', '♭7'])
+        );
+        await show(row('C', 2), 'notes');
+        expect(new Set(dots().map(dot => dot.textContent.trim()))).toEqual(
+            new Set(['D', 'E', 'F', 'G', 'A', 'B', 'C'])
+        );
+    });
+
+    it('MODE-1.13 rings the characteristic note and nothing else', async () => {
+        const dorian = row('C', 2);
+        const position = await show(dorian);
+        const sixths = mapScale(STANDARD, dorian.set, position).filter(cell => cell.code === '6M');
+        expect(dots('circle.mark')).toHaveLength(sixths.length);
         expect(dots('.dot.characteristic').every(dot => dot.getAttribute('data-code') === '6M')).toBe(true);
-        expect(dots('.dot.characteristic circle.mark').length).toBe(cells.filter(cell => cell.code === '6M').length);
-        const marks = ghosts(dorian, STANDARD, window, 0);
-        expect(marks.length).toBeGreaterThan(0);
-        expect(dots('.ghost')).toHaveLength(marks.length);
-    });
-
-    it('MODE-1.9 marks no change on Lydian, the first row', async () => {
-        await show(row('C', 'lydian'), 'C');
-        expect(dots('.dot.changed')).toHaveLength(0);
-        expect(dots('.ghost')).toHaveLength(0);
-        expect(dots('.dot.characteristic').length).toBeGreaterThan(0);
     });
 
     it('DIAG-1.5 mirrors the neck left-handed', async () => {
-        const ionian = row('G', 'ionian');
-        await show(ionian, 'G');
         // The lowest fret's note on the lowest string is nearest the nut: on the left, or mirrored on the right.
         const x = () => document.querySelector('.dot[data-string="6"]')?.getBoundingClientRect().x ?? 0;
+        await show(row('G', 1));
         const right = x();
-        await show(ionian, 'G', 'left');
+        await show(row('G', 1), 'intervals', 'left');
         expect(x()).toBeGreaterThan(right);
     });
 });

@@ -1,37 +1,36 @@
 <!--
-    A Modes overview row's small fretboard (MODE-1.1, MODE-1.9): the mode's notes in a window of six frets, labelled
-    by interval, with the note it changed from the row above filled in the accent colour, a hollow dot on the fret it
-    moved from, and its characteristic note ringed. Not tappable: the row it's in opens the mode's card.
+    A Modes overview row's small fretboard (MODE-1.12, MODE-1.13): one position of the mode across its frets, the
+    scale's other notes there faded, labelled per the overview's labels, and its characteristic note ringed. Not
+    tappable: the row it's in opens the mode's card.
 -->
 <script lang="ts">
-    import { mapScale, type FretRange, type IntervalCode, type NoteName, type NoteSet } from '@fretdex/fretkit';
+    import { mapScale, type IntervalCode, type NoteName, type NoteSet, type Position } from '@fretdex/fretkit';
     import { INLAYS, DOUBLE_INLAYS, dotLabel, gauge, type FretSpace } from '#lib/diagrams/fretboard.ts';
     import { MODE_NECK, layModeNeck, modeStringY } from '#lib/diagrams/mode-neck.ts';
-    import type { Ghost } from '#lib/modes/overview.ts';
-    import type { Handedness } from '#lib/settings/settings.ts';
+    import type { Handedness, Labels } from '#lib/settings/settings.ts';
 
     interface Props {
         /** The tuning's pitches, lowest string first. */
         tuning: readonly NoteName[];
         set: NoteSet;
-        window: FretRange;
+        /** The position shown (MODE-1.12): its frets, and its notes at full strength. */
+        position: Pick<Position, 'from' | 'to' | 'cells'>;
         capo?: number;
+        labels: Labels;
         handedness: Handedness;
         /** Ringed (SCL-5.1). */
         characteristic: IntervalCode;
-        /** The note it changed to from the row above, filled in the accent colour (MODE-1.9). */
-        changed?: IntervalCode;
-        /** Where the changed note was in the row above, drawn hollow (MODE-1.9). */
-        ghosts?: readonly Ghost[];
     }
 
-    let { tuning, set, window, capo = 0, handedness, characteristic, changed, ghosts = [] }: Props = $props();
+    let { tuning, set, position, capo = 0, labels, handedness, characteristic }: Props = $props();
 
     let measured = $state(0);
     const width = $derived(measured > 0 ? measured : 343);
     const stringCount = $derived(tuning.length);
+    const window = $derived({ from: position.from, to: position.to });
     const layout = $derived(layModeNeck(window, width, stringCount));
     const cells = $derived(mapScale(tuning, set, window, capo));
+    const inPosition = $derived(new Set(position.cells.map(cell => `${String(cell.string)}:${String(cell.fret)}`)));
 
     const left = $derived(handedness === 'left');
     /** An x as drawn: mirrored when left-handed, so the nut is on the right (DIAG-1.5). */
@@ -131,44 +130,31 @@
         {#each numbered as space (space.fret)}
             <text class="number" x={centre(space)} y={layout.bottom + MODE_NECK.overhang + 13}>{space.fret}</text>
         {/each}
-        {#each ghosts as ghost (`${String(ghost.string)}:${String(ghost.fret)}`)}
-            {@const space = spaceOf(ghost.fret)}
-            {#if space}
-                <circle
-                    class="ghost"
-                    data-string={ghost.string}
-                    data-fret={ghost.fret}
-                    cx={centre(space)}
-                    cy={modeStringY(layout, ghost.string)}
-                    r={r - 2}
-                />
-            {/if}
-        {/each}
         {#each cells as cell (`${String(cell.string)}:${String(cell.fret)}`)}
             {@const space = spaceOf(cell.fret)}
             {#if space}
                 {@const x = centre(space)}
                 {@const y = modeStringY(layout, cell.string)}
                 {@const root = cell.degree === 1}
-                {@const change = cell.code === changed}
+                {@const key = `${String(cell.string)}:${String(cell.fret)}`}
                 <g
                     class="dot"
                     class:root
-                    class:changed={change}
+                    class:dim={!inPosition.has(key)}
                     class:characteristic={cell.code === characteristic}
                     data-string={cell.string}
                     data-fret={cell.fret}
                     data-code={cell.code}
                 >
                     {#if cell.code === characteristic}
-                        <circle class="mark" cx={x} cy={y} r={r + 3.5} />
+                        <circle class="mark" cx={x} cy={y} r={r + 2.5} />
                     {/if}
                     {#if root}
                         <rect x={x - r} y={y - r} width={MODE_NECK.dot} height={MODE_NECK.dot} rx="4" />
                     {:else}
                         <circle cx={x} cy={y} {r} />
                     {/if}
-                    <text {x} {y}>{dotLabel(cell, 'intervals')}</text>
+                    <text {x} {y}>{dotLabel(cell, labels)}</text>
                 </g>
             {/if}
         {/each}
@@ -238,24 +224,13 @@
         fill: var(--root-ink);
     }
 
-    .dot.changed circle:not(.mark) {
-        fill: var(--accent);
-    }
-
-    .dot.changed text {
-        fill: var(--accent-ink);
+    .dot.dim {
+        opacity: 0.3;
     }
 
     .dot circle.mark {
         fill: none;
         stroke: var(--accent);
         stroke-width: 2.5;
-    }
-
-    .ghost {
-        fill: none;
-        stroke: var(--note);
-        stroke-width: 2;
-        stroke-dasharray: 4 3;
     }
 </style>

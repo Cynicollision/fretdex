@@ -68,16 +68,16 @@ describe('the Modes overview', () => {
         expect(path(readModesCard('Fs'))).toBe('/modes/Fs');
         expect(path(readModesCard('F#'))).toBe('/modes/Fs');
         expect(path(readModesCard('bb'))).toBe('/modes/Bb');
-        expect(title(readModesCard('Fs'))).toBe('Modes on F♯');
+        expect(title(readModesCard('Fs'))).toBe('Modes of F♯ major');
         expect(readModesCard('H')).toBeUndefined();
         expect(readModesCard('E2')).toBeUndefined();
     });
 
-    it('APP-1.3 goes back Home, and takes no options but the override', () => {
+    it('APP-1.3 goes back Home, and MODE-1.15 takes the labels and the override', () => {
         expect(cardModule('modes')).toBe('/');
-        expect(
-            canonicalQuery('modes', new URLSearchParams('mode=dorian&compare=lydian&capo=2'), DEFAULT_SETTINGS)
-        ).toBe('?capo=2');
+        const modes = (query: string) => canonicalQuery('modes', new URLSearchParams(query), DEFAULT_SETTINGS);
+        expect(modes('mode=dorian&compare=lydian&capo=2')).toBe('?capo=2');
+        expect(modes('capo=2&nps=1&labels=notes')).toBe('?labels=notes&capo=2');
     });
 });
 

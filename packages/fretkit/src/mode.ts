@@ -30,27 +30,6 @@ export function modeInfo(type: ScaleType): ModeInfo | undefined {
     return MODES[type.id];
 }
 
-/** The note a mode flattens from the mode one brighter (MODE-1.9): Ionian's 4 was Lydian's ♯4. */
-export interface ModeChange {
-    /** The brighter mode's interval: `4A` for Ionian. */
-    readonly from: IntervalCode;
-    /** This mode's, a semitone lower: `4P` for Ionian. */
-    readonly to: IntervalCode;
-}
-
-/**
- * What a mode of the major scale changed from the one above it in brightness order (MODE-1.9): Dorian flattens
- * Mixolydian's 3, so `{ from: '3M', to: '3m' }`. `undefined` for Lydian, the brightest, and for any other scale.
- */
-export function changedFrom(type: ScaleType): ModeChange | undefined {
-    const index = BRIGHTNESS.findIndex(candidate => candidate.id === type.id);
-    const brighter = index > 0 ? BRIGHTNESS[index - 1] : undefined;
-    if (brighter === undefined) return undefined;
-    const from = brighter.intervals.find(code => !type.intervals.includes(code));
-    const to = type.intervals.find(code => !brighter.intervals.includes(code));
-    return from === undefined || to === undefined ? undefined : { from, to };
-}
-
 /** The major scale's interval up to each of its degrees, 1 to 7. */
 const MAJOR_DEGREES: readonly IntervalCode[] = ['1P', '2M', '3M', '4P', '5P', '6M', '7M'];
 

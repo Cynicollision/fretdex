@@ -4,15 +4,15 @@ import { fretWidths, type FretSpace } from './fretboard';
 /** The Modes overview's small fretboard's sizes, in CSS pixels (MODE-1.1): a row's neck, not a tap target. */
 export const MODE_NECK = {
     edge: 6,
-    open: 28,
+    open: 26,
     nut: 5,
     /** Between strings. */
-    gap: 26,
-    overhang: 10,
+    gap: 23,
+    overhang: 8,
     /** Below the neck, for the fret numbers. */
-    numbers: 22,
-    /** Room for a 14px interval label such as ♭6 (APP-5.3). */
-    dot: 24
+    numbers: 20,
+    /** Room for a 14px label such as ♭6 or F♯ (APP-5.3). */
+    dot: 22
 } as const;
 
 /** Where everything on a row's neck goes, before mirroring for the left hand. */
@@ -28,7 +28,7 @@ export interface ModeNeckLayout {
 }
 
 /**
- * Lays out a row's window of frets across `width` (MODE-1.1), narrowing gently up the neck as the card's fretboard
+ * Lays out a row's position's frets across `width` (MODE-1.12), narrowing gently up the neck as the card's fretboard
  * does (DIAG-1.8). From fret 0 the open strings get their own column left of the nut.
  */
 export function layModeNeck(window: FretRange, width: number, stringCount: number): ModeNeckLayout {
