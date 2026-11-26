@@ -6,7 +6,7 @@
 <script lang="ts">
     import { mapScale, type IntervalCode, type NoteName, type NoteSet, type Position } from '@fretdex/fretkit';
     import { INLAYS, DOUBLE_INLAYS, dotLabel, gauge, type FretSpace } from '#lib/diagrams/fretboard.ts';
-    import { MODE_NECK, layModeNeck, modeStringY } from '#lib/diagrams/mode-neck.ts';
+    import { MARK, MODE_NECK, layModeNeck, modeStringY } from '#lib/diagrams/mode-neck.ts';
     import type { Handedness, Labels } from '#lib/settings/settings.ts';
 
     interface Props {
@@ -52,8 +52,10 @@
     const neckEnd = $derived(layout.spaces.at(-1)?.x1 ?? 0);
     const middle = $derived((layout.top + layout.bottom) / 2);
     const capoSpace = $derived(capo > 0 ? fretted.find(space => space.fret === capo) : undefined);
-    /** The window's first fret is numbered, and the inlay frets (DIAG-1.4). */
-    const numbered = $derived(fretted.filter(space => INLAYS.includes(space.fret) || space === fretted[0]));
+    /** The inlay frets are numbered, and the first fret when the nut isn't shown (DIAG-1.4). */
+    const numbered = $derived(
+        fretted.filter(space => INLAYS.includes(space.fret) || (layout.nut === undefined && space === fretted[0]))
+    );
     const r = MODE_NECK.dot / 2;
 </script>
 
@@ -147,7 +149,7 @@
                     data-code={cell.code}
                 >
                     {#if cell.code === characteristic}
-                        <circle class="mark" cx={x} cy={y} r={r + 2.5} />
+                        <circle class="mark" cx={x} cy={y} r={r + MARK.gap} stroke-width={MARK.stroke} />
                     {/if}
                     {#if root}
                         <rect x={x - r} y={y - r} width={MODE_NECK.dot} height={MODE_NECK.dot} rx="4" />
@@ -231,6 +233,5 @@
     .dot circle.mark {
         fill: none;
         stroke: var(--accent);
-        stroke-width: 2.5;
     }
 </style>

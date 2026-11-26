@@ -75,6 +75,16 @@ describe('ModeNeck', () => {
         expect(dots('.dot.characteristic').every(dot => dot.getAttribute('data-code') === '6M')).toBe(true);
     });
 
+    it('DIAG-1.4 numbers the inlay frets, and the first fret only when the nut is not shown', async () => {
+        const numbers = () => dots('.number').map(text => text.textContent.trim());
+        // E Phrygian in C opens at the nut.
+        expect((await show(row('C', 3))).from).toBe(0);
+        expect(numbers()).toEqual(['3', '5']);
+        // D Dorian in C starts at fret 10.
+        await show(row('C', 2));
+        expect(numbers()[0]).toBe('10');
+    });
+
     it('DIAG-1.5 mirrors the neck left-handed', async () => {
         // The lowest fret's note on the lowest string is nearest the nut: on the left, or mirrored on the right.
         const x = () => document.querySelector('.dot[data-string="6"]')?.getBoundingClientRect().x ?? 0;

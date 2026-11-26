@@ -6,14 +6,18 @@ export const MODE_NECK = {
     edge: 6,
     open: 26,
     nut: 5,
-    /** Between strings. */
-    gap: 23,
-    overhang: 8,
+    /** Between strings: room for a ringed dot beside a plain one (`MARK`). */
+    gap: 26,
+    /** Above the top string and below the bottom one, inside the neck: room for a ringed dot, `edge` included. */
+    overhang: 9,
     /** Below the neck, for the fret numbers. */
     numbers: 20,
     /** Room for a 14px label such as ♭6 or F♯ (APP-5.3). */
     dot: 22
 } as const;
+
+/** The characteristic note's ring (MODE-1.13): its radius past the dot's, and its stroke. */
+export const MARK = { gap: 2.5, stroke: 2.5 } as const;
 
 /** Where everything on a row's neck goes, before mirroring for the left hand. */
 export interface ModeNeckLayout {
