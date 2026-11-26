@@ -22,6 +22,8 @@ export interface RunOptions<E> {
     readonly onevent?: (event: E, time: number) => void;
     /** Called when a track that doesn't loop has finished. */
     readonly onend?: () => void;
+    /** Called when the run is stopped before its end: by its `stop`, by another sound, or by `stopAll`. */
+    readonly onstop?: () => void;
     /** Plays under other sounds rather than stopping them and being stopped by them, as the metronome does. */
     readonly under?: boolean;
 }
@@ -51,6 +53,7 @@ interface Run {
     /** Its notes by channel, so a run's notes on one string cut each other as taps do. */
     readonly channels: Map<string, Sounding>;
     readonly under: boolean;
+    readonly onstop: (() => void) | undefined;
 }
 
 /**
@@ -111,7 +114,8 @@ export class AudioEngine {
             playback: undefined,
             sounding: new Set(),
             channels: new Map(),
-            under: options.under ?? false
+            under: options.under ?? false,
+            onstop: options.onstop
         };
         this.#runs.add(run);
         run.playback = scheduler.play(track, {
@@ -238,10 +242,12 @@ export class AudioEngine {
     }
 
     #stopRun(run: Run, at: number): void {
+        const early = run.playback?.playing ?? false;
         run.playback?.stop();
         for (const sounding of run.sounding) this.#cut(sounding, at);
         run.channels.clear();
         this.#runs.delete(run);
+        if (early) run.onstop?.();
     }
 
     #stopRuns(includingUnder: boolean): void {
