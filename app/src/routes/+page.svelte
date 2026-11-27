@@ -1,11 +1,13 @@
 <!--
-    Home (APP-1.1): the pin board (PIN-2), or how to pin when there's nothing pinned (PIN-2.5), then the modules and
-    tools, so any card is two taps away (APP-1.2).
+    Home (APP-1.1): the pin board (PIN-2), and nothing else once something is pinned, as the modules are in the menu.
+    With nothing pinned, how to pin and the modules and tools under it (PIN-2.5).
 -->
 <script lang="ts">
     import ModuleGrid from '#lib/components/ModuleGrid.svelte';
     import PinBoard from '#lib/components/PinBoard.svelte';
     import { pins } from '#lib/pins/store.svelte.ts';
+
+    const empty = $derived(pins.current.pins.length === 0 && pins.current.groups.length === 0);
 </script>
 
 <svelte:head>
@@ -14,21 +16,24 @@
 
 <main>
     <h1>Fretdex</h1>
-    <!-- Nothing until the pins have loaded, so a board never flashes empty. -->
+    <!-- Nothing until the pins have loaded, so neither the board nor the modules flash in and out. -->
     {#if pins.loaded}
         <section aria-labelledby="pins-heading">
             <h2 id="pins-heading">Pins</h2>
-            {#if pins.current.pins.length > 0 || pins.current.groups.length > 0}
-                <PinBoard />
-            {:else}
+            {#if empty}
                 <p class="empty">
-                    Nothing pinned yet. Open a scale from Scales below and tap <strong>☆ Pin</strong> beside its name to keep
-                    it here, just as it is, a tap away.
+                    Nothing pinned yet. Open a scale from Scales below and tap <strong>☆ Pin</strong> beside its name to
+                    keep it here, just as it is, a tap away. Once something's pinned, Home is your pins, and the modules
+                    are in the menu, <strong>☰</strong>, at the top of every screen.
                 </p>
+            {:else}
+                <PinBoard />
             {/if}
         </section>
+        {#if empty}
+            <ModuleGrid />
+        {/if}
     {/if}
-    <ModuleGrid />
 </main>
 
 <style>

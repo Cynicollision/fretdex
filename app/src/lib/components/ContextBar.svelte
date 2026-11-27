@@ -1,5 +1,5 @@
 <!--
-    The context bar at the top of every screen (APP-1.4, APP-2.1): Home (APP-1.1), then the current key, the
+    The context bar at the top of every screen (APP-1.4, APP-2.1): ☰, which opens the menu (APP-1.1), then the current key, the
     instrument, the tuning's name and the capo when one is set (CTX-3.1). On a card it leaves out the key, which never
     changes what a card shows (CTX-2.8), so it can't be read as the card's name (owner, 2026-11-25). A tap on those
     opens the sheet that changes them. On a card whose URL overrides the
@@ -8,13 +8,12 @@
 -->
 <script lang="ts">
     import ContextSheet from '#lib/components/ContextSheet.svelte';
+    import MenuSheet from '#lib/components/MenuSheet.svelte';
     import { keyName } from '#lib/settings/key.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { tuningName } from '#lib/settings/tunings.ts';
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { overrides, viewContext, type ContextOverride } from '#lib/url/context.ts';
-    import { resolve } from '$app/paths';
-    import { page } from '$app/state';
 
     interface Props {
         /** What the current URL overrides (APP-3.3). */
@@ -28,6 +27,7 @@
     let { override = {}, onclear, card = false }: Props = $props();
 
     let open = $state(false);
+    let menuOpen = $state(false);
 
     const current = $derived(settings.current);
     const view = $derived(viewContext(current, override));
@@ -46,16 +46,18 @@
 
 <header>
     <div class="row">
-        <a
-            class="home"
-            href={resolve('/')}
-            aria-current={page.url.pathname === '/' && !page.error ? 'page' : undefined}
+        <button
+            type="button"
+            class="menu"
+            aria-haspopup="dialog"
+            aria-expanded={menuOpen}
+            onclick={() => (menuOpen = true)}
         >
             <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z" />
+                <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-            <span class="visually-hidden">Home</span>
-        </a>
+            <span class="visually-hidden">Menu</span>
+        </button>
         <button
             type="button"
             class="context"
@@ -78,6 +80,8 @@
         {/if}
     </div>
 </header>
+
+<MenuSheet open={menuOpen} onclose={() => (menuOpen = false)} />
 
 <ContextSheet
     {open}
@@ -107,24 +111,27 @@
         padding-right: max(16px, env(safe-area-inset-right, 0px));
     }
 
-    .home {
+    .menu {
         flex: none;
         display: grid;
         place-items: center;
         width: 52px;
         min-height: 56px;
-        color: var(--muted);
+        padding: 0;
+        border: 0;
         border-right: 1px solid var(--line);
+        background: none;
+        color: var(--text);
+        cursor: pointer;
     }
 
-    .home[aria-current='page'] {
-        color: var(--accent);
-    }
-
-    .home svg {
+    .menu svg {
         width: 24px;
         height: 24px;
-        fill: currentColor;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
     }
 
     .context {

@@ -33,6 +33,21 @@ describe('Home', () => {
 
         await expect.element(page.getByText('Nothing pinned yet.', { exact: false })).toBeVisible();
         await expect.element(page.getByRole('link', { name: 'Scales' })).toBeVisible();
+        await expect.element(page.getByRole('region', { name: 'Tools' })).toBeVisible();
+    });
+
+    it('PIN-2.5 and APP-1.1 show the board alone once something is pinned, the modules being in the menu', async () => {
+        await pins.add({ url: '/scales/G/major', label: 'G major' });
+        await render(Page);
+
+        await expect.poll(() => board().all()).toHaveLength(1);
+        await expect.element(page.getByRole('region', { name: 'Modules' })).not.toBeInTheDocument();
+        await expect.element(page.getByRole('region', { name: 'Tools' })).not.toBeInTheDocument();
+        await expect.element(page.getByText('Nothing pinned yet.', { exact: false })).not.toBeInTheDocument();
+
+        // Unpinned again, the modules come back.
+        await pins.update(() => NO_PINS);
+        await expect.element(page.getByRole('region', { name: 'Modules' })).toBeVisible();
     });
 
     it("PIN-2.1, 2.2 and 2.6 show the pins as tiles in order, a list's as text", async () => {

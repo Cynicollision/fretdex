@@ -87,7 +87,7 @@
     {@html manifestLink}
 </svelte:head>
 
-<!-- Home, and the current key, instrument, tuning and capo, on every screen (APP-1.1, APP-1.4, APP-2). -->
+<!-- The menu, and the current key, instrument, tuning and capo, on every screen (APP-1.1, APP-1.4, APP-2). -->
 <ContextBar
     {override}
     onclear={() => void clearOverride(page.url)}

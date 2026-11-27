@@ -55,7 +55,7 @@ test("APP-3.5 shows Not found, with a link to the module's list, for a URL it ca
     await expect(page.getByRole('link', { name: 'Home' }).first()).toBeVisible();
 });
 
-test('APP-1.1 and APP-1.2 reach a card in two taps from Home, and the context bar goes Home and to Settings', async ({
+test('APP-1.1 and APP-1.2 reach a card from Home, and the menu goes Home, to a module and to Settings', async ({
     page
 }) => {
     await page.goto('/');
@@ -66,14 +66,23 @@ test('APP-1.1 and APP-1.2 reach a card in two taps from Home, and the context ba
     await expect(heading(page)).toHaveText('F Lydian');
 
     const banner = page.getByRole('banner');
-    await banner.getByRole('link', { name: 'Home' }).click();
+    const menu = page.getByRole('dialog', { name: 'Menu' });
+    await banner.getByRole('button', { name: 'Menu' }).click();
+    // On a scale card, the menu marks the module it's in.
+    await expect(menu.getByRole('link', { name: 'Scales' })).toHaveAttribute('aria-current', 'true');
+    await menu.getByRole('link', { name: 'Home' }).click();
     await expect(heading(page)).toHaveText('Fretdex');
-    await expect(banner.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
+    await expect(menu).toBeHidden();
 
-    await banner.getByRole('button', { name: /No key/u }).click();
-    await page.getByRole('dialog').getByRole('link', { name: 'All settings ›' }).click();
+    await banner.getByRole('button', { name: 'Menu' }).click();
+    await expect(menu.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
+    await menu.getByRole('link', { name: 'Scales' }).click();
+    await expect(heading(page)).toHaveText('Scales');
+
+    await banner.getByRole('button', { name: 'Menu' }).click();
+    await menu.getByRole('link', { name: 'Settings' }).click();
     await expect(heading(page)).toHaveText('Settings');
-    await expect(page.getByRole('dialog')).toBeHidden();
+    await expect(menu).toBeHidden();
 });
 
 test('APP-1.3 goes back where the user came from, by the back control and the browser', async ({ page }) => {

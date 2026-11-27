@@ -23,7 +23,7 @@ test('the context bar sets the key, capo and a saved tuning, which survive a rel
     page
 }) => {
     await page.goto('/');
-    const bar = page.getByRole('banner').getByRole('button');
+    const bar = page.getByRole('banner').getByRole('button', { name: /Guitar|Bass/u });
     await expect(bar).toContainText('No key');
     await bar.click();
     const sheet = page.getByRole('dialog', { name: 'Key and tuning' });
