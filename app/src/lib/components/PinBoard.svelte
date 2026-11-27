@@ -63,6 +63,8 @@
             else void pins.placeGroup(dragged.id, drop.index);
         }
     );
+    // A press or drag ends with the board, so its timer and listeners don't outlive Home.
+    $effect(() => () => drag.cancel());
     const draggedPin = $derived(
         drag.dragging?.kind === 'pin' ? board.pins.find(pin => pin.id === drag.dragging?.id) : undefined
     );
@@ -227,11 +229,8 @@
     ondragstart={(event: DragEvent) => event.preventDefault()}
     role="presentation"
 >
-    {#if ungrouped.length > 0 || (draggedPin && board.groups.length > 0)}
-        <div class="section" class:drop-into={draggedPin && mark.into === ''} data-section="">
-            {#if ungrouped.length === 0}
-                <p class="hint drop-zone">Ungrouped</p>
-            {/if}
+    {#if ungrouped.length > 0}
+        <div class="section" data-section="">
             {@render tileList(ungrouped)}
         </div>
     {/if}
@@ -272,6 +271,16 @@
             {@render tileList(section)}
         </section>
     {/each}
+
+    <!--
+        With nothing ungrouped, a pin is dragged out of its group onto this area, which shows below the groups so
+        that nothing above it moves when the pin lifts.
+    -->
+    {#if ungrouped.length === 0 && draggedPin && board.groups.length > 0}
+        <div class="section" class:drop-into={mark.into === ''} data-section="">
+            <p class="hint drop-zone">Ungrouped</p>
+        </div>
+    {/if}
 </div>
 
 {#if drag.dragging}

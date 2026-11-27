@@ -39,7 +39,8 @@ export class BoardDrag {
 
     readonly #root: () => HTMLElement | undefined;
     readonly #ondrop: (dragged: Dragged, drop: Drop) => void;
-    #pressed = false;
+    /** Ends the press being watched, dropping what's dragged or not; unset while there's none. */
+    #end: ((dropped: boolean) => void) | undefined;
     #point = { x: 0, y: 0 };
     #grab = { x: 0, y: 0 };
     #frame = 0;
@@ -51,13 +52,21 @@ export class BoardDrag {
 
     /** Whether a press is being held or a drag is on, when a long press's context menu should be kept away. */
     get active(): boolean {
-        return this.#pressed;
+        return this.#end !== undefined;
     }
 
-    /** Starts watching a press on a tile or heading (`element`), which lifts it if it's held. */
+    /** Ends a press or drag without dropping anything, as when the board goes away. */
+    cancel(): void {
+        this.#end?.(false);
+    }
+
+    /**
+     * Starts watching a press on a tile or heading (`element`), which lifts it if it's held. A press on a button in
+     * it, such as its ⋯ menu, is left to the button.
+     */
     press(event: PointerEvent, item: Dragged, element: HTMLElement): void {
-        if (this.#pressed || !event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
-        this.#pressed = true;
+        if (this.#end || !event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
+        if (event.target instanceof Element && event.target.closest('button')) return;
         const pointer = event.pointerId;
         const start = { x: event.clientX, y: event.clientY };
         this.#point = start;
@@ -76,26 +85,31 @@ export class BoardDrag {
         const touchmove = (moved: TouchEvent) => {
             if (this.dragging && moved.cancelable) moved.preventDefault();
         };
+        // A window that loses focus mid-press may never hear the pointer go up.
+        const blur = () => end(false);
         const end = (dropped: boolean) => {
             clearTimeout(timer);
             window.removeEventListener('pointermove', move);
             window.removeEventListener('pointerup', up);
             window.removeEventListener('pointercancel', up);
             window.removeEventListener('touchmove', touchmove);
+            window.removeEventListener('blur', blur);
             cancelAnimationFrame(this.#frame);
             const { dragging, drop } = this;
-            if (dragging) {
-                this.#swallowClick();
-                if (dropped && drop) this.#ondrop(dragging, drop);
-            }
             this.dragging = undefined;
             this.drop = undefined;
-            this.#pressed = false;
+            this.#end = undefined;
+            if (dragging && dropped) {
+                this.#swallowClick();
+                if (drop) this.#ondrop(dragging, drop);
+            }
         };
+        this.#end = end;
         window.addEventListener('pointermove', move);
         window.addEventListener('pointerup', up);
         window.addEventListener('pointercancel', up);
         window.addEventListener('touchmove', touchmove, { passive: false });
+        window.addEventListener('blur', blur);
     }
 
     #lift(item: Dragged, element: HTMLElement, start: { x: number; y: number }): void {
@@ -144,14 +158,24 @@ export class BoardDrag {
         return { group, index: tileIndex(tiles.map(box), x, y) };
     }
 
-    /** Keeps the click that ends a drag from opening the tile it ends on. */
+    /**
+     * Keeps the click that can follow a drop, as a mouse's does, from opening the tile it ends on. A finger's drag
+     * makes no click, so the next press, or a moment, disarms it, and a tap after the drop still works.
+     */
     #swallowClick(): void {
         const swallow = (event: MouseEvent) => {
             event.preventDefault();
             event.stopPropagation();
+            disarm();
         };
-        window.addEventListener('click', swallow, { capture: true, once: true });
-        setTimeout(() => window.removeEventListener('click', swallow, { capture: true }), 400);
+        const disarm = () => {
+            clearTimeout(timer);
+            window.removeEventListener('click', swallow, { capture: true });
+            window.removeEventListener('pointerdown', disarm, { capture: true });
+        };
+        const timer = setTimeout(disarm, 400);
+        window.addEventListener('click', swallow, { capture: true });
+        window.addEventListener('pointerdown', disarm, { capture: true });
     }
 }
 
