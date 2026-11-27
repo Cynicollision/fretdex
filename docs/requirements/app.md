@@ -38,7 +38,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 | APP-4.1 | The app shall be installable as a progressive web app, named "Fretdex" with its own icon and theme colors, opening full screen at the home board. | Implemented |
 | APP-4.2 | After the first load, every screen, diagram, sound and the voicing data shall work with no network. | Implemented |
 | APP-4.3 | An installed app shall pick up a new version at the latest on its next launch, without the user clearing anything. | Implemented |
-| APP-4.4 | On Android, the installed app's icon shall offer shortcuts to the first three pins on the board (PIN-2). | Planned |
+| APP-4.4 | Retired 2026-11-27: shortcuts to the first three pins can't follow the board, as a web app's shortcuts are fixed in its manifest and Android only picks up a change when Chrome rebuilds the installed app; iOS has none, and the owner doesn't use them. | Retired |
 | APP-4.5 | The app shall make no network request after it's installed other than checking for its own update, and shall have no analytics, tracking, ads or accounts. | Implemented |
 | APP-4.6 | The microphone shall be used only by the tuner (TUN), only while its screen is open, and nothing it hears shall be recorded, stored or sent. | Planned |
 

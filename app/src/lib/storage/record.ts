@@ -60,7 +60,8 @@ export async function saveRecord<T>(store: KeyValueStore, format: RecordFormat<T
     await store.set(format.key, { version: format.version, data });
 }
 
-function isStored(value: unknown): value is { version: number; data: unknown } {
+/** Whether a value is a record as stored: its version, an integer from 1, beside its data. */
+export function isStored(value: unknown): value is { version: number; data: unknown } {
     if (typeof value !== 'object' || value === null || !('version' in value) || !('data' in value)) return false;
     return Number.isInteger(value.version) && (value.version as number) >= 1;
 }
