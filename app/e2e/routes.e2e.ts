@@ -67,19 +67,19 @@ test('APP-1.1 and APP-1.2 reach a card from Home, and the menu goes Home, to a m
 
     const banner = page.getByRole('banner');
     const menu = page.getByRole('dialog', { name: 'Menu' });
-    await banner.getByRole('button', { name: 'Menu' }).click();
+    await banner.getByRole('button', { name: 'Fretdex menu' }).click();
     // On a scale card, the menu marks the module it's in.
     await expect(menu.getByRole('link', { name: 'Scales' })).toHaveAttribute('aria-current', 'true');
     await menu.getByRole('link', { name: 'Home' }).click();
     await expect(heading(page)).toHaveText('Fretdex');
     await expect(menu).toBeHidden();
 
-    await banner.getByRole('button', { name: 'Menu' }).click();
+    await banner.getByRole('button', { name: 'Fretdex menu' }).click();
     await expect(menu.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
     await menu.getByRole('link', { name: 'Scales' }).click();
     await expect(heading(page)).toHaveText('Scales');
 
-    await banner.getByRole('button', { name: 'Menu' }).click();
+    await banner.getByRole('button', { name: 'Fretdex menu' }).click();
     await menu.getByRole('link', { name: 'Settings' }).click();
     await expect(heading(page)).toHaveText('Settings');
     await expect(menu).toBeHidden();

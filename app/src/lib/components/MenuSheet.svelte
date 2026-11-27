@@ -51,7 +51,7 @@
     </section>
 {/snippet}
 
-<Sheet {open} title="Menu" {onclose}>
+<Sheet {open} title="Menu" {onclose} closeIcon>
     <nav aria-label="Menu">
         <ul>{@render row('Home', '/')}</ul>
         {@render group('Modules', MODULES)}

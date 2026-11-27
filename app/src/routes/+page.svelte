@@ -15,7 +15,8 @@
 </svelte:head>
 
 <main>
-    <h1>Fretdex</h1>
+    <!-- The bar's ☰ Fretdex names the app on every screen, so Home's title is for screen readers. -->
+    <h1 class="visually-hidden">Fretdex</h1>
     <!-- Nothing until the pins have loaded, so neither the board nor the modules flash in and out. -->
     {#if pins.loaded}
         <section aria-labelledby="pins-heading">
