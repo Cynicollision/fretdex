@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { storedSettings } from './stored.ts';
 
 /** The path and query the page is on. */
 function where(page: Page): string {
@@ -73,4 +74,40 @@ test('APP-3.5 shows Not found for a key it cannot read', async ({ page }) => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Not found');
     await page.goto('/modes/Gss');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Not found');
+});
+
+test("CTX-2.5 opens a screen on what's stored, never the defaults and then a redraw", async ({ page }) => {
+    // Records every heading the screen shows while it's visible, sampled before each frame is painted, so only what
+    // could be seen counts (the prerendered HTML is parsed before its stylesheet hides the screen).
+    await page.addInitScript(() => {
+        const seen: string[] = [];
+        Object.assign(window, { seen });
+        const sample = () => {
+            const screen = document.querySelector('.screen');
+            const heading = document.querySelector('h1')?.textContent?.trim() ?? '';
+            const shown = screen !== null && getComputedStyle(screen).visibility !== 'hidden';
+            if (shown && heading !== '' && seen.at(-1) !== heading) seen.push(heading);
+            requestAnimationFrame(sample);
+        };
+        requestAnimationFrame(sample);
+    });
+    await page.goto('/modes');
+    await page
+        .getByRole('banner')
+        .getByRole('button', { name: /Guitar/u })
+        .click();
+    const sheet = page.getByRole('dialog', { name: 'Key and tuning' });
+    await sheet.getByText('minor', { exact: true }).click();
+    await sheet.getByText('E', { exact: true }).click();
+    await sheet.getByRole('button', { name: 'Done' }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Modes of G major');
+    // The key is saved after it's shown; a reload before the save commits would lose it.
+    await expect.poll(() => storedSettings(page)).toMatchObject({ key: { root: 'E', mode: 'minor' } });
+
+    // A fresh load of the prerendered `/modes` once showed C major before the stored key's.
+    await page.reload();
+    // The heading's text is there while the screen is still hidden, so wait for a frame that showed it.
+    await expect
+        .poll(() => page.evaluate(() => (window as unknown as { seen: string[] }).seen))
+        .toEqual(['Modes of G major']);
 });

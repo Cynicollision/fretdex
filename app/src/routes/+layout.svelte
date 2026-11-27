@@ -35,6 +35,9 @@
     // hydrated, as a prerendered page has no query, and once the settings have loaded, which a tuning's id is read
     // against.
     const ready = $derived(mounted && settings.loaded);
+    // Everything stored, which every screen draws from. Until it has loaded, a screen keeps its place but shows
+    // nothing, rather than draw the defaults (C, guitar, no pins) and then redraw (owner's report, M01 T13c).
+    const stored = $derived(mounted && settings.loaded && customTunings.loaded && pins.loaded);
     const override: ContextOverride = $derived(ready ? readOverride(page.url.searchParams, settings.current) : {});
 
     // A query the app can't read in part loses that part, so the URL always says what the view shows (APP-3.1).
@@ -93,7 +96,7 @@
     onclear={() => void clearOverride(page.url)}
     card={page.route.id !== null && CARD_ROUTES[page.route.id] !== undefined && !page.error}
 />
-<div class="screen">
+<div class="screen" class:pending={!stored}>
     {@render children()}
 </div>
 
@@ -101,5 +104,9 @@
     /* The end of a screen scrolls clear of the home indicator. */
     .screen {
         padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .screen.pending {
+        visibility: hidden;
     }
 </style>
