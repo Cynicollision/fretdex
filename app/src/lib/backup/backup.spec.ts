@@ -26,12 +26,12 @@ const board: PinBoard = {
 };
 
 const tunings: CustomTunings = {
-    guitar: [{ id: 't1', name: 'Open D', strings: ['D2', 'A2', 'D3', 'F#3', 'A3', 'D4'] }],
+    guitar: [{ id: 't1', name: 'Open C', strings: ['C2', 'G2', 'C3', 'G3', 'C4', 'E4'] }],
     bass: []
 };
 
 const backup: Backup = {
-    settings: { ...DEFAULT_SETTINGS, labels: 'intervals', theme: 'light' },
+    settings: { ...DEFAULT_SETTINGS, labels: 'degrees', theme: 'light' },
     customTunings: tunings,
     pins: board
 };
@@ -105,8 +105,27 @@ describe('reading a backup', () => {
         expect(refused(await readBackup(JSON.stringify({ kind: 'something-else', version: 1, records: {} })))).toBe(
             "This file isn't a Fretdex backup."
         );
-        expect(refused(await readBackup(file({ settings: { version: 1, data: {} } })))).toMatch(/missing part/u);
+        expect(refused(await readBackup(JSON.stringify({ kind: 'fretdex-backup', version: 1, records: [] })))).toBe(
+            "This file isn't a Fretdex backup."
+        );
         expect(refused(await readBackup(' '.repeat(1_000_001)))).toMatch(/too big/u);
+    });
+
+    it('PIN-5.2 refuses a backup with a record missing or damaged, which would replace what is here with defaults', async () => {
+        const { records } = JSON.parse(writeBackup(backup, new Date())) as { records: Record<string, unknown> };
+        const damaged = [
+            { settings: records.settings, customTunings: records.customTunings },
+            { ...records, settings: null },
+            { ...records, settings: { version: 0, data: {} } },
+            { ...records, pins: { version: 2 } },
+            { ...records, pins: { version: 2, data: null } },
+            { ...records, customTunings: { version: 1, data: [] } }
+        ];
+        for (const each of damaged) {
+            expect(refused(await readBackup(file(each)))).toBe(
+                "Part of this backup is missing or damaged, so it can't be restored."
+            );
+        }
     });
 
     it('PIN-5.2 refuses a backup a newer version of the app wrote', async () => {
@@ -115,6 +134,10 @@ describe('reading a backup', () => {
         expect(refused(await readBackup(file({ ...records.records, pins: { version: 3, data: board } })))).toMatch(
             /newer version/u
         );
+        // A record this version doesn't keep yet, such as M02's hidden voicings.
+        expect(
+            refused(await readBackup(file({ ...records.records, hiddenVoicings: { version: 1, data: {} } })))
+        ).toMatch(/newer version/u);
     });
 });
 
@@ -146,9 +169,10 @@ describe('adding a backup to what is here', () => {
         expect(merged.groups.map(group => group.name)).toEqual(['Gig', 'Practice']);
     });
 
-    it('PIN-5.2 adds saved tunings by name, up to the most an instrument keeps', () => {
+    it('PIN-5.2 adds saved tunings unless their name or pitches are here already, up to the most an instrument keeps', () => {
+        const OPEN_E = ['E2', 'B2', 'E3', 'G#3', 'B3', 'E4'] as const;
         const here: CustomTunings = {
-            guitar: [{ id: 'mine', name: 'open d', strings: ['D2', 'A2', 'D3', 'G3', 'A3', 'D4'] }],
+            guitar: [{ id: 'mine', name: 'open c', strings: OPEN_E }],
             bass: Array.from({ length: MAX_CUSTOM_TUNINGS }, (_, i) => ({
                 id: `b${String(i)}`,
                 name: `Bass ${String(i)}`,
@@ -156,12 +180,17 @@ describe('adding a backup to what is here', () => {
             }))
         };
         const from: CustomTunings = {
-            guitar: [...tunings.guitar, { id: 't2', name: 'DADGAD', strings: ['D2', 'A2', 'D3', 'G3', 'A3', 'D4'] }],
+            guitar: [
+                ...tunings.guitar,
+                { id: 't2', name: 'Open A', strings: ['E2', 'A2', 'E3', 'A3', 'C#4', 'E4'] },
+                { id: 't3', name: 'Vestapol', strings: OPEN_E },
+                { id: 't4', name: 'Drop D', strings: ['C2', 'G2', 'D3', 'G3', 'A3', 'D4'] }
+            ],
             bass: [{ id: 't3', name: 'Low', strings: ['C1', 'G1', 'C2', 'F2'] }]
         };
         const { merged, added, skipped } = addTunings(here, from);
-        expect({ added, skipped }).toEqual({ added: 1, skipped: 2 });
-        expect(merged.guitar.map(tuning => tuning.name)).toEqual(['open d', 'DADGAD']);
+        expect({ added, skipped }).toEqual({ added: 1, skipped: 4 });
+        expect(merged.guitar.map(tuning => tuning.name)).toEqual(['open c', 'Open A']);
         expect(merged.bass).toHaveLength(MAX_CUSTOM_TUNINGS);
     });
 });

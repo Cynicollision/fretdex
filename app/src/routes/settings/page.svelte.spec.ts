@@ -148,7 +148,7 @@ describe("Settings' backup", () => {
     }
 
     it('PIN-5 restores an export, replacing everything', async () => {
-        await settings.update({ labels: 'intervals' });
+        await settings.update({ labels: 'degrees' });
         await customTunings.add('guitar', 'Open C', OPEN_C);
         await pins.addGroup('Gig');
         await pins.add({ url: '/scales/C/major', label: 'C major' });
@@ -166,7 +166,7 @@ describe("Settings' backup", () => {
         await page.getByRole('button', { name: 'Replace everything' }).click();
 
         await expect.element(page.getByText('Replaced everything with the backup.')).toBeVisible();
-        expect(settings.current.labels).toBe('intervals');
+        expect(settings.current.labels).toBe('degrees');
         expect(customTunings.current.guitar).toMatchObject([{ name: 'Open C', strings: OPEN_C }]);
         expect(pins.current.pins).toMatchObject([{ url: '/scales/C/major', label: 'C major' }]);
         expect(pins.current.groups).toMatchObject([{ name: 'Gig' }]);

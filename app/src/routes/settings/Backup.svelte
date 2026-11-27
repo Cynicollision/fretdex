@@ -19,12 +19,18 @@
     import { settings } from '#lib/settings/store.svelte.ts';
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { requestPersistence } from '#lib/storage/persist.ts';
+    import { onDestroy } from 'svelte';
 
     let input: HTMLInputElement | undefined = $state();
     /** The backup picked, waiting for the user to choose how to import it. */
     let picked: { readonly name: string; readonly backup: Backup } | undefined = $state();
     /** What the last export or import did, or why it couldn't. */
     let message: { readonly text: string; readonly error: boolean } | undefined = $state();
+    /** The last export's file, until the next export or until Settings closes. */
+    let exported: string | undefined;
+    onDestroy(() => {
+        if (exported) URL.revokeObjectURL(exported);
+    });
 
     async function exportBackup() {
         await Promise.all([settings.ready(), customTunings.ready(), pins.ready()]);
@@ -33,13 +39,14 @@
             { settings: settings.current, customTunings: customTunings.current, pins: pins.current },
             now
         );
-        const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+        // A phone may ask before it downloads, and reads the file only then, so the last export's URL is kept until
+        // the next export or until Settings closes.
+        if (exported) URL.revokeObjectURL(exported);
+        exported = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
         const link = document.createElement('a');
-        link.href = url;
+        link.href = exported;
         link.download = backupFileName(now);
         link.click();
-        // The download has its own copy once it's started.
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
         message = { text: `Exported ${link.download}.`, error: false };
     }
 
@@ -54,7 +61,15 @@
             message = { text: 'This file is too big to be a Fretdex backup.', error: true };
             return;
         }
-        const result = await readBackup(await file.text());
+        let text: string;
+        try {
+            text = await file.text();
+        } catch {
+            // As when a file from a cloud drive can't be fetched offline.
+            message = { text: "This file couldn't be read.", error: true };
+            return;
+        }
+        const result = await readBackup(text);
         if (result.ok) picked = { name: file.name, backup: result.backup };
         else message = { text: result.reason, error: true };
     }

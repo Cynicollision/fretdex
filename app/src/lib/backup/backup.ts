@@ -1,14 +1,16 @@
 import { PINS_FORMAT, groupNamed, newId, readPinBoard, type Pin, type PinBoard } from '#lib/pins/pins.ts';
 import { SETTINGS_FORMAT, type Settings } from '#lib/settings/settings.ts';
+import type { Instrument } from '@fretdex/fretkit';
 import {
     CUSTOM_TUNINGS_FORMAT,
     MAX_CUSTOM_TUNINGS,
+    cannotSave,
     newTuningId,
     readCustomTunings,
     type CustomTuning,
     type CustomTunings
 } from '#lib/settings/tunings.ts';
-import { loadRecord, type KeyValueStore, type RecordFormat } from '#lib/storage/record.ts';
+import { isStored, loadRecord, type KeyValueStore, type RecordFormat } from '#lib/storage/record.ts';
 
 /**
  * Backups (PIN-5): a JSON file holding each record the app keeps as it's stored, its version beside its data, so
@@ -25,7 +27,11 @@ export interface Backup {
     readonly pins: PinBoard;
 }
 
-/** The backup file's own format. Raise it if the file's shape around the records changes. */
+/**
+ * The backup file's own format. Raise it if the file's shape around the records changes. A record the app starts
+ * keeping is added to `FORMATS` and needs no new version: an older version of the app refuses a file with a record
+ * it doesn't keep.
+ */
 export const BACKUP_VERSION = 1;
 
 const KIND = 'fretdex-backup';
@@ -61,12 +67,14 @@ export type ReadBackup =
     { readonly ok: true; readonly backup: Backup } | { readonly ok: false; readonly reason: string };
 
 const NOT_A_BACKUP = "This file isn't a Fretdex backup.";
+const DAMAGED = "Part of this backup is missing or damaged, so it can't be restored.";
 const TOO_NEW =
     'This backup was made by a newer version of Fretdex. Close and reopen the app to update it, then try again.';
 
 /**
  * Reads a backup file's text (PIN-5.2): each record is migrated and checked as if loaded from the device, keeping
- * what's valid. A file that isn't a backup, or that a newer version of the app wrote, is refused with the reason,
+ * what's valid. A file that isn't a backup, has a record missing or damaged, or that a newer version of the app wrote
+ * (a newer file or record version, or a record this version doesn't keep), is refused with the reason,
  * since importing what this version doesn't understand would lose it.
  */
 export async function readBackup(text: string): Promise<ReadBackup> {
@@ -82,24 +90,35 @@ export async function readBackup(text: string): Promise<ReadBackup> {
     if (kind !== KIND || !Number.isInteger(version) || (version as number) < 1)
         return { ok: false, reason: NOT_A_BACKUP };
     if ((version as number) > BACKUP_VERSION) return { ok: false, reason: TOO_NEW };
-    if (typeof records !== 'object' || records === null) return { ok: false, reason: NOT_A_BACKUP };
+    if (typeof records !== 'object' || records === null || Array.isArray(records)) {
+        return { ok: false, reason: NOT_A_BACKUP };
+    }
 
     const stored = records as Record<string, unknown>;
+    const keys: readonly string[] = Object.values(FORMATS).map(format => format.key);
+    // A record this version doesn't keep was written by a newer one, and importing without it would lose it.
+    if (Object.keys(stored).some(key => !keys.includes(key))) return { ok: false, reason: TOO_NEW };
+    // A record missing or damaged would be read as the defaults, which Replace everything would then save.
+    if (keys.some(key => !Object.hasOwn(stored, key) || !isRecordEntry(stored[key]))) {
+        return { ok: false, reason: DAMAGED };
+    }
     const store: KeyValueStore = {
         get: key => Promise.resolve(Object.hasOwn(stored, key) ? stored[key] : undefined),
         set: () => Promise.resolve()
     };
-    const missing = (Object.values(FORMATS) as RecordFormat<unknown>[]).some(
-        format => !Object.hasOwn(stored, format.key)
-    );
-    if (missing)
-        return { ok: false, reason: "This backup is missing part of what Fretdex keeps, so it can't be restored." };
 
     const settings = await loadRecord(store, SETTINGS_FORMAT);
     const customTunings = await loadRecord(store, CUSTOM_TUNINGS_FORMAT);
     const pins = await loadRecord(store, PINS_FORMAT);
     if (settings.newer || customTunings.newer || pins.newer) return { ok: false, reason: TOO_NEW };
     return { ok: true, backup: { settings: settings.data, customTunings: customTunings.data, pins: pins.data } };
+}
+
+/** A record in a backup: stored as on the device, its data an object, as every record's is. */
+function isRecordEntry(value: unknown): boolean {
+    if (!isStored(value)) return false;
+    const { data } = value;
+    return typeof data === 'object' && data !== null && !Array.isArray(data);
 }
 
 /** What a backup holds, for the confirmation before importing it. */
@@ -166,17 +185,18 @@ export function addPins(here: PinBoard, from: PinBoard): Added<PinBoard> & { rea
 }
 
 /**
- * Adds a backup's saved tunings to this device's (PIN-5.2): one whose name the instrument already has, ignoring case,
- * is skipped, as are any past `MAX_CUSTOM_TUNINGS`.
+ * Adds a backup's saved tunings to this device's (PIN-5.2): one that couldn't be saved here as it is (`cannotSave`),
+ * as its name or pitches are a built-in tuning's or already saved, ignoring case, is skipped, as are any past
+ * `MAX_CUSTOM_TUNINGS`.
  */
 export function addTunings(here: CustomTunings, from: CustomTunings): Added<CustomTunings> {
     let added = 0;
     let skipped = 0;
-    const merge = (mine: readonly CustomTuning[], theirs: readonly CustomTuning[]): CustomTuning[] => {
-        const list = [...mine];
-        for (const tuning of theirs) {
-            const taken = list.some(other => other.name.toLocaleLowerCase() === tuning.name.toLocaleLowerCase());
-            if (taken || list.length >= MAX_CUSTOM_TUNINGS) {
+    const merge = (instrument: Instrument): CustomTuning[] => {
+        const list = [...here[instrument]];
+        for (const tuning of from[instrument]) {
+            const saved = { ...here, [instrument]: list };
+            if (list.length >= MAX_CUSTOM_TUNINGS || cannotSave(instrument, tuning.name, tuning.strings, saved)) {
                 skipped++;
                 continue;
             }
@@ -185,6 +205,6 @@ export function addTunings(here: CustomTunings, from: CustomTunings): Added<Cust
         }
         return list;
     };
-    const merged = readCustomTunings({ guitar: merge(here.guitar, from.guitar), bass: merge(here.bass, from.bass) });
+    const merged = readCustomTunings({ guitar: merge('guitar'), bass: merge('bass') });
     return { merged, added, skipped };
 }

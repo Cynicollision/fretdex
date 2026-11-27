@@ -44,7 +44,7 @@ Screen: **Home** (`/`), and **Settings** (`/settings`) for export and import.
 | ID | Requirement | Status |
 |---|---|---|
 | PIN-5.1 | **Export** on Settings shall save a JSON file, `fretdex-YYYY-MM-DD.json`, with the pins, groups, settings, custom tunings and hidden voicings, with a format version, and each record's own. | Partial |
-| PIN-5.2 | **Import** shall read such a file and, after the user confirms, either **Replace everything** or **Add to what's here**, which skips pins whose URL is already pinned, adds groups and custom tunings by name, and keeps this device's settings. Before the choice, it says what the file holds, and after it, what was added or skipped. A file it can't read, one missing part of what the app keeps, or one a newer version of the app wrote, is refused with a message saying why, and nothing changes. | Implemented |
+| PIN-5.2 | **Import** shall read such a file and, after the user confirms, either **Replace everything** or **Add to what's here**, which skips pins whose URL is already pinned, adds groups by name and custom tunings unless their name or pitches are already in the list, and keeps this device's settings. Before the choice, it says what the file holds, and after it, what was added or skipped. A file it can't read, one with part of what the app keeps missing or damaged, or one a newer version of the app wrote, is refused with a message saying why, and nothing changes. | Implemented |
 
 ## PIN-6 Storage stays on the device
 
