@@ -213,8 +213,8 @@ describe('pinning a view', () => {
     });
 
     it('PIN-1.1 writes the URL as the app does, dropping what it cannot read', () => {
-        expect(pinTarget(scale('Fs', 'dorian'), query('nps=9&deg=31&box=2'), DEFAULT_SETTINGS).url).toBe(
-            '/scales/Fs/dorian?box=2'
+        expect(pinTarget(scale('Fs', 'dorian'), query('nps=9&deg=31&oct1=2'), DEFAULT_SETTINGS).url).toBe(
+            '/scales/Fs/dorian?oct1=2'
         );
     });
 
@@ -226,7 +226,7 @@ describe('pinning a view', () => {
 
     it("PIN-1.4 adds the settings' instrument, tuning and capo when they aren't the defaults", () => {
         expect(pinTarget(scale('G', 'major'), query(''), DEFAULT_SETTINGS).url).toBe('/scales/G/major');
-        expect(pinTarget(scale('G', 'major'), query('box=1'), bass).url).toBe('/scales/G/major?box=1&inst=bass');
+        expect(pinTarget(scale('G', 'major'), query('oct1=1'), bass).url).toBe('/scales/G/major?oct1=1&inst=bass');
         expect(pinTarget(scale('G', 'major'), query(''), { ...DEFAULT_SETTINGS, capo: 3 }).url).toBe(
             '/scales/G/major?capo=3'
         );

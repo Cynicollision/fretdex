@@ -153,8 +153,10 @@ export interface ViewOptions {
     readonly pos?: number;
     /** A 3-notes-per-string pattern, 1–7, by the degree it starts on (SCL-3.2); never with `pos`. */
     readonly nps?: number;
-    /** A bass box, 1–4 (SCL-4.1); never with `pos` or `nps`. */
-    readonly box?: number;
+    /** A one-octave bass box, 1–2 up the neck (SCL-4.1); never with another position. */
+    readonly oct1?: number;
+    /** A two-octave bass box, 1–2 up the neck (SCL-4.1); never with another position. */
+    readonly oct2?: number;
     /** The labels setting for this card alone (CTX-2.4). */
     readonly labels?: Labels;
     /** The degrees highlighted, the rest dimmed (SCL-2.3): their numbers from the root in order, `135`. */
@@ -163,18 +165,18 @@ export interface ViewOptions {
 
 /** The options each card takes, in the order its URL writes them. */
 const CARD_OPTIONS: Readonly<Record<CardKind, readonly (keyof ViewOptions)[]>> = {
-    scale: ['pos', 'nps', 'box', 'deg', 'labels'],
+    scale: ['pos', 'nps', 'oct1', 'oct2', 'deg', 'labels'],
     modes: ['labels']
 };
 
 /** The options that choose a position, of which a card shows one at most, in the order the first present wins. */
-const POSITION_OPTIONS = ['pos', 'nps', 'box'] as const;
+export const POSITION_OPTIONS = ['pos', 'nps', 'oct1', 'oct2'] as const;
 
 const LABELS: readonly Labels[] = ['notes', 'intervals', 'degrees', 'none'];
 
 /**
- * Reads a card's options from its query, ignoring any the card doesn't take or can't read: `pos`, `nps` and `box`
- * are whole numbers in range, and with more than one, the first of them wins.
+ * Reads a card's options from its query, ignoring any the card doesn't take or can't read: `pos`, `nps`, `oct1` and
+ * `oct2` are whole numbers in range, and with more than one, the first of them wins.
  */
 export function readViewOptions(kind: CardKind, params: QueryParams): ViewOptions {
     const takes = CARD_OPTIONS[kind];
@@ -186,13 +188,15 @@ export function readViewOptions(kind: CardKind, params: QueryParams): ViewOption
     };
     const pos = whole('pos', 5);
     const nps = pos === undefined ? whole('nps', 7) : undefined;
-    const box = pos === undefined && nps === undefined ? whole('box', 4) : undefined;
+    const oct1 = pos === undefined && nps === undefined ? whole('oct1', 2) : undefined;
+    const oct2 = pos === undefined && nps === undefined && oct1 === undefined ? whole('oct2', 2) : undefined;
     const labels = takes.includes('labels') ? LABELS.find(label => label === params.get('labels')) : undefined;
     const deg = takes.includes('deg') ? readDegrees(params.get('deg')) : undefined;
     return {
         ...(pos === undefined ? {} : { pos }),
         ...(nps === undefined ? {} : { nps }),
-        ...(box === undefined ? {} : { box }),
+        ...(oct1 === undefined ? {} : { oct1 }),
+        ...(oct2 === undefined ? {} : { oct2 }),
         ...(deg === undefined ? {} : { deg }),
         ...(labels === undefined ? {} : { labels })
     };
@@ -259,7 +263,7 @@ export function writeQuery(kind: CardKind | undefined, options: ViewOptions, ove
 
 /**
  * A card's query with one option changed, or removed with `undefined`, written as the app writes it. Choosing a
- * position, pattern or bass box clears the others, as a card shows one at most.
+ * position, pattern or bass box of either size clears the others, as a card shows one at most.
  */
 export function withViewOption<K extends keyof ViewOptions>(
     kind: CardKind,
@@ -269,8 +273,8 @@ export function withViewOption<K extends keyof ViewOptions>(
     value: ViewOptions[K] | undefined
 ): string {
     const options: ViewOptions = { ...readViewOptions(kind, params), [name]: value };
-    const { pos, nps, box, ...others } = options;
-    const positions = { pos, nps, box };
+    const { pos, nps, oct1, oct2, ...others } = options;
+    const positions = { pos, nps, oct1, oct2 };
     // One at most: the one just chosen, else the first already there.
     const chosen =
         POSITION_OPTIONS.find(option => option === name && value !== undefined) ??

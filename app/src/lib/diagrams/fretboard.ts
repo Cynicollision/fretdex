@@ -137,19 +137,25 @@ export function stretchLength(width: number): number {
 }
 
 /**
- * The stretches upright (DIAG-1.10): runs of `length` frets from the bottom of the range up, the first taking in the
- * open strings when the range starts at the nut, and the last ending at the top of the range.
+ * The frets an upright stretch of `length` frets can start on (DIAG-1.10), a fret apart: from the bottom of the range
+ * (fret 1 where it starts at the nut, as the open strings come with it) to where the stretch ends at the top.
  */
-export function stretches(range: FretRange, length: number): FretRange[] {
-    const result: FretRange[] = [];
+export function stretchStarts(range: FretRange, length: number): { readonly first: number; readonly last: number } {
     const first = Math.max(range.from, 1);
-    for (let start = first; start <= range.to; start += length) {
-        const end = Math.min(start + length - 1, range.to);
-        const from = Math.max(first, end - length + 1);
-        result.push({ from: from === 1 && range.from === 0 ? 0 : from, to: end });
-        if (end === range.to) break;
-    }
-    return result;
+    return { first, last: Math.max(first, range.to - length + 1) };
+}
+
+/** The stretch of `length` frets from a start, held within the range, taking in the open strings from fret 1. */
+export function stretchAt(range: FretRange, length: number, start: number): FretRange {
+    const { first, last } = stretchStarts(range, length);
+    const from = Math.min(Math.max(start, first), last);
+    return { from: from === 1 && range.from === 0 ? 0 : from, to: Math.min(from + length - 1, range.to) };
+}
+
+/** The start of the stretch centred on a fret, held within the range: a tap or drag on the strip (DIAG-1.10). */
+export function centredStart(range: FretRange, length: number, fret: number): number {
+    const { first, last } = stretchStarts(range, length);
+    return Math.min(Math.max(Math.round(fret - (length - 1) / 2), first), last);
 }
 
 /** A string's height: string 1, the highest-pitched, at the top (THY-3.4). */

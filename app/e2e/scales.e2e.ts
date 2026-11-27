@@ -68,9 +68,14 @@ test('SCL-3 and SCL-4 choose a position, step through them, and keep the choice 
     await page.getByText('Full neck', { exact: true }).click();
     await expect.poll(() => where(page)).toBe('/scales/G/major');
 
-    await page.goto('/scales/A/minor-pentatonic?box=1&inst=bass');
-    await expect(page.getByRole('group', { name: 'Position', exact: true })).toContainText(
-        'Box 1 · one octave from the E string'
-    );
+    // On bass, each size of box is numbered up the neck (SCL-4.1): A's root is lower on the A string.
+    await page.goto('/scales/A/minor-pentatonic?oct1=1&inst=bass');
+    const position = page.getByRole('group', { name: 'Position', exact: true });
+    await expect(position).toContainText('Box 1 · from the A string');
+    await page.getByRole('button', { name: 'Next ›' }).click();
+    await expect.poll(() => where(page)).toBe('/scales/A/minor-pentatonic?oct1=2&inst=bass');
+    await expect(position).toContainText('Box 2 · from the E string');
+    await page.getByText('2 octaves', { exact: true }).click();
+    await expect.poll(() => where(page)).toBe('/scales/A/minor-pentatonic?oct2=1&inst=bass');
     await expect(page.getByText('3 per string', { exact: true })).toHaveCount(0);
 });

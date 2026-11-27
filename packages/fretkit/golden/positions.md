@@ -1,6 +1,6 @@
 # Golden table: positions
 
-Each position's frets, string by string from the lowest, roots in bold, in standard tuning without a capo, as the card lists them (up the neck on guitar, by number on bass). CAGED positions are numbered up the neck (SCL-3.1); a mode and natural minor take their parent major's, so only the major scale is listed. Pentatonic boxes are numbered from Box 1, the minor root on the lowest string (SCL-3.3); the major pentatonic shares its relative minor's numbers, and the blues scales add their blue note. A 3-notes-per-string pattern is numbered by the degree it starts on (SCL-3.2). Bass boxes are SCL-4.1's; on a four-string bass, the two-octave box from the A string isn't offered.
+Each position's frets, string by string from the lowest, roots in bold, in standard tuning without a capo, as the card lists them, up the neck. CAGED positions are numbered up the neck (SCL-3.1); a mode and natural minor take their parent major's, so only the major scale is listed. Pentatonic boxes are numbered from Box 1, the minor root on the lowest string (SCL-3.3); the major pentatonic shares its relative minor's numbers, and the blues scales add their blue note. A 3-notes-per-string pattern is numbered by the degree it starts on (SCL-3.2). Bass boxes are SCL-4.1's, each size numbered up the neck; a four-string bass has one two-octave box, from the E string.
 
 Written by `src/golden-positions.spec.ts` from `fretkit`'s answers, which fail the test if they change. To change one on purpose, run `npx vitest run -u` in `packages/fretkit` and check the diff by hand.
 
@@ -126,7 +126,7 @@ Written by `src/golden-positions.spec.ts` from `fretkit`'s answers, which fail t
 | Position 4 | D shape of B major | 8–12 | 9 11 12 | 9 11 | 8 **9** 11 | 8 9 11 | 9 11 **12** | 9 11 12 |
 | Position 5 | C shape of B major | 11–14 | 11 12 14 | 11 13 **14** | 11 13 14 | 11 13 | 11 **12** 14 | 11 12 14 |
 
-## Minor pentatonic: boxs
+## Minor pentatonic: boxes
 
 ### C
 
@@ -248,7 +248,7 @@ Written by `src/golden-positions.spec.ts` from `fretkit`'s answers, which fail t
 | Box 2 | E shape of D major | 9–12 | 10 12 | 9 12 | **9** 12 | 9 11 | 10 **12** | 10 12 |
 | Box 3 | D shape of D major | 11–15 | 12 14 | 12 **14** | 12 14 | 11 14 | **12** 15 | 12 14 |
 
-## Minor blues: boxs
+## Minor blues: boxes
 
 ### A
 
@@ -270,7 +270,7 @@ Written by `src/golden-positions.spec.ts` from `fretkit`'s answers, which fail t
 | Box 4 | C shape of G major | 7–10 | 7 10 | **7** 10 | 7 8 9 | 7 **9** | 8 10 | 7 10 |
 | Box 5 | A shape of G major | 9–12 | 10 **12** | 10 12 | 9 12 | **9** 12 | 10 11 12 | 10 **12** |
 
-## Major blues: boxs
+## Major blues: boxes
 
 ### C
 
@@ -620,216 +620,352 @@ Written by `src/golden-positions.spec.ts` from `fretkit`'s answers, which fail t
 | Pattern 2 | from degree 2 | 9–14 | 9 11 12 | 9 11 13 | **10** 11 13 | 9 11 13 | 11 **13** 14 | 11 12 14 |
 | Pattern 3 | from degree 3 | 11–16 | 11 12 14 | 11 13 **15** | 11 13 14 | 11 13 15 | **13** 14 16 | 12 14 16 |
 
-## Major: bass boxes
+## Major: one-octave bass boxes
 
 ### C
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 7–10 | **8** 10 | 7 8 10 | 7 9 **10** |  |
-| Box 2 | one octave from the A string | 2–5 |  | **3** 5 | 2 3 5 | 2 4 **5** |
-| Box 3 | two octaves from the E string | 7–17 | **8** 10 | 7 8 10 **15** 17 | 7 9 14 15 17 | 14 16 **17** |
+| Box 1 | from the A string | 2–5 |  | **3** 5 | 2 3 5 | 2 4 **5** |
+| Box 2 | from the E string | 7–10 | **8** 10 | 7 8 10 | 7 9 **10** |  |
 
 ### D♭
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 8–11 | **9** 11 | 8 9 11 | 8 10 **11** |  |
-| Box 2 | one octave from the A string | 3–6 |  | **4** 6 | 3 4 6 | 3 5 **6** |
-| Box 3 | two octaves from the E string | 8–18 | **9** 11 | 8 9 11 **16** 18 | 8 10 15 16 18 | 15 17 **18** |
+| Box 1 | from the A string | 3–6 |  | **4** 6 | 3 4 6 | 3 5 **6** |
+| Box 2 | from the E string | 8–11 | **9** 11 | 8 9 11 | 8 10 **11** |  |
 
 ### D
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 9–12 | **10** 12 | 9 10 12 | 9 11 **12** |  |
-| Box 2 | one octave from the A string | 4–7 |  | **5** 7 | 4 5 7 | 4 6 **7** |
-| Box 3 | two octaves from the E string | 9–19 | **10** 12 | 9 10 12 **17** 19 | 9 11 16 17 19 | 16 18 **19** |
+| Box 1 | from the A string | 4–7 |  | **5** 7 | 4 5 7 | 4 6 **7** |
+| Box 2 | from the E string | 9–12 | **10** 12 | 9 10 12 | 9 11 **12** |  |
 
 ### E♭
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 10–13 | **11** 13 | 10 11 13 | 10 12 **13** |  |
-| Box 2 | one octave from the A string | 5–8 |  | **6** 8 | 5 6 8 | 5 7 **8** |
-| Box 3 | two octaves from the E string | 10–20 | **11** 13 | 10 11 13 **18** 20 | 10 12 17 18 20 | 17 19 **20** |
+| Box 1 | from the A string | 5–8 |  | **6** 8 | 5 6 8 | 5 7 **8** |
+| Box 2 | from the E string | 10–13 | **11** 13 | 10 11 13 | 10 12 **13** |  |
 
 ### E
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 0–4 | **0** 2 4 | 0 2 4 | 1 **2** |  |
-| Box 2 | one octave from the A string | 6–9 |  | **7** 9 | 6 7 9 | 6 8 **9** |
-| Box 3 | two octaves from the E string | 0–9 | **0** 2 4 | 0 2 4 **7** 9 | 1 6 7 9 | 6 8 **9** |
+| Box 1 | from the E string | 0–4 | **0** 2 4 | 0 2 4 | 1 **2** |  |
+| Box 2 | from the A string | 6–9 |  | **7** 9 | 6 7 9 | 6 8 **9** |
 
 ### F
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 0–3 | **1** 3 | 0 1 3 | 0 2 **3** |  |
-| Box 2 | one octave from the A string | 7–10 |  | **8** 10 | 7 8 10 | 7 9 **10** |
-| Box 3 | two octaves from the E string | 0–10 | **1** 3 | 0 1 3 **8** 10 | 0 2 7 8 10 | 7 9 **10** |
+| Box 1 | from the E string | 0–3 | **1** 3 | 0 1 3 | 0 2 **3** |  |
+| Box 2 | from the A string | 7–10 |  | **8** 10 | 7 8 10 | 7 9 **10** |
 
 ### F♯
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 1–4 | **2** 4 | 1 2 4 | 1 3 **4** |  |
-| Box 2 | one octave from the A string | 8–11 |  | **9** 11 | 8 9 11 | 8 10 **11** |
-| Box 3 | two octaves from the E string | 1–11 | **2** 4 | 1 2 4 **9** 11 | 1 3 8 9 11 | 8 10 **11** |
+| Box 1 | from the E string | 1–4 | **2** 4 | 1 2 4 | 1 3 **4** |  |
+| Box 2 | from the A string | 8–11 |  | **9** 11 | 8 9 11 | 8 10 **11** |
 
 ### G
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 2–5 | **3** 5 | 2 3 5 | 2 4 **5** |  |
-| Box 2 | one octave from the A string | 9–12 |  | **10** 12 | 9 10 12 | 9 11 **12** |
-| Box 3 | two octaves from the E string | 2–12 | **3** 5 | 2 3 5 **10** 12 | 2 4 9 10 12 | 9 11 **12** |
+| Box 1 | from the E string | 2–5 | **3** 5 | 2 3 5 | 2 4 **5** |  |
+| Box 2 | from the A string | 9–12 |  | **10** 12 | 9 10 12 | 9 11 **12** |
 
 ### A♭
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 3–6 | **4** 6 | 3 4 6 | 3 5 **6** |  |
-| Box 2 | one octave from the A string | 10–13 |  | **11** 13 | 10 11 13 | 10 12 **13** |
-| Box 3 | two octaves from the E string | 3–13 | **4** 6 | 3 4 6 **11** 13 | 3 5 10 11 13 | 10 12 **13** |
+| Box 1 | from the E string | 3–6 | **4** 6 | 3 4 6 | 3 5 **6** |  |
+| Box 2 | from the A string | 10–13 |  | **11** 13 | 10 11 13 | 10 12 **13** |
 
 ### A
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 4–7 | **5** 7 | 4 5 7 | 4 6 **7** |  |
-| Box 2 | one octave from the A string | 0–4 |  | **0** 2 4 | 0 2 4 | 1 **2** |
-| Box 3 | two octaves from the E string | 4–14 | **5** 7 | 4 5 7 **12** 14 | 4 6 11 12 14 | 11 13 **14** |
+| Box 1 | from the A string | 0–4 |  | **0** 2 4 | 0 2 4 | 1 **2** |
+| Box 2 | from the E string | 4–7 | **5** 7 | 4 5 7 | 4 6 **7** |  |
 
 ### B♭
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 5–8 | **6** 8 | 5 6 8 | 5 7 **8** |  |
-| Box 2 | one octave from the A string | 0–3 |  | **1** 3 | 0 1 3 | 0 2 **3** |
-| Box 3 | two octaves from the E string | 5–15 | **6** 8 | 5 6 8 **13** 15 | 5 7 12 13 15 | 12 14 **15** |
+| Box 1 | from the A string | 0–3 |  | **1** 3 | 0 1 3 | 0 2 **3** |
+| Box 2 | from the E string | 5–8 | **6** 8 | 5 6 8 | 5 7 **8** |  |
 
 ### B
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 6–9 | **7** 9 | 6 7 9 | 6 8 **9** |  |
-| Box 2 | one octave from the A string | 1–4 |  | **2** 4 | 1 2 4 | 1 3 **4** |
-| Box 3 | two octaves from the E string | 6–16 | **7** 9 | 6 7 9 **14** 16 | 6 8 13 14 16 | 13 15 **16** |
+| Box 1 | from the A string | 1–4 |  | **2** 4 | 1 2 4 | 1 3 **4** |
+| Box 2 | from the E string | 6–9 | **7** 9 | 6 7 9 | 6 8 **9** |  |
 
-## Natural minor: bass boxes
+## Natural minor: one-octave bass boxes
 
 ### C
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 8–11 | **8** 10 11 | 8 10 11 | 8 **10** |  |
-| Box 2 | one octave from the A string | 3–6 |  | **3** 5 6 | 3 5 6 | 3 **5** |
-| Box 3 | two octaves from the E string | 8–18 | **8** 10 11 | 8 10 11 **15** 17 18 | 8 15 17 18 | 15 **17** |
+| Box 1 | from the A string | 3–6 |  | **3** 5 6 | 3 5 6 | 3 **5** |
+| Box 2 | from the E string | 8–11 | **8** 10 11 | 8 10 11 | 8 **10** |  |
 
 ### C♯
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 9–12 | **9** 11 12 | 9 11 12 | 9 **11** |  |
-| Box 2 | one octave from the A string | 4–7 |  | **4** 6 7 | 4 6 7 | 4 **6** |
-| Box 3 | two octaves from the E string | 9–19 | **9** 11 12 | 9 11 12 **16** 18 19 | 9 16 18 19 | 16 **18** |
+| Box 1 | from the A string | 4–7 |  | **4** 6 7 | 4 6 7 | 4 **6** |
+| Box 2 | from the E string | 9–12 | **9** 11 12 | 9 11 12 | 9 **11** |  |
 
 ### D
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 10–13 | **10** 12 13 | 10 12 13 | 10 **12** |  |
-| Box 2 | one octave from the A string | 5–8 |  | **5** 7 8 | 5 7 8 | 5 **7** |
-| Box 3 | two octaves from the E string | 10–20 | **10** 12 13 | 10 12 13 **17** 19 20 | 10 17 19 20 | 17 **19** |
+| Box 1 | from the A string | 5–8 |  | **5** 7 8 | 5 7 8 | 5 **7** |
+| Box 2 | from the E string | 10–13 | **10** 12 13 | 10 12 13 | 10 **12** |  |
 
 ### E♭
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 11–14 | **11** 13 14 | 11 13 14 | 11 **13** |  |
-| Box 2 | one octave from the A string | 6–9 |  | **6** 8 9 | 6 8 9 | 6 **8** |
-| Box 3 | two octaves from the E string | 11–21 | **11** 13 14 | 11 13 14 **18** 20 21 | 11 18 20 21 | 18 **20** |
+| Box 1 | from the A string | 6–9 |  | **6** 8 9 | 6 8 9 | 6 **8** |
+| Box 2 | from the E string | 11–14 | **11** 13 14 | 11 13 14 | 11 **13** |  |
 
 ### E
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 0–3 | **0** 2 3 | 0 2 3 | 0 **2** |  |
-| Box 2 | one octave from the A string | 7–10 |  | **7** 9 10 | 7 9 10 | 7 **9** |
-| Box 3 | two octaves from the E string | 0–10 | **0** 2 3 | 0 2 3 **7** 9 10 | 0 7 9 10 | 7 **9** |
+| Box 1 | from the E string | 0–3 | **0** 2 3 | 0 2 3 | 0 **2** |  |
+| Box 2 | from the A string | 7–10 |  | **7** 9 10 | 7 9 10 | 7 **9** |
 
 ### F
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 1–4 | **1** 3 4 | 1 3 4 | 1 **3** |  |
-| Box 2 | one octave from the A string | 8–11 |  | **8** 10 11 | 8 10 11 | 8 **10** |
-| Box 3 | two octaves from the E string | 1–11 | **1** 3 4 | 1 3 4 **8** 10 11 | 1 8 10 11 | 8 **10** |
+| Box 1 | from the E string | 1–4 | **1** 3 4 | 1 3 4 | 1 **3** |  |
+| Box 2 | from the A string | 8–11 |  | **8** 10 11 | 8 10 11 | 8 **10** |
 
 ### F♯
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 2–5 | **2** 4 5 | 2 4 5 | 2 **4** |  |
-| Box 2 | one octave from the A string | 9–12 |  | **9** 11 12 | 9 11 12 | 9 **11** |
-| Box 3 | two octaves from the E string | 2–12 | **2** 4 5 | 2 4 5 **9** 11 12 | 2 9 11 12 | 9 **11** |
+| Box 1 | from the E string | 2–5 | **2** 4 5 | 2 4 5 | 2 **4** |  |
+| Box 2 | from the A string | 9–12 |  | **9** 11 12 | 9 11 12 | 9 **11** |
 
 ### G
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 3–6 | **3** 5 6 | 3 5 6 | 3 **5** |  |
-| Box 2 | one octave from the A string | 10–13 |  | **10** 12 13 | 10 12 13 | 10 **12** |
-| Box 3 | two octaves from the E string | 3–13 | **3** 5 6 | 3 5 6 **10** 12 13 | 3 10 12 13 | 10 **12** |
+| Box 1 | from the E string | 3–6 | **3** 5 6 | 3 5 6 | 3 **5** |  |
+| Box 2 | from the A string | 10–13 |  | **10** 12 13 | 10 12 13 | 10 **12** |
 
 ### G♯
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 4–7 | **4** 6 7 | 4 6 7 | 4 **6** |  |
-| Box 2 | one octave from the A string | 11–14 |  | **11** 13 14 | 11 13 14 | 11 **13** |
-| Box 3 | two octaves from the E string | 4–14 | **4** 6 7 | 4 6 7 **11** 13 14 | 4 11 13 14 | 11 **13** |
+| Box 1 | from the E string | 4–7 | **4** 6 7 | 4 6 7 | 4 **6** |  |
+| Box 2 | from the A string | 11–14 |  | **11** 13 14 | 11 13 14 | 11 **13** |
 
 ### A
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 5–8 | **5** 7 8 | 5 7 8 | 5 **7** |  |
-| Box 2 | one octave from the A string | 0–3 |  | **0** 2 3 | 0 2 3 | 0 **2** |
-| Box 3 | two octaves from the E string | 5–15 | **5** 7 8 | 5 7 8 **12** 14 15 | 5 12 14 15 | 12 **14** |
+| Box 1 | from the A string | 0–3 |  | **0** 2 3 | 0 2 3 | 0 **2** |
+| Box 2 | from the E string | 5–8 | **5** 7 8 | 5 7 8 | 5 **7** |  |
 
 ### B♭
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 6–9 | **6** 8 9 | 6 8 9 | 6 **8** |  |
-| Box 2 | one octave from the A string | 1–4 |  | **1** 3 4 | 1 3 4 | 1 **3** |
-| Box 3 | two octaves from the E string | 6–16 | **6** 8 9 | 6 8 9 **13** 15 16 | 6 13 15 16 | 13 **15** |
+| Box 1 | from the A string | 1–4 |  | **1** 3 4 | 1 3 4 | 1 **3** |
+| Box 2 | from the E string | 6–9 | **6** 8 9 | 6 8 9 | 6 **8** |  |
 
 ### B
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 7–10 | **7** 9 10 | 7 9 10 | 7 **9** |  |
-| Box 2 | one octave from the A string | 2–5 |  | **2** 4 5 | 2 4 5 | 2 **4** |
-| Box 3 | two octaves from the E string | 7–17 | **7** 9 10 | 7 9 10 **14** 16 17 | 7 14 16 17 | 14 **16** |
+| Box 1 | from the A string | 2–5 |  | **2** 4 5 | 2 4 5 | 2 **4** |
+| Box 2 | from the E string | 7–10 | **7** 9 10 | 7 9 10 | 7 **9** |  |
 
-## Minor pentatonic: bass boxes
+## Minor pentatonic: one-octave bass boxes
 
 ### A
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 5–8 | **5** 8 | 5 7 | 5 **7** |  |
-| Box 2 | one octave from the A string | 0–3 |  | **0** 3 | 0 2 | 0 **2** |
-| Box 3 | two octaves from the E string | 5–15 | **5** 8 | 5 7 **12** 15 | 5 12 14 | 12 **14** |
+| Box 1 | from the A string | 0–3 |  | **0** 3 | 0 2 | 0 **2** |
+| Box 2 | from the E string | 5–8 | **5** 8 | 5 7 | 5 **7** |  |
 
 ### E
 
 | | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
 |---|---|---|---|---|---|---|
-| Box 1 | one octave from the E string | 0–3 | **0** 3 | 0 2 | 0 **2** |  |
-| Box 2 | one octave from the A string | 7–10 |  | **7** 10 | 7 9 | 7 **9** |
-| Box 3 | two octaves from the E string | 0–10 | **0** 3 | 0 2 **7** 10 | 0 7 9 | 7 **9** |
+| Box 1 | from the E string | 0–3 | **0** 3 | 0 2 | 0 **2** |  |
+| Box 2 | from the A string | 7–10 |  | **7** 10 | 7 9 | 7 **9** |
+
+## Major: two-octave bass boxes
+
+### C
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 7–17 | **8** 10 | 7 8 10 **15** 17 | 7 9 14 15 17 | 14 16 **17** |
+
+### D♭
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 8–18 | **9** 11 | 8 9 11 **16** 18 | 8 10 15 16 18 | 15 17 **18** |
+
+### D
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 9–19 | **10** 12 | 9 10 12 **17** 19 | 9 11 16 17 19 | 16 18 **19** |
+
+### E♭
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 10–20 | **11** 13 | 10 11 13 **18** 20 | 10 12 17 18 20 | 17 19 **20** |
+
+### E
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 0–9 | **0** 2 4 | 0 2 4 **7** 9 | 1 6 7 9 | 6 8 **9** |
+
+### F
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 0–10 | **1** 3 | 0 1 3 **8** 10 | 0 2 7 8 10 | 7 9 **10** |
+
+### F♯
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 1–11 | **2** 4 | 1 2 4 **9** 11 | 1 3 8 9 11 | 8 10 **11** |
+
+### G
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 2–12 | **3** 5 | 2 3 5 **10** 12 | 2 4 9 10 12 | 9 11 **12** |
+
+### A♭
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 3–13 | **4** 6 | 3 4 6 **11** 13 | 3 5 10 11 13 | 10 12 **13** |
+
+### A
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 4–14 | **5** 7 | 4 5 7 **12** 14 | 4 6 11 12 14 | 11 13 **14** |
+
+### B♭
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 5–15 | **6** 8 | 5 6 8 **13** 15 | 5 7 12 13 15 | 12 14 **15** |
+
+### B
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 6–16 | **7** 9 | 6 7 9 **14** 16 | 6 8 13 14 16 | 13 15 **16** |
+
+## Natural minor: two-octave bass boxes
+
+### C
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 8–18 | **8** 10 11 | 8 10 11 **15** 17 18 | 8 15 17 18 | 15 **17** |
+
+### C♯
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 9–19 | **9** 11 12 | 9 11 12 **16** 18 19 | 9 16 18 19 | 16 **18** |
+
+### D
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 10–20 | **10** 12 13 | 10 12 13 **17** 19 20 | 10 17 19 20 | 17 **19** |
+
+### E♭
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 11–21 | **11** 13 14 | 11 13 14 **18** 20 21 | 11 18 20 21 | 18 **20** |
+
+### E
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 0–10 | **0** 2 3 | 0 2 3 **7** 9 10 | 0 7 9 10 | 7 **9** |
+
+### F
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 1–11 | **1** 3 4 | 1 3 4 **8** 10 11 | 1 8 10 11 | 8 **10** |
+
+### F♯
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 2–12 | **2** 4 5 | 2 4 5 **9** 11 12 | 2 9 11 12 | 9 **11** |
+
+### G
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 3–13 | **3** 5 6 | 3 5 6 **10** 12 13 | 3 10 12 13 | 10 **12** |
+
+### G♯
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 4–14 | **4** 6 7 | 4 6 7 **11** 13 14 | 4 11 13 14 | 11 **13** |
+
+### A
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 5–15 | **5** 7 8 | 5 7 8 **12** 14 15 | 5 12 14 15 | 12 **14** |
+
+### B♭
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 6–16 | **6** 8 9 | 6 8 9 **13** 15 16 | 6 13 15 16 | 13 **15** |
+
+### B
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 7–17 | **7** 9 10 | 7 9 10 **14** 16 17 | 7 14 16 17 | 14 **16** |
+
+## Minor pentatonic: two-octave bass boxes
+
+### A
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 5–15 | **5** 8 | 5 7 **12** 15 | 5 12 14 | 12 **14** |
+
+### E
+
+| | Shape | Frets | 4 (E) | 3 (A) | 2 (D) | 1 (G) |
+|---|---|---|---|---|---|---|
+| Box 1 | from the E string | 0–10 | **0** 3 | 0 2 **7** 10 | 0 7 9 | 7 **9** |

@@ -292,14 +292,15 @@ describe('Fretboard', () => {
             mapScale(STANDARD, scale('C', 'major'), { from: 0, to: 15 }).filter(cell => cell.degree === 1).length
         );
 
+        // A fret at a time, the open strings leaving with fret 1.
         await page.getByRole('button', { name: /Higher/u }).click();
-        expect(frets()).toBe('7-12');
-        for (const element of dots()) expect(Number(element.dataset.fret)).toBeGreaterThanOrEqual(7);
-        await page.getByRole('button', { name: /Higher/u }).click();
+        expect(frets()).toBe('2-7');
+        for (const element of dots()) expect(Number(element.dataset.fret)).toBeGreaterThanOrEqual(2);
+        for (let i = 0; i < 8; i++) await page.getByRole('button', { name: /Higher/u }).click();
         expect(frets()).toBe('10-15');
         await expect.element(page.getByRole('button', { name: /Higher/u })).toBeDisabled();
         await page.getByRole('button', { name: /Lower/u }).click();
-        expect(frets()).toBe('7-12');
+        expect(frets()).toBe('9-14');
     });
 
     it('DIAG-1.3 and DIAG-1.10 show a position at full strength, the rest dimmed, upright its frets alone', async () => {
@@ -334,22 +335,68 @@ describe('Fretboard', () => {
         expect(document.querySelector('.fretboard svg')?.getAttribute('data-frets')).toBe('0-13');
         expect(dot(2, 13)).not.toBeNull();
 
-        const bass = scalePositions(BASS, set, 'bass')[0]?.positions.find(box => box.octaves === 2);
+        const bass = scalePositions(BASS, set, 'bass').find(group => group.kind === 'two-octaves')?.positions[0];
         if (!bass) throw new Error('No box');
         await show({ width: UPRIGHT, tuning: BASS, set, focus: bass });
         const frets = () => document.querySelector('.fretboard svg')?.getAttribute('data-frets');
         expect(frets()).toBe('2-7');
         await page.getByRole('button', { name: /Higher/u }).click();
+        expect(frets()).toBe('3-8');
+        for (let i = 0; i < 4; i++) await page.getByRole('button', { name: /Higher/u }).click();
         expect(frets()).toBe('7-12');
+        await expect.element(page.getByRole('button', { name: /Higher/u })).toBeDisabled();
     });
 
-    it('DIAG-1.10 moves to where the strip is tapped', async () => {
+    /** Where fret `fret`'s slot is on the strip of frets 0 to 15, from its left edge. */
+    function stripX(strip: Element, fret: number): number {
+        const box = strip.getBoundingClientRect();
+        const pad = (12 * box.width) / Number(strip.getAttribute('width'));
+        return pad + ((fret + 0.5) * (box.width - 2 * pad)) / 16;
+    }
+
+    it('DIAG-1.10 centres the stretch on a fret tapped on the strip', async () => {
         await show({ width: UPRIGHT });
+        const frets = () => document.querySelector('.fretboard svg')?.getAttribute('data-frets');
+
+        const strip = document.querySelector('.strip') as Element;
+        const y = strip.getBoundingClientRect().height / 2;
+        await userEvent.click(strip, { position: { x: stripX(strip, 8), y } });
+        expect(frets()).toBe('6-11');
+        // Near either end, the stretch stops at the end of the neck.
+        await userEvent.click(strip, { position: { x: stripX(strip, 15), y } });
+        expect(frets()).toBe('10-15');
+        await userEvent.click(strip, { position: { x: stripX(strip, 1), y } });
+        expect(frets()).toBe('0-6');
+    });
+
+    it('DIAG-1.10 slides the stretch along with a drag on the strip', async () => {
+        await show({ width: UPRIGHT });
+        const frets = () => document.querySelector('.fretboard svg')?.getAttribute('data-frets');
 
         const strip = document.querySelector('.strip') as Element;
         const box = strip.getBoundingClientRect();
-        await userEvent.click(strip, { position: { x: box.width - 14, y: box.height / 2 } });
-        expect(document.querySelector('.fretboard svg')?.getAttribute('data-frets')).toBe('10-15');
+        const at = (type: string, fret: number) =>
+            strip.dispatchEvent(
+                new PointerEvent(type, {
+                    bubbles: true,
+                    pointerId: 1,
+                    pointerType: 'mouse',
+                    button: type === 'pointermove' ? -1 : 0,
+                    buttons: type === 'pointerup' ? 0 : 1,
+                    clientX: box.left + stripX(strip, fret),
+                    clientY: box.top + box.height / 2
+                })
+            );
+        at('pointerdown', 4);
+        await expect.poll(frets).toBe('2-7');
+        at('pointermove', 7);
+        await expect.poll(frets).toBe('5-10');
+        at('pointermove', 9);
+        await expect.poll(frets).toBe('7-12');
+        at('pointerup', 9);
+        // Once the pointer lifts, moving over the strip no longer slides it.
+        at('pointermove', 3);
+        await expect.poll(frets).toBe('7-12');
     });
 
     it('DIAG-1.10 goes back to the capo when the capo changes after moving along the neck', async () => {
@@ -370,13 +417,13 @@ describe('Fretboard', () => {
         await page.getByRole('button', { name: /Lower/u }).click();
         expect(frets()).toBe('0-6');
         await view.rerender({ capo: 9 });
-        await expect.poll(frets).toBe('7-12');
+        await expect.poll(frets).toBe('9-14');
     });
 
     it('DIAG-1.10 starts upright at the capo', async () => {
         await show({ width: UPRIGHT, capo: 9, set: scale('A', 'major') });
 
-        expect(document.querySelector('.fretboard svg')?.getAttribute('data-frets')).toBe('7-12');
+        expect(document.querySelector('.fretboard svg')?.getAttribute('data-frets')).toBe('9-14');
     });
 
     it('APP-6.4 has a text alternative listing every string', async () => {

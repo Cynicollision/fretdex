@@ -12,7 +12,8 @@
         rootChoices,
         scaleType,
         simplerRoot,
-        type NoteName
+        type NoteName,
+        type Position
     } from '@fretdex/fretkit';
     import Choice from '#lib/components/Choice.svelte';
     import ModeNeck from '#lib/components/ModeNeck.svelte';
@@ -27,6 +28,7 @@
         stepSlice,
         type ModeRow
     } from '#lib/modes/overview.ts';
+    import { POSITION_OPTION } from '#lib/scales/positions.ts';
     import { rootButtons } from '#lib/settings/key.ts';
     import type { Labels } from '#lib/settings/settings.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
@@ -90,9 +92,9 @@
     }
 
     /** A row's link: the mode's card on the position the row shows, keeping the override (MODE-1.7, APP-1.5). */
-    function rowHref(row: ModeRow, hasPosition: boolean): string {
-        const option = view.instrument === 'bass' ? { box: 1 } : { nps: 1 };
-        return cardHref(row.card) + writeQuery('scale', hasPosition ? option : {}, override);
+    function rowHref(row: ModeRow, position: Position | undefined): string {
+        const option = position ? { [POSITION_OPTION[position.kind]]: position.number } : {};
+        return cardHref(row.card) + writeQuery('scale', option, override);
     }
 </script>
 
@@ -151,7 +153,7 @@
             {@const slice = stepSlice(row)}
             <li>
                 <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- a resolved card path, with its query -->
-                <a href={rowHref(row, position !== undefined)} aria-describedby={position ? `${id}-neck` : undefined}>
+                <a href={rowHref(row, position)} aria-describedby={position ? `${id}-neck` : undefined}>
                     <span class="head">
                         <span class="name"><span class="numeral">{row.numeral}</span> {name}</span>
                         <span class="muted">{characteristicLine(row)}</span>

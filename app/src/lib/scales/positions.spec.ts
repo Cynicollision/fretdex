@@ -38,11 +38,14 @@ describe('positionName', () => {
         expect(nps?.names).toContain('Pattern 3 · from the ♭3 · frets 1–7');
     });
 
-    it('SCL-4.1 names bass boxes by their octaves and string', () => {
-        expect(names(BASS, 'G', 'major', 'bass')[0]?.names).toEqual([
-            'Box 1 · one octave from the E string · frets 2–5',
-            'Box 2 · one octave from the A string · frets 9–12',
-            'Box 3 · two octaves from the E string · frets 2–12'
+    it('SCL-4.1 names bass boxes by their number up the neck and their root string', () => {
+        expect(names(BASS, 'G', 'major', 'bass').map(group => [group.kind, ...group.names])).toEqual([
+            ['octave', 'Box 1 · from the E string · frets 2–5', 'Box 2 · from the A string · frets 9–12'],
+            ['two-octaves', 'Box 1 · from the E string · frets 2–12']
+        ]);
+        expect(names(BASS, 'D', 'major', 'bass')[0]?.names).toEqual([
+            'Box 1 · from the A string · frets 4–7',
+            'Box 2 · from the E string · frets 9–12'
         ]);
     });
 });
@@ -56,6 +59,8 @@ describe('chosenPosition', () => {
         expect(chosenPosition(groups, {})).toBeUndefined();
         const bass = scalePositions(BASS, scale('A', 'minor-pentatonic'), 'bass');
         expect(chosenPosition(bass, { pos: 1 })).toBeUndefined();
-        expect(chosenPosition(bass, { box: 2 })?.position.number).toBe(2);
+        expect(chosenPosition(bass, { oct1: 2 })?.position).toMatchObject({ kind: 'octave', number: 2 });
+        expect(chosenPosition(bass, { oct2: 1 })?.position).toMatchObject({ kind: 'two-octaves', number: 1 });
+        expect(chosenPosition(bass, { oct2: 2 })).toBeUndefined();
     });
 });

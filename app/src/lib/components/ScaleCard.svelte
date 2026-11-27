@@ -53,6 +53,7 @@
         cardPath,
         cardTitle,
         degreesOf,
+        POSITION_OPTIONS,
         readViewOptions,
         writeDegrees,
         type ScaleCardRef
@@ -87,7 +88,7 @@
     function showPosition(kind: PositionKind | 'neck', index = 0) {
         // One option at most: setting this one clears the others (`withViewOption`).
         if (kind === 'neck') {
-            for (const name of ['pos', 'nps', 'box'] as const) {
+            for (const name of POSITION_OPTIONS) {
                 if (options[name] !== undefined)
                     void setViewOption(page.url, card.kind, settings.current, name, undefined);
             }

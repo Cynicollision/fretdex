@@ -1,6 +1,7 @@
 <!--
     The whole fret range in small, under an upright fretboard (DIAG-1.10): the roots at their strings' heights and the
-    stretch shown outlined. Tapping it moves the fretboard there; Lower and Higher do the same for anyone who can't tap.
+    stretch shown outlined. A tap centres the stretch on the fret tapped, and a drag slides it along with the finger;
+    Lower and Higher move it for anyone who can't tap.
 -->
 <script lang="ts">
     import type { FretboardCell, FretRange } from '@fretdex/fretkit';
@@ -37,18 +38,47 @@
         return BAR_TOP + 4 + (string - 1) * step;
     }
 
-    function tap(event: MouseEvent) {
+    /** The fret slot under a pointer. */
+    function fretAt(event: PointerEvent): number {
         const svg = event.currentTarget as SVGSVGElement;
         const box = svg.getBoundingClientRect();
         let x = ((event.clientX - box.left) * width) / box.width;
         if (left) x = width - x;
         const fret = range.from + Math.floor((x - PAD) / slot);
-        onpick(Math.min(Math.max(fret, range.from), range.to));
+        return Math.min(Math.max(fret, range.from), range.to);
+    }
+
+    /** The pointer dragging along the strip, which keeps the stretch under it until it lifts. */
+    let dragging: number | undefined;
+
+    function down(event: PointerEvent) {
+        if (event.button !== 0) return;
+        (event.currentTarget as SVGSVGElement).setPointerCapture(event.pointerId);
+        dragging = event.pointerId;
+        onpick(fretAt(event));
+    }
+
+    function drag(event: PointerEvent) {
+        if (event.pointerId === dragging) onpick(fretAt(event));
+    }
+
+    function lift(event: PointerEvent) {
+        if (event.pointerId === dragging) dragging = undefined;
     }
 </script>
 
 <!-- The Lower and Higher buttons do what tapping here does. -->
-<svg viewBox="0 0 {width} {HEIGHT}" {width} height={HEIGHT} aria-hidden="true" onclick={tap} class="strip">
+<svg
+    viewBox="0 0 {width} {HEIGHT}"
+    {width}
+    height={HEIGHT}
+    aria-hidden="true"
+    class="strip"
+    onpointerdown={down}
+    onpointermove={drag}
+    onpointerup={lift}
+    onpointercancel={lift}
+>
     <rect class="bar" x={PAD} y={BAR_TOP} width={width - 2 * PAD} height={BAR_HEIGHT} rx="3" />
     {#each { length: slots - 1 }, i (i)}
         {@const x = slotX(range.from + i + 1) + (left ? slot : 0)}
@@ -73,6 +103,8 @@
         max-width: 100%;
         height: auto;
         cursor: pointer;
+        /* A sideways drag slides the stretch; an upward or downward one still scrolls the page. */
+        touch-action: pan-y;
     }
 
     .bar {

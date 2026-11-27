@@ -57,7 +57,9 @@ describe('rowPosition', () => {
     it('MODE-1.12 works in other tunings, and on bass takes the one-octave box from the lowest string', () => {
         expect(rowPosition(row('G', 1), DADGAD, 'guitar', 0)?.kind).toBe('nps');
         const box = rowPosition(row('G', 1), BASS, 'bass', 0);
-        expect(box).toMatchObject({ kind: 'bass', number: 1, octaves: 1, rootString: 4 });
+        expect(box).toMatchObject({ kind: 'octave', number: 1, rootString: 4 });
+        // D Dorian's root is lower on the A string, so the box from the E string is the second up the neck.
+        expect(rowPosition(row('C', 2), BASS, 'bass', 0)).toMatchObject({ kind: 'octave', number: 2, rootString: 4 });
     });
 
     it('MODE-1.12 moves up with a capo', () => {

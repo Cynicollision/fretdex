@@ -18,16 +18,26 @@ const KIND_NAMES: Readonly<Record<PositionKind, string>> = {
     caged: 'Position',
     pentatonic: 'Box',
     nps: 'Pattern',
-    bass: 'Box'
+    octave: 'Box',
+    'two-octaves': 'Box'
+};
+
+/** Each kind's section heading, after the scale's name. */
+const SECTION_NAMES: Readonly<Record<PositionKind, string>> = {
+    caged: 'positions',
+    pentatonic: 'boxes',
+    nps: 'patterns',
+    octave: 'one-octave bass boxes',
+    'two-octaves': 'two-octave bass boxes'
 };
 
 function describePosition(position: Position, strings: readonly string[]): string {
     if (position.shape !== undefined && position.shapeOf !== undefined) {
         return `${position.shape} shape of ${noteLabel(position.shapeOf)} major`;
     }
-    if (position.octaves !== undefined && position.rootString !== undefined) {
+    if (position.rootString !== undefined) {
         const open = strings[strings.length - position.rootString] ?? '';
-        return `${position.octaves === 1 ? 'one octave' : 'two octaves'} from the ${open.replace(/\d+$/u, '')} string`;
+        return `from the ${open.replace(/\d+$/u, '')} string`;
     }
     return `from degree ${String(position.number)}`;
 }
@@ -54,7 +64,7 @@ function section(id: string, kind: PositionKind, instrument: Instrument, roots: 
     if (!type) throw new Error(`No scale ${id}`);
     const strings = instrument === 'guitar' ? GUITAR : BASS;
     const header = strings.map((note, i) => `${String(strings.length - i)} (${note.replace(/\d+$/u, '')})`);
-    const lines = [`## ${type.name}: ${instrument === 'guitar' ? KIND_NAMES[kind].toLowerCase() + 's' : 'bass boxes'}`];
+    const lines = [`## ${type.name}: ${SECTION_NAMES[kind]}`];
     const list =
         roots === 'all' ? PICKER_ROOTS.map(button => rootChoices(button.pitchClass, type, 'auto').root) : roots;
     for (const root of list) {
@@ -77,7 +87,7 @@ describe('golden positions', () => {
         const intro = [
             '# Golden table: positions',
             '',
-            "Each position's frets, string by string from the lowest, roots in bold, in standard tuning without a capo, as the card lists them (up the neck on guitar, by number on bass). CAGED positions are numbered up the neck (SCL-3.1); a mode and natural minor take their parent major's, so only the major scale is listed. Pentatonic boxes are numbered from Box 1, the minor root on the lowest string (SCL-3.3); the major pentatonic shares its relative minor's numbers, and the blues scales add their blue note. A 3-notes-per-string pattern is numbered by the degree it starts on (SCL-3.2). Bass boxes are SCL-4.1's; on a four-string bass, the two-octave box from the A string isn't offered.",
+            "Each position's frets, string by string from the lowest, roots in bold, in standard tuning without a capo, as the card lists them, up the neck. CAGED positions are numbered up the neck (SCL-3.1); a mode and natural minor take their parent major's, so only the major scale is listed. Pentatonic boxes are numbered from Box 1, the minor root on the lowest string (SCL-3.3); the major pentatonic shares its relative minor's numbers, and the blues scales add their blue note. A 3-notes-per-string pattern is numbered by the degree it starts on (SCL-3.2). Bass boxes are SCL-4.1's, each size numbered up the neck; a four-string bass has one two-octave box, from the E string.",
             '',
             "Written by `src/golden-positions.spec.ts` from `fretkit`'s answers, which fail the test if they change. To change one on purpose, run `npx vitest run -u` in `packages/fretkit` and check the diff by hand."
         ].join('\n');
@@ -91,9 +101,11 @@ describe('golden positions', () => {
             section('major-blues', 'pentatonic', 'guitar', ['C', 'G']),
             section('major', 'nps', 'guitar', 'all'),
             ...sevenNote.map(id => section(id, 'nps', 'guitar', ['C'])),
-            section('major', 'bass', 'bass', 'all'),
-            section('natural-minor', 'bass', 'bass', 'all'),
-            section('minor-pentatonic', 'bass', 'bass', ['A', 'E'])
+            ...(['octave', 'two-octaves'] as const).flatMap(kind => [
+                section('major', kind, 'bass', 'all'),
+                section('natural-minor', kind, 'bass', 'all'),
+                section('minor-pentatonic', kind, 'bass', ['A', 'E'])
+            ])
         ];
         await expect([intro, ...sections].join('\n\n') + '\n').toMatchFileSnapshot('../golden/positions.md');
     });

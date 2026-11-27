@@ -185,27 +185,53 @@ describe('scalePositions', () => {
 
     it('SCL-4.1 gives bass one- and two-octave boxes from the lowest two strings, and nothing else', () => {
         const groups = scalePositions(bass, scale('G', 'major'), 'bass');
-        expect(groups.map(g => g.kind)).toEqual(['bass']);
-        const boxes = groups[0]?.positions ?? [];
-        expect(boxes.map(p => `${String(p.number)} ${String(p.octaves)} ${String(p.rootString)}`)).toEqual([
-            '1 1 4',
-            '2 1 3',
-            '3 2 4'
-        ]);
-        expect(frets(boxes[0], 4)).toBe('3 5 | 2 3 5 | 2 4 5 | ');
-        expect(frets(boxes[1], 4)).toBe(' | 10 12 | 9 10 12 | 9 11 12');
-        // Two octaves: the first box, then a shift to the octave on the next string.
-        expect(frets(boxes[2], 4)).toBe('3 5 | 2 3 5 10 12 | 2 4 9 10 12 | 9 11 12');
-        expect(boxes[2]?.cells.filter(cell => cell.degree === 1)).toHaveLength(3);
+        expect(groups.map(g => g.kind)).toEqual(['octave', 'two-octaves']);
+        const [one, two] = groups.map(g => g.positions);
+        expect(one?.map(p => `${String(p.number)} ${String(p.rootString)}`)).toEqual(['1 4', '2 3']);
+        expect(frets(one?.[0], 4)).toBe('3 5 | 2 3 5 | 2 4 5 | ');
+        expect(frets(one?.[1], 4)).toBe(' | 10 12 | 9 10 12 | 9 11 12');
+        // Two octaves: the first box, then a shift to the octave on the next string. A four-string bass has one.
+        expect(two?.map(p => `${String(p.number)} ${String(p.rootString)}`)).toEqual(['1 4']);
+        expect(frets(two?.[0], 4)).toBe('3 5 | 2 3 5 10 12 | 2 4 9 10 12 | 9 11 12');
+        expect(two?.[0]?.cells.filter(cell => cell.degree === 1)).toHaveLength(3);
+    });
+
+    it('SCL-4.1 numbers each size of bass box up the neck from the lowest (owner, 2026-11-27)', () => {
+        for (const strings of [bass, fiveString]) {
+            for (const id of ['major', 'dorian', 'minor-pentatonic']) {
+                for (const root of autoRoots(id)) {
+                    for (const kind of ['octave', 'two-octaves'] as const) {
+                        const boxes = group(strings, root, id, kind, 'bass');
+                        expect(
+                            boxes.map(box => box.number),
+                            `${root} ${id} ${kind}`
+                        ).toEqual(boxes.map((_, i) => i + 1));
+                        const starts = boxes.map(box => box.from);
+                        expect(starts, `${root} ${id} ${kind}`).toEqual([...starts].sort((a, b) => a - b));
+                    }
+                }
+            }
+        }
+        // D's root is lower on the A string (fret 5) than on the E string (fret 10), so that box is Box 1.
+        expect(group(bass, 'D', 'dorian', 'octave', 'bass').map(box => box.rootString)).toEqual([3, 4]);
     });
 
     it('SCL-4.1 keeps a one-octave bass box on three strings, so its two octaves are the same box', () => {
-        const boxes = group(bass, 'D', 'dorian', 'bass', 'bass');
-        expect(frets(boxes[0], 4)).toBe('10 12 13 | 10 12 | 9 10 12 | ');
+        const boxes = group(bass, 'D', 'dorian', 'octave', 'bass');
+        expect(
+            frets(
+                boxes.find(box => box.rootString === 4),
+                4
+            )
+        ).toBe('10 12 13 | 10 12 | 9 10 12 | ');
         for (const root of autoRoots('dorian')) {
-            for (const box of group(bass, root, 'dorian', 'bass', 'bass')) {
-                const strings = new Set(box.cells.map(cell => cell.string));
-                expect(strings.size, `${root} ${String(box.number)}`).toBeLessThanOrEqual(box.octaves === 2 ? 4 : 3);
+            for (const kind of ['octave', 'two-octaves'] as const) {
+                for (const box of group(bass, root, 'dorian', kind, 'bass')) {
+                    const strings = new Set(box.cells.map(cell => cell.string));
+                    expect(strings.size, `${root} ${kind} ${String(box.number)}`).toBeLessThanOrEqual(
+                        kind === 'two-octaves' ? 4 : 3
+                    );
+                }
             }
         }
     });
@@ -214,25 +240,23 @@ describe('scalePositions', () => {
         const dropDBass = ['D1', 'A1', 'D2', 'G2'];
         for (const id of ['major', 'natural-minor', 'dorian', 'minor-pentatonic']) {
             for (const root of autoRoots(id)) {
-                const boxes = group(dropDBass, root, id, 'bass', 'bass');
-                expect(
-                    boxes.map(box => box.number),
-                    `${root} ${id}`
-                ).toEqual([1, 2, 3]);
+                expect(group(dropDBass, root, id, 'octave', 'bass').length, `${root} ${id}`).toBe(2);
+                expect(group(dropDBass, root, id, 'two-octaves', 'bass').length, `${root} ${id}`).toBe(1);
             }
         }
-        expect(frets(group(dropDBass, 'D', 'major', 'bass', 'bass')[0], 4)).toBe('0 2 4 5 | 0 2 4 5 |  | ');
+        expect(frets(group(dropDBass, 'D', 'major', 'octave', 'bass')[0], 4)).toBe('0 2 4 5 | 0 2 4 5 |  | ');
     });
 
     it('SCL-4.1 offers a two-octave box from the second string where three strings sit above it (owner, 2026-11-25)', () => {
-        const boxes = group(fiveString, 'C', 'major', 'bass', 'bass');
-        expect(boxes.map(p => p.number)).toEqual([1, 2, 3, 4]);
-        expect(boxes[3]?.rootString).toBe(4);
+        const boxes = group(fiveString, 'C', 'major', 'two-octaves', 'bass');
+        expect(boxes.map(p => p.rootString).sort()).toEqual([4, 5]);
         for (const root of autoRoots('major')) {
-            for (const box of group(bass, root, 'major', 'bass', 'bass')) {
-                const pcs = scale(root, 'major').notes.map(note => (noteMidi(`${note}4`) ?? 0) % 12);
-                expect(climbsTheScale(box, pcs), `${root} ${String(box.number)}`).toBe(true);
-                expect(box.cells.filter(cell => cell.degree === 1)).toHaveLength(box.octaves === 2 ? 3 : 2);
+            for (const kind of ['octave', 'two-octaves'] as const) {
+                for (const box of group(bass, root, 'major', kind, 'bass')) {
+                    const pcs = scale(root, 'major').notes.map(note => (noteMidi(`${note}4`) ?? 0) % 12);
+                    expect(climbsTheScale(box, pcs), `${root} ${String(box.number)}`).toBe(true);
+                    expect(box.cells.filter(cell => cell.degree === 1)).toHaveLength(kind === 'two-octaves' ? 3 : 2);
+                }
             }
         }
     });
