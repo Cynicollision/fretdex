@@ -37,7 +37,7 @@ Screen: **Home** (`/`), and **Settings** (`/settings`) for export and import.
 | ID | Requirement | Status |
 |---|---|---|
 | PIN-4.1 | The app shall remember the last 20 cards viewed, newest first, one entry per path (a newer view of the same card replaces the older one, keeping its latest options). | Planned |
-| PIN-4.2 | Home shall show recents below the pins, and the user can clear them. | Planned |
+| PIN-4.2 | Search shall show recents while nothing is typed (SRCH-1.9), and the user can clear them; Home doesn't show them, so the board stays the pins alone (owner, 2026-11-27). | Planned |
 
 ## PIN-5 The user can back up and restore
 
@@ -56,4 +56,5 @@ Screen: **Home** (`/`), and **Settings** (`/settings`) for export and import.
 ## Known gaps
 
 - **PIN-1.5:** waits for the backlog's question on whether to keep a global current key (owner, 2026-11-26).
-- **PIN-6.1:** settings, custom tunings and pins are stored, on the device only; recents (M01 T12c) and hidden voicings (M02) come later.
+- **PIN-4:** recents come with search in M03, as that's where they show (owner, 2026-11-27).
+- **PIN-6.1:** settings, custom tunings and pins are stored, on the device only; hidden voicings (M02) and recents (M03) come later.

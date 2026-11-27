@@ -29,6 +29,12 @@ An item is one bullet: a bold title, what's wrong or wanted, and where (file and
 
 ---
 
+## M03 Version one
+
+- **Recents with search.** PIN-4 moved here from M01's T12c: recents show in search while nothing is typed (PIN-4.2, SRCH-1.9), not on Home, so they're built with search and stored as a record of their own. (owner's feedback, 2026-11-27, M01 decision 15)
+
+---
+
 ## Anytime
 
 Nothing yet.
@@ -42,6 +48,7 @@ Nothing yet.
 - **More instruments.** 5-string bass (B E A D G) and 7-string guitar: tunings with more strings (THY-3.2), and positions and voicings that use them. **Revisit when** planning the milestones after version 1.
 - **Your own progressions**, saved like pins. **Revisit when** planning the milestones after version 1.
 - **Reuse `fretkit` and the audio package in the synth-toy projects**: decide whether to publish them or copy them. **Revisit when** a synth-toy project needs them.
+- **Collapsible groups on Home.** A long board pushes everything under it down; groups that fold, each remembering whether it's open, would shorten it without hiding the newest pins as a cap with a See all would (`PinBoard.svelte`, PIN-2). **Revisit when** M01's trial shows the board getting long. (owner's feedback, 2026-11-27, M01 decision 15)
 
 ---
 
@@ -54,3 +61,4 @@ Nothing yet.
 - **Identify for scales**: which scales contain these notes.
 - **An adjustable reference pitch** (A4 other than 440 Hz) for the tuner and audio.
 - **A setlist mode**: a pin group that steps through its pins in order, one tap each, for a gig.
+- **Starter packs**: curated groups of pins shipped with the app, kept out of the way, that the user adds to their board whole to start exploring, built on PIN-5.2's **Add to what's here**. To weigh against the vision's "a lookup tool for a working player, not a course" and principle 1's limit on hand-curated data; worth more once chords and progressions exist, after M03. (owner's feedback, 2026-11-27)
