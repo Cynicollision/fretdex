@@ -7,7 +7,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 | ID | Requirement | Status |
 |---|---|---|
 | APP-1.1 | The context bar (APP-2) shall start with **Home**, the pin board at `/` (PIN-2), which lists the six modules (**Chords**, **Scales**, **Triads**, **Modes**, **Keys** and **Progressions**) and the tools (**Identify**, CHD-6, and later **Tuner**, TUN, and **Metronome**, MET) under the pins, and end with **Search** (SRCH). **Settings** opens from the context bar's sheet. There's no bottom bar, so the rest of the screen is the card's (owner, 2026-11-25). | Partial |
-| APP-1.2 | Any card shall be reachable in at most two taps from the home board: a pin opens its card in one, and a module's list plus one of its items is two, as Home shows the modules under its pins (owner, 2026-11-25). | Implemented |
+| APP-1.2 | Any card should be a few taps from the home board: a pin opens its card in one, and a module's list and one of its items open any other. It's a guideline, traded for a better layout where they conflict (owner, 2026-11-27). | Implemented |
 | APP-1.3 | Every card shall have a back control that returns to where the user came from (the browser's history), and the browser's and phone's own back shall do the same. A card opened with nothing in the app to go back to (from a link or a shortcut) goes back to its module's list. | Implemented |
 | APP-1.4 | The context bar (APP-2) shall be at the top of every screen, and search one tap away on every screen (SRCH-1.1). | Partial |
 | APP-1.5 | A cross-link between modules (a chord in a key, a mode's parent scale) shall open that card with the same instrument and tuning. | Planned |
