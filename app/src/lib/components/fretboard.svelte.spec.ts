@@ -381,6 +381,7 @@ describe('Fretboard', () => {
                     bubbles: true,
                     pointerId: 1,
                     pointerType: 'mouse',
+                    isPrimary: true,
                     button: type === 'pointermove' ? -1 : 0,
                     buttons: type === 'pointerup' ? 0 : 1,
                     clientX: box.left + stripX(strip, fret),
@@ -397,6 +398,13 @@ describe('Fretboard', () => {
         // Once the pointer lifts, moving over the strip no longer slides it.
         at('pointermove', 3);
         await expect.poll(frets).toBe('7-12');
+
+        // Nor once the strip loses the pointer without it lifting, as when the window loses focus mid-drag.
+        at('pointerdown', 4);
+        await expect.poll(frets).toBe('2-7');
+        at('lostpointercapture', 4);
+        at('pointermove', 9);
+        await expect.poll(frets).toBe('2-7');
     });
 
     it('DIAG-1.10 goes back to the capo when the capo changes after moving along the neck', async () => {

@@ -48,11 +48,15 @@
         return Math.min(Math.max(fret, range.from), range.to);
     }
 
-    /** The pointer dragging along the strip, which keeps the stretch under it until it lifts. */
+    /**
+     * The pointer dragging along the strip, which keeps the stretch under it until it lifts or the strip loses it, as
+     * when the window loses focus mid-drag.
+     */
     let dragging: number | undefined;
 
     function down(event: PointerEvent) {
-        if (event.button !== 0) return;
+        // One finger or the main button; a second finger on the strip doesn't take over the drag.
+        if (!event.isPrimary || event.button !== 0) return;
         (event.currentTarget as SVGSVGElement).setPointerCapture(event.pointerId);
         dragging = event.pointerId;
         onpick(fretAt(event));
@@ -78,6 +82,7 @@
     onpointermove={drag}
     onpointerup={lift}
     onpointercancel={lift}
+    onlostpointercapture={lift}
 >
     <rect class="bar" x={PAD} y={BAR_TOP} width={width - 2 * PAD} height={BAR_HEIGHT} rx="3" />
     {#each { length: slots - 1 }, i (i)}
@@ -103,6 +108,7 @@
         max-width: 100%;
         height: auto;
         cursor: pointer;
+        user-select: none;
         /* A sideways drag slides the stretch; an upward or downward one still scrolls the page. */
         touch-action: pan-y;
     }
