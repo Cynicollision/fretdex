@@ -1,6 +1,6 @@
 <!--
     The menu (APP-1.1), opened by ☰ at the start of the context bar: Home, the modules and the tools in their fixed
-    order, and Settings, as rows in a `Sheet`. Those a later milestone builds keep their places, dimmed and marked as
+    order, then Settings and About, as rows in a `Sheet`. Those a later milestone builds keep their places, dimmed and marked as
     coming, so nothing moves as they arrive. The screen open now, or the module it's in, is marked. Following a row
     closes the sheet.
 -->
@@ -28,7 +28,7 @@
     }
 </script>
 
-{#snippet row(name: string, path: '/' | '/settings' | NonNullable<ModuleEntry['path']>)}
+{#snippet row(name: string, path: '/' | '/settings' | '/about' | NonNullable<ModuleEntry['path']>)}
     <li>
         <a href={resolve(path)} aria-current={current(path)} onclick={onclose}>{name}</a>
     </li>
@@ -56,7 +56,10 @@
         <ul>{@render row('Home', '/')}</ul>
         {@render group('Modules', MODULES)}
         {@render group('Tools', TOOLS)}
-        <ul class="settings">{@render row('Settings', '/settings')}</ul>
+        <ul class="settings">
+            {@render row('Settings', '/settings')}
+            {@render row('About', '/about')}
+        </ul>
     </nav>
 </Sheet>
 

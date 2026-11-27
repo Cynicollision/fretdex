@@ -81,6 +81,7 @@ Paths name the thing; query parameters hold view options. Global settings stay o
 | `/circle` | Circle of fifths | `key` |
 | `/progressions`, `/progressions/[slug]` | `/progressions/ii-v-i` | `key`, `bpm` |
 | `/settings` | Settings, export and import | — |
+| `/about` | What Fretdex is, and a link to its repository | — |
 | `/tuner` (M04) | Tuner | — |
 | `/metronome` (M04) | `/metronome?bpm=132&sig=6-8` | `bpm`, `sig`, `sub` |
 
@@ -95,7 +96,7 @@ The routes of M01 are built: the Scales list and scale card (`ScaleCard.svelte`)
 - **Back.** `BackLink.svelte` goes back in the browser's history when the previous entry is one of the app's (the Navigation API's `canGoBack`, or else any history at all), and otherwise follows its link, the card's module list (APP-1.3).
 - **The wake lock** (`wake-lock.ts`) is held while **Keep screen awake** is on and taken again each time the app is shown, as the browser drops it when the app is hidden (APP-5.5).
 
-The root layout puts the context bar (`ContextBar.svelte` in `app/src/lib/components/`) at the top of every route: ☰ and the app's name, one button that opens the menu and names the app on every screen, then the context (on a card, without the key, `card` in `ContextBar.svelte`), which opens its sheet. There's no bottom bar (APP-1.1). The menu is `MenuSheet.svelte`, a `Sheet` closed by ✕ (`closeIcon`) rather than Done: Home, the modules and tools as rows in `MODULES` and `TOOLS`'s order, those not built yet dimmed in their places, then Settings; the screen open, or the module a card is in, is marked, and following a row closes it. The context sheet (`ContextSheet.svelte`) sets the key, instrument, tuning and capo straight into the settings, so whatever screen is open follows at once (APP-2.2), and holds the master volume and mute (AUD-1.2); custom tunings are entered there (`TuningEditor.svelte`) and managed on Settings.
+The root layout puts the context bar (`ContextBar.svelte` in `app/src/lib/components/`) at the top of every route: ☰ and the app's name, one button that opens the menu and names the app on every screen, then the context (on a card, without the key, `card` in `ContextBar.svelte`), which opens its sheet. There's no bottom bar (APP-1.1). The menu is `MenuSheet.svelte`, a `Sheet` closed by ✕ (`closeIcon`) rather than Done: Home, the modules and tools as rows in `MODULES` and `TOOLS`'s order, those not built yet dimmed in their places, then Settings and About; the screen open, or the module a card is in, is marked, and following a row closes it. The context sheet (`ContextSheet.svelte`) sets the key, instrument, tuning and capo straight into the settings, so whatever screen is open follows at once (APP-2.2), and holds the master volume and mute (AUD-1.2); custom tunings are entered there (`TuningEditor.svelte`) and managed on Settings.
 
 ## Storage
 

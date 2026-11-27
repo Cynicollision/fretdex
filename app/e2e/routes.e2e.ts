@@ -8,7 +8,8 @@ const ROUTES: readonly [path: string, heading: string][] = [
     ['/modes/Fs', 'Modes of F♯ major'],
     ['/scales/Fs/dorian', 'F♯ Dorian'],
     ['/scales/Eb/locrian', 'E♭ Locrian'],
-    ['/settings', 'Settings']
+    ['/settings', 'Settings'],
+    ['/about', 'About']
 ];
 
 function heading(page: Page) {

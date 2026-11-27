@@ -220,7 +220,7 @@ describe('the context bar', () => {
 describe('the menu', () => {
     const menu = () => page.getByRole('dialog', { name: 'Menu' });
 
-    it('APP-1.1 opens from ☰ with Home, the modules and tools in order, and Settings', async () => {
+    it('APP-1.1 and APP-1.6 open from ☰ with Home, the modules and tools in order, Settings and About', async () => {
         await render(ContextBar);
 
         await page.getByRole('button', { name: 'Fretdex menu' }).click();
@@ -229,12 +229,13 @@ describe('the menu', () => {
         const links = menu().getByRole('link');
         await expect
             .poll(() => links.all().map(link => link.element().textContent.trim()))
-            .toEqual(['Home', 'Scales', 'Modes', 'Settings']);
+            .toEqual(['Home', 'Scales', 'Modes', 'Settings', 'About']);
         expect(links.all().map(link => link.element().getAttribute('href'))).toEqual([
             '/',
             '/scales',
             '/modes',
-            '/settings'
+            '/settings',
+            '/about'
         ]);
         // The modules and tools keep their places, those not built yet marked as coming.
         const rows = (name: string) =>
