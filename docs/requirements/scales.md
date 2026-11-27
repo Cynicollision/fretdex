@@ -2,7 +2,7 @@
 
 The scales module: any scale on any root, the modes included, on the full neck and in positions, with degrees highlighted. Positions are what make it a guitar reference rather than a theory chart: five CAGED shapes and seven 3-notes-per-string patterns on guitar, one- and two-octave boxes on bass.
 
-Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, options `pos` 1–5 for a CAGED position or pentatonic box, `nps` 1–7, `box` 1–4 on bass, `deg` for the highlighted degrees, `labels`); the list takes `root` (`/scales?root=Eb`).
+Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, options `pos` 1–5 for a CAGED position or pentatonic box, `nps` 1–7, and on bass `oct1` 1–2 for a one-octave box or `oct2` 1–2 for a two-octave one, `deg` for the highlighted degrees, `labels`); the list takes `root` (`/scales?root=Eb`).
 
 ## SCL-1 The user can find a scale
 
@@ -31,7 +31,7 @@ Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, op
 | SCL-3.2 | For seven-note scales, the card shall offer seven 3-notes-per-string patterns, one starting on each degree on the lowest string, numbered by that degree and stepped through up the neck, the choice being `nps`. | Implemented |
 | SCL-3.3 | For pentatonic and blues scales in standard tuning, the card shall offer the five pentatonic boxes, two notes on each string, with the blue note added in the blues scales wherever it falls within the box's frets. They're numbered as traditionally taught, Box 1 having the minor pentatonic's root on the lowest string and the rest following up the neck, the major pentatonic sharing its relative minor's numbers, and named by their relative major's CAGED shape (owner, 2026-11-25). Each is placed as low as it fits and they're stepped through up the neck; the choice is `pos`. | Implemented |
 | SCL-3.4 | Each position shall name its shape ("Position 2 · E shape"; for a mode, "Position 3 · G shape of C major"; a 3-notes-per-string pattern, "Pattern 3 · from the ♭3"). Its frets are read off the neck's numbers, and named in the fretboard's text alternative (owner, 2026-11-25). | Implemented |
-| SCL-3.5 | The user can step through positions with previous and next, and each position plays on its own (AUD-3). The choice is above the neck: **Full neck**, then the kinds the scale offers (**CAGED** or **Boxes**, and **3 per string**), then Previous, the position's name and Next (owner, 2026-11-25). Highlighted degrees (SCL-2.3) work within the position. | Implemented |
+| SCL-3.5 | The user can step through positions with previous and next, and each position plays on its own (AUD-3). The choice is above the neck: **Full neck**, then the kinds the scale offers (**CAGED** or **Boxes**, and **3 per string**; on bass **1 octave** and **2 octaves**, SCL-4.1), then Previous, the position's name and Next (owner, 2026-11-25). Highlighted degrees (SCL-2.3) work within the position. | Implemented |
 | SCL-3.6 | In tunings other than standard, CAGED positions and pentatonic boxes shall be hidden, leaving the 3-notes-per-string patterns and the full neck. A capo isn't another tuning: positions move up with it, so only those at or above the capo are offered. | Implemented |
 | SCL-3.7 | Scales that are neither seven-note nor pentatonic (whole tone, the diminished scales) shall show the full neck only, on bass too. | Implemented |
 
@@ -39,7 +39,7 @@ Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, op
 
 | ID | Requirement | Status |
 |---|---|---|
-| SCL-4.1 | On bass, the card shall offer a one-octave box and a two-octave box from the root on each of the lowest two strings, the choice being `box`: 1 and 2 one octave from the lowest and next string, 3 and 4 two octaves from them (owner, 2026-11-25). A one-octave box climbs from the root one finger a fret on at most three strings (a sixth fret where a string is a 5th above the one below, as Drop D's low D is); a two-octave box is that box, then a shift to the octave on the next string and the same box from there, so it needs three strings above its root's, and on a four-string bass box 4 isn't offered (owner, 2026-11-25). | Implemented |
+| SCL-4.1 | On bass, the card shall offer a one-octave box and a two-octave box from the root on each of the lowest two strings, as two kinds on the Positions row, **1 octave** (`oct1`) and **2 octaves** (`oct2`). Each kind's boxes are numbered up the neck from the lowest, as CAGED positions are, so Next always goes up the neck, and each is named by its root's string ("Box 1 · from the A string") (owner, 2026-11-27). A one-octave box climbs from the root one finger a fret on at most three strings (a sixth fret where a string is a 5th above the one below, as Drop D's low D is); a two-octave box is that box, then a shift to the octave on the next string and the same box from there, so it needs three strings above its root's, and a four-string bass has one two-octave box, from its lowest string (owner, 2026-11-25). | Implemented |
 | SCL-4.2 | Bass shall offer no CAGED positions or 3-notes-per-string patterns, which are guitar's (owner, 2026-11-25). | Implemented |
 
 ## SCL-5 A mode's card shows what makes it a mode

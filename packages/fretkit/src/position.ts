@@ -12,9 +12,9 @@ export type CagedShape = 'C' | 'A' | 'G' | 'E' | 'D';
 
 /**
  * The kinds of position a card offers (SCL-3, SCL-4), each with its URL option: CAGED positions and pentatonic boxes
- * are `pos`, 3-notes-per-string patterns `nps`, and bass boxes `box`.
+ * are `pos`, 3-notes-per-string patterns `nps`, and bass boxes of one octave `oct1` and of two `oct2`.
  */
-export type PositionKind = 'caged' | 'pentatonic' | 'nps' | 'bass';
+export type PositionKind = 'caged' | 'pentatonic' | 'nps' | 'octave' | 'two-octaves';
 
 /** One position of a scale on the neck: the frets it's played on. */
 export interface Position {
@@ -22,15 +22,13 @@ export interface Position {
     /**
      * Its number, as the URL writes it: CAGED positions 1–5 up the neck (SCL-3.1); pentatonic boxes 1–5, Box 1 having
      * the minor pentatonic's root on the lowest string (SCL-3.3); 3-notes-per-string patterns by the degree they start
-     * on, 1–7 (SCL-3.2); bass boxes 1–4 (SCL-4.1).
+     * on, 1–7 (SCL-3.2); bass boxes of each size up the neck (SCL-4.1).
      */
     readonly number: number;
     /** The CAGED shape, for CAGED positions and pentatonic boxes. */
     readonly shape?: CagedShape;
     /** The major scale whose shape it is: the scale's own root, a mode's parent, or a minor scale's relative major. */
     readonly shapeOf?: NoteName;
-    /** For a bass box: one octave or two. */
-    readonly octaves?: 1 | 2;
     /** For a bass box: the string its root is on (1 = the highest, THY-3.4). */
     readonly rootString?: number;
     /** The lowest and highest frets it uses, counted from the nut. */
@@ -86,8 +84,8 @@ type Placed = readonly [Placement, Spot[]];
  * - On guitar in standard tuning, the major scale, its modes and natural minor have five CAGED positions, and the
  *   pentatonic and blues scales five boxes. In other tunings neither is offered (SCL-3.6).
  * - On guitar in any tuning, every seven-note scale has seven 3-notes-per-string patterns (SCL-3.2).
- * - On bass, every scale has one- and two-octave boxes from the root on each of the lowest two strings, where it fits
- *   (SCL-4.1), and nothing else (owner, 2026-11-25).
+ * - On bass, every scale has one- and two-octave boxes from the root on each of the lowest two strings, where it fits,
+ *   each size its own kind (SCL-4.1), and nothing else (owner, 2026-11-25).
  * - Whole tone and the diminished scales have none: the full neck only (SCL-3.7).
  *
  * A capo moves every position up with it (SCL-3.6); a position that would pass `MAX_FRET` is left out.
@@ -105,12 +103,13 @@ export function scalePositions(
         const positions = spots
             .map(([position, found]) => withCells(strings, scale, capo, position, found))
             .filter(position => position !== undefined);
-        // Guitar's positions step up the neck; bass boxes go by number, a box and then its two octaves.
-        if (kind !== 'bass') positions.sort((a, b) => a.from - b.from);
+        // Positions step up the neck.
+        positions.sort((a, b) => a.from - b.from);
         if (positions.length > 0) groups.push({ kind, positions });
     };
     if (instrument === 'bass') {
-        add('bass', bassBoxes(open, scale));
+        add('octave', bassBoxes(open, scale, 1));
+        add('two-octaves', bassBoxes(open, scale, 2));
         return groups;
     }
     if (isStandardGuitar(strings)) {
@@ -255,30 +254,28 @@ function nextNote(pcs: readonly number[], midi: number): number {
 }
 
 /**
- * Bass boxes (SCL-4.1): 1 and 2 are one octave from the root on the lowest and next string, 3 and 4 two octaves
- * from them. A two-octave box is a one-octave box, then a shift up to the octave on the next string and the same box
- * from there, so it needs three strings above its root's: on a four-string bass, box 4 isn't offered (owner,
- * 2026-11-25).
+ * Bass boxes of one size (SCL-4.1), from the root on the lowest and next string, numbered up the neck from the lowest
+ * (owner, 2026-11-27). A two-octave box is a one-octave box, then a shift up to the octave on the next string and the
+ * same box from there, so it needs three strings above its root's: a four-string bass has one, from the lowest string
+ * (owner, 2026-11-25).
  */
-function bassBoxes(open: readonly number[], scale: SpelledScale): Placed[] {
+function bassBoxes(open: readonly number[], scale: SpelledScale, octaves: 1 | 2): Placed[] {
     const pcs = scale.notes.map(notePitchClass);
     const root = notePitchClass(scale.root);
-    const boxes: Placed[] = [];
     const count = open.length;
-    for (const [number, index, octaves] of [
-        [1, 0, 1],
-        [2, 1, 1],
-        [3, 0, 2],
-        [4, 1, 2]
-    ] as const) {
+    const found: { readonly index: number; readonly spots: Spot[] }[] = [];
+    for (const index of [0, 1]) {
         // A one-octave box climbs three strings from its root's, a two-octave one four.
-        if (index + (octaves === 1 ? 2 : 3) > count - 1) continue;
+        if (index + octaves + 1 > count - 1) continue;
         const spots = octaves === 1 ? oneOctave(open, pcs, index, root) : twoOctaves(open, pcs, index, root);
-        if (spots !== undefined) {
-            boxes.push([{ kind: 'bass', number, octaves, rootString: stringNumber(index, count) }, spots]);
-        }
+        if (spots !== undefined) found.push({ index, spots });
     }
-    return boxes;
+    return found
+        .sort((a, b) => lowestFret(a.spots) - lowestFret(b.spots))
+        .map(({ index, spots }, i) => [
+            { kind: octaves === 1 ? 'octave' : 'two-octaves', number: i + 1, rootString: stringNumber(index, count) },
+            spots
+        ]);
 }
 
 /** A one-octave bass box from the root's lowest fret on a string (or an octave up, where it won't fit there). */

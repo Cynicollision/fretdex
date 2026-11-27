@@ -81,7 +81,8 @@ export function modeRows(parent: NoteName): ModeRow[] {
 
 /**
  * The position a row's fretboard shows (MODE-1.12): on guitar, the 3-notes-per-string pattern starting on the mode's
- * root on the lowest string (`nps` 1); on bass, the one-octave box from the root on the lowest string (`box` 1).
+ * root on the lowest string (`nps` 1); on bass, the one-octave box from the root on the lowest string (an `oct1`
+ * numbered by where it falls on the neck).
  * `undefined` if the instrument, tuning and capo leave it out.
  */
 export function rowPosition(
@@ -90,9 +91,11 @@ export function rowPosition(
     instrument: Instrument,
     capo: number
 ): Position | undefined {
-    const kind = instrument === 'bass' ? 'bass' : 'nps';
+    const kind = instrument === 'bass' ? 'octave' : 'nps';
     const group = scalePositions(tuning, row.set, instrument, capo).find(candidate => candidate.kind === kind);
-    return group?.positions.find(position => position.number === 1);
+    return group?.positions.find(position =>
+        kind === 'octave' ? position.rootString === tuning.length : position.number === 1
+    );
 }
 
 /** The slice of `STEP_STRIP` a row lights (MODE-1.14): its seven steps, from the one its degree starts. */

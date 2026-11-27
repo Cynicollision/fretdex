@@ -1,9 +1,9 @@
 <!--
     A fretboard (DIAG-1): the notes `fretkit` maps for a set on a tuning, drawn as architecture.md's Styling says. Wide enough for
     the whole fret range at the tap target, it shows it all; otherwise, as on a phone held upright, it shows a stretch
-    of up to six frets with Lower and Higher, over a strip of the whole neck (DIAG-1.10). Given a position, its notes
-    are at full strength and the rest dimmed (DIAG-1.3), and upright it shows the position's frets, with Lower and
-    Higher only when they don't fit.
+    of up to six frets that Lower and Higher move a fret at a time, over a strip of the whole neck that a tap or a drag
+    moves it along (DIAG-1.10). Given a position, its notes are at full strength and the rest dimmed (DIAG-1.3), and
+    upright it shows the position's frets, with Lower and Higher only when they don't fit.
 -->
 <script lang="ts">
     import {
@@ -23,12 +23,14 @@
         DOUBLE_INLAYS,
         INLAYS,
         SIZES,
+        centredStart,
         describeFretboard,
         dotLabel,
         gauge,
         layNeck,
+        stretchAt,
         stretchLength,
-        stretches,
+        stretchStarts,
         stringY,
         type FretSpace,
         type TappedFret
@@ -98,22 +100,20 @@
     }
 
     const whole = $derived(layNeck(neck.from, neck.to, width, stringCount));
-    // Upright, the stretches of the position's frets, or of the whole range.
-    const runs = $derived(stretches(focus ? { from: focus.from, to: focus.to } : neck, stretchLength(width)));
+    // Upright, a stretch along the position's frets, or along the whole range, starting on any fret.
+    const along: FretRange = $derived(focus ? { from: focus.from, to: focus.to } : neck);
+    const length = $derived(stretchLength(width));
+    const starts = $derived(stretchStarts(along, length));
     /**
-     * The stretch chosen with Lower, Higher or the strip, for the stretches it was chosen among; until then, or once the
-     * capo, the range or the width changes them, the one with the capo or the bottom of the range.
+     * The fret the stretch starts on, chosen with Lower, Higher or the strip, for the frets it was chosen along; until
+     * then, or once the capo, the range or the width changes them, the capo's or the bottom of the range's.
      */
-    let chosen: { readonly among: string; readonly index: number } | undefined = $state();
-    const among = $derived(`${String(capo)}:${runs.map(run => `${String(run.from)}-${String(run.to)}`).join(',')}`);
+    let chosen: { readonly among: string; readonly start: number } | undefined = $state();
+    const among = $derived(`${String(capo)}:${String(along.from)}-${String(along.to)}:${String(length)}`);
     const start = $derived(
-        Math.max(
-            0,
-            runs.findIndex(run => run.to >= capo)
-        )
+        Math.min(Math.max(chosen?.among === among ? chosen.start : capo, starts.first), starts.last)
     );
-    const index = $derived(Math.min(Math.max(chosen?.among === among ? chosen.index : start, 0), runs.length - 1));
-    const shown: FretRange = $derived(whole ? neck : (runs[index] ?? neck));
+    const shown: FretRange = $derived(whole ? neck : stretchAt(along, length, start));
     const layout = $derived(
         whole ??
             layNeck(shown.from, shown.to, width, stringCount) ??
@@ -182,21 +182,13 @@
     }
 
     function move(by: number) {
-        chosen = { among, index: Math.min(Math.max(index + by, 0), runs.length - 1) };
+        chosen = { among, start: Math.min(Math.max(start + by, starts.first), starts.last) };
     }
 
-    /** Shows the stretch that best centres a fret tapped on the strip. */
+    /** Centres the stretch on a fret tapped, or dragged over, on the strip. */
     function pick(fret: number) {
-        let best = index;
-        let distance = Infinity;
-        runs.forEach((run, i) => {
-            const d = Math.abs((run.from + run.to) / 2 - fret);
-            if (d < distance) {
-                best = i;
-                distance = d;
-            }
-        });
-        chosen = { among, index: best };
+        const next = centredStart(along, length, fret);
+        if (next !== start) chosen = { among, start: next };
     }
 
     const rangeText = $derived(
@@ -206,15 +198,15 @@
 
 <figure class="fretboard" bind:clientWidth={measured}>
     <!-- A position that fits needs no Lower and Higher: the card steps through positions (DIAG-1.10). -->
-    {#if !whole && (!focus || runs.length > 1)}
+    {#if !whole && (!focus || starts.last > starts.first)}
         <div class="stretch" role="group" aria-label="Part of the neck">
             {#snippet lower(side: 'start' | 'end')}
-                <button type="button" onclick={() => move(-1)} disabled={index === 0}>
+                <button type="button" onclick={() => move(-1)} disabled={start === starts.first}>
                     {side === 'start' ? '‹ Lower' : 'Lower ›'}
                 </button>
             {/snippet}
             {#snippet higher(side: 'start' | 'end')}
-                <button type="button" onclick={() => move(1)} disabled={index === runs.length - 1}>
+                <button type="button" onclick={() => move(1)} disabled={start === starts.last}>
                     {side === 'start' ? '‹ Higher' : 'Higher ›'}
                 </button>
             {/snippet}

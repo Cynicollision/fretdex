@@ -46,4 +46,4 @@ Rules that apply across the codebase. Match the surrounding code for anything no
 
 ## Lint
 
-- `npm run lint` at the root runs ESLint over every workspace: `typescript-eslint`'s type-checked recommended rules (which catch, for example, a promise that's never awaited) and `eslint-plugin-svelte`'s recommended rules.
+- `npm run lint` at the root runs ESLint over every workspace: `typescript-eslint`'s type-checked recommended rules (which catch, for example, a promise that's never awaited) and `eslint-plugin-svelte`'s recommended rules. It skips everything in `.gitignore`, and `.claude/`, where Claude Code keeps its worktrees.

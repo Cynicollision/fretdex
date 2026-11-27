@@ -1,6 +1,15 @@
 import { mapScale, scaleType, spellScale } from '@fretdex/fretkit';
 import { describe, expect, it } from 'vitest';
-import { FRET_RATIO, SIZES, describeFretboard, fretWidths, stretchLength, stretches } from './fretboard.ts';
+import {
+    FRET_RATIO,
+    SIZES,
+    describeFretboard,
+    fretWidths,
+    centredStart,
+    stretchAt,
+    stretchLength,
+    stretchStarts
+} from './fretboard.ts';
 
 describe('fretWidths', () => {
     it('DIAG-1.8 narrows each fret gently up the neck where there is room', () => {
@@ -24,13 +33,21 @@ describe('fretWidths', () => {
 });
 
 describe('stretches', () => {
-    it('DIAG-1.10 covers the range in runs, the first from the nut and the last ending at the top', () => {
-        expect(stretches({ from: 0, to: 15 }, 6)).toEqual([
-            { from: 0, to: 6 },
-            { from: 7, to: 12 },
-            { from: 10, to: 15 }
-        ]);
-        expect(stretches({ from: 3, to: 8 }, 6)).toEqual([{ from: 3, to: 8 }]);
+    it('DIAG-1.10 starts a stretch on any fret, the open strings coming with fret 1, and the last ending at the top', () => {
+        expect(stretchStarts({ from: 0, to: 15 }, 6)).toEqual({ first: 1, last: 10 });
+        expect(stretchAt({ from: 0, to: 15 }, 6, 1)).toEqual({ from: 0, to: 6 });
+        expect(stretchAt({ from: 0, to: 15 }, 6, 2)).toEqual({ from: 2, to: 7 });
+        expect(stretchAt({ from: 0, to: 15 }, 6, 14)).toEqual({ from: 10, to: 15 });
+        expect(stretchAt({ from: 3, to: 8 }, 6, 5)).toEqual({ from: 3, to: 8 });
+        expect(stretchStarts({ from: 2, to: 12 }, 6)).toEqual({ first: 2, last: 7 });
+    });
+
+    it('DIAG-1.10 centres a stretch on a fret tapped on the strip, held within the range', () => {
+        expect(centredStart({ from: 0, to: 15 }, 6, 8)).toBe(6);
+        expect(stretchAt({ from: 0, to: 15 }, 6, centredStart({ from: 0, to: 15 }, 6, 8))).toEqual({ from: 6, to: 11 });
+        expect(centredStart({ from: 0, to: 15 }, 5, 8)).toBe(6);
+        expect(centredStart({ from: 0, to: 15 }, 6, 0)).toBe(1);
+        expect(centredStart({ from: 0, to: 15 }, 6, 15)).toBe(10);
     });
 
     it('DIAG-1.10 fits five or six frets on a phone held upright', () => {

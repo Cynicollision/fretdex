@@ -8,7 +8,7 @@ import {
     type NoteName,
     type SpelledScale
 } from '@fretdex/fretkit';
-import { chosenPosition, positionTitle } from '#lib/scales/positions.ts';
+import { chosenPosition, positionLabel } from '#lib/scales/positions.ts';
 import { DEFAULT_SETTINGS, builtInTuning, type Settings } from '#lib/settings/settings.ts';
 import { tuningName, type CustomTunings } from '#lib/settings/tunings.ts';
 import type { RecordFormat } from '#lib/storage/record.ts';
@@ -367,7 +367,7 @@ export function pinTile(url: string, settings: Settings, saved: CustomTunings): 
     const options = readViewOptions(view.card.kind, view.params);
     const groups = scalePositions(context.tuning, set, context.instrument, context.capo);
     const chosen = chosenPosition(groups, options);
-    const detail = chosen ? positionTitle(chosen.position, set, context.tuning) : 'Full neck';
+    const detail = chosen ? positionLabel(chosen.position, set, context.tuning) : 'Full neck';
     const title = `${cardTitle(view.card)}, ${detail}`;
     const diagram: TileDiagram = chosen
         ? {
