@@ -76,6 +76,47 @@ test('PIN-1.2 pins a second view of a card, unpins one view or all of them', asy
     await expect(pin).toBeVisible();
 });
 
+test('PIN-1.3, PIN-2.3 and PIN-2.4 group pins and drag one into a group, kept after a relaunch', async ({ page }) => {
+    for (const card of ['/scales/G/major', '/scales/D/dorian', '/scales/A/natural-minor']) {
+        await page.goto(card);
+        await page.getByRole('button', { name: 'Pin', exact: true }).click();
+        await expect(page.getByRole('button', { name: 'Pinned' })).toBeVisible();
+    }
+
+    await page.goto('/');
+    await page.getByRole('button', { name: 'D Dorian: rename, group, move or unpin' }).click();
+    const menu = page.getByRole('dialog', { name: 'D Dorian' });
+    await menu.getByRole('button', { name: 'New group…' }).click();
+    await menu.getByRole('textbox', { name: 'New group' }).fill('Practice');
+    await menu.getByRole('button', { name: 'Create' }).click();
+    await menu.getByRole('button', { name: 'Done' }).click();
+
+    const practice = page.getByRole('region', { name: 'Practice' });
+    await expect(practice.getByRole('link')).toHaveText([/D Dorian/u]);
+
+    // Holding G major lifts it; dropped on the group's heading, it goes first in the group.
+    const tile = page.getByRole('main').getByRole('listitem').filter({ hasText: 'G major' });
+    const from = await tile.boundingBox();
+    const to = await practice.getByRole('heading', { name: 'Practice' }).boundingBox();
+    if (!from || !to) throw new Error('The tile or the heading is not on screen');
+    await page.mouse.move(from.x + 20, from.y + 20);
+    await page.mouse.down();
+    await page.waitForTimeout(700);
+    await page.mouse.move(to.x + 20, to.y + to.height / 2, { steps: 10 });
+    await page.mouse.up();
+    await expect(practice.getByRole('link')).toHaveText([/G major/u, /D Dorian/u]);
+    // The drag didn't open the tile it ended on.
+    await expect(page).toHaveURL(/\/$/u);
+
+    await page.reload();
+    await expect(practice.getByRole('link')).toHaveText([/G major/u, /D Dorian/u]);
+    await expect(page.getByRole('main').getByRole('listitem').first()).toContainText('A natural minor');
+
+    // A quick tap still opens a tile.
+    await practice.getByRole('link', { name: /D Dorian/u }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('D Dorian');
+});
+
 test('PIN-1.1 and PIN-2.6 pin a filtered list, matched by its filter', async ({ page }) => {
     await page.goto('/scales?root=Eb');
     await page.getByRole('button', { name: 'Pin', exact: true }).click();

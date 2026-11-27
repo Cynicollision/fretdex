@@ -83,14 +83,41 @@ describe('the pins store', () => {
         expect(labels(store)).toEqual(['G major', 'E minor', 'D Dorian']);
     });
 
+    it('PIN-6.1 reads pins saved before groups, as ungrouped', async () => {
+        const database = freshDatabase();
+        await database.set('pins', { version: 1, data: { pins: [{ id: 'a', ...G_MAJOR }] } });
+        const store = new PinsStore(database, () => undefined);
+        await store.ready();
+
+        expect(store.current).toEqual({ pins: [{ id: 'a', ...G_MAJOR }], groups: [] });
+    });
+
+    it('PIN-1.3 and PIN-2.4 make a group from a pin, keep it across launches, and delete it', async () => {
+        const database = freshDatabase();
+        const store = new PinsStore(database, () => undefined);
+        for (const pin of [G_MAJOR, D_DORIAN, E_MINOR]) await store.add(pin);
+        const [g, d] = store.current.pins.map(pin => pin.id);
+
+        await store.addGroup(' Practice ', g);
+        await store.addGroup('practice', d);
+        expect(store.current.groups.map(group => group.name)).toEqual(['Practice']);
+        expect(labels(store)).toEqual(['E minor', 'G major', 'D Dorian']);
+
+        const relaunched = new PinsStore(database, () => undefined);
+        await relaunched.ready();
+        expect(relaunched.current).toEqual(store.current);
+
+        await relaunched.deleteGroup(relaunched.current.groups[0]?.id ?? '', 'ungroup');
+        expect(relaunched.current.groups).toEqual([]);
+        expect(labels(relaunched)).toEqual(['E minor', 'G major', 'D Dorian']);
+    });
+
     it('PIN-6.1 never saves over pins written by a newer version of the app', async () => {
         const database = freshDatabase();
         await saveRecord(
             database,
             { ...PINS_FORMAT, version: PINS_FORMAT.version + 1 },
-            {
-                pins: [{ id: 'a', ...G_MAJOR }]
-            }
+            { pins: [{ id: 'a', ...G_MAJOR }], groups: [] }
         );
         const store = new PinsStore(database, () => undefined);
         await store.add(D_DORIAN);

@@ -34,46 +34,107 @@ export interface Pin {
     readonly id: string;
     readonly url: string;
     readonly label: string;
+    /** The id of the group it's in (PIN-1.3); without one, it's ungrouped. */
+    readonly group?: string;
 }
 
-/** The home board: the pins in the user's order. */
+/** A heading on the board that pins are grouped under (PIN-2.4). */
+export interface PinGroup {
+    /** Stays the same through renames and moves. */
+    readonly id: string;
+    /** Unique on the board, ignoring case, so an import can match groups by name (PIN-5.2). */
+    readonly name: string;
+}
+
+/**
+ * The home board: its groups in order, and its pins in the order the board shows them, the ungrouped ones first and
+ * then each group's in turn (PIN-2.1). `readPinBoard` keeps them so, so the board's order is the pins' order.
+ */
 export interface PinBoard {
     readonly pins: readonly Pin[];
+    readonly groups: readonly PinGroup[];
 }
 
-export const NO_PINS: PinBoard = { pins: [] };
+export const NO_PINS: PinBoard = { pins: [], groups: [] };
 
 /** The longest label a pin can have. */
 export const MAX_PIN_LABEL = 60;
+
+/** The longest name a group can have. */
+export const MAX_GROUP_NAME = 40;
 
 /** The longest URL a pin keeps; the app's own are far shorter. */
 const MAX_PIN_URL = 2000;
 
 /**
- * Reads a stored board, keeping each pin with an id, a label and a URL on this site, and dropping the rest. A pin
- * whose URL this version can't read is kept, as a newer version may have written it; its tile shows its label.
+ * Reads a stored board, keeping each group with an id and a name no group before it has, and each pin with an id, a
+ * label and a URL on this site, dropping the rest. A pin whose group isn't there is ungrouped. A pin whose URL this
+ * version can't read is kept, as a newer version may have written it; its tile shows its label.
  */
 export function readPinBoard(data: unknown): PinBoard {
-    const stored = typeof data === 'object' && data !== null ? (data as { pins?: unknown }).pins : undefined;
-    if (!Array.isArray(stored)) return NO_PINS;
+    const record = typeof data === 'object' && data !== null ? (data as { pins?: unknown; groups?: unknown }) : {};
+    const groups: PinGroup[] = [];
+    for (const item of Array.isArray(record.groups) ? (record.groups as unknown[]) : []) {
+        const group = readGroup(item);
+        if (group && !groups.some(other => other.id === group.id || sameName(other.name, group.name))) {
+            groups.push(group);
+        }
+    }
     const pins: Pin[] = [];
-    for (const item of stored as unknown[]) {
-        const pin = readPin(item);
+    for (const item of Array.isArray(record.pins) ? (record.pins as unknown[]) : []) {
+        const pin = readPin(item, groups);
         if (pin && !pins.some(other => other.id === pin.id)) pins.push(pin);
     }
-    return { pins };
+    return { pins: inBoardOrder(pins, groups), groups };
 }
 
-/** The pins record (PIN-6.1). */
-export const PINS_FORMAT: RecordFormat<PinBoard> = { key: 'pins', version: 1, read: readPinBoard };
+/** The pins record (PIN-6.1). Version 2 added groups (PIN-2.4). */
+export const PINS_FORMAT: RecordFormat<PinBoard> = {
+    key: 'pins',
+    version: 2,
+    migrations: {
+        1: data => (typeof data === 'object' && data !== null ? { ...data, groups: [] } : data)
+    },
+    read: readPinBoard
+};
 
-function readPin(value: unknown): Pin | undefined {
+function readGroup(value: unknown): PinGroup | undefined {
     if (typeof value !== 'object' || value === null) return undefined;
-    const { id, url, label } = value as { id?: unknown; url?: unknown; label?: unknown };
+    const { id, name } = value as { id?: unknown; name?: unknown };
+    if (typeof id !== 'string' || id === '' || typeof name !== 'string') return undefined;
+    const trimmed = cleanGroupName(name);
+    return trimmed === '' ? undefined : { id, name: trimmed };
+}
+
+function readPin(value: unknown, groups: readonly PinGroup[]): Pin | undefined {
+    if (typeof value !== 'object' || value === null) return undefined;
+    const { id, url, label, group } = value as { id?: unknown; url?: unknown; label?: unknown; group?: unknown };
     if (typeof id !== 'string' || id === '' || typeof url !== 'string' || typeof label !== 'string') return undefined;
     if (!isOwnPath(url)) return undefined;
     const trimmed = cleanLabel(label);
-    return trimmed === '' ? undefined : { id, url, label: trimmed };
+    if (trimmed === '') return undefined;
+    return inGroup({ id, url, label: trimmed }, groups.find(other => other.id === group)?.id);
+}
+
+/** A pin in a group, or ungrouped with none. */
+function inGroup(pin: Pin, group: string | undefined): Pin {
+    const { id, url, label } = pin;
+    return group === undefined ? { id, url, label } : { id, url, label, group };
+}
+
+/** The board's sections in order: the ungrouped pins (`undefined`), then each group's. */
+function sections(groups: readonly PinGroup[]): (string | undefined)[] {
+    return [undefined, ...groups.map(group => group.id)];
+}
+
+/** The pins in the board's order, each section's in the order given. */
+function inBoardOrder(pins: readonly Pin[], groups: readonly PinGroup[]): Pin[] {
+    return sections(groups).flatMap(section => pins.filter(pin => pin.group === section));
+}
+
+/** Whether two group names are the same, ignoring case. */
+function sameName(a: string, b: string): boolean {
+    return a.toLocaleLowerCase() === b.toLocaleLowerCase();
 }
 
 const ORIGIN = 'https://fretdex.invalid';
@@ -97,12 +158,94 @@ export function cleanLabel(label: string): string {
     return label.trim().slice(0, MAX_PIN_LABEL).trim();
 }
 
-/** A new id for a pin, unique among the ones given. */
-export function newPinId(taken: readonly Pin[]): string {
+/** A name as a group keeps it: trimmed, and cut to `MAX_GROUP_NAME`. */
+export function cleanGroupName(name: string): string {
+    return name.trim().slice(0, MAX_GROUP_NAME).trim();
+}
+
+/** A new id for a pin or a group, unique among the ones given. */
+export function newId(taken: readonly { readonly id: string }[]): string {
     let id: string;
     do id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-    while (taken.some(pin => pin.id === id));
+    while (taken.some(item => item.id === id));
     return id;
+}
+
+/** The group with this name, ignoring case. */
+export function groupNamed(board: PinBoard, name: string): PinGroup | undefined {
+    const cleaned = cleanGroupName(name);
+    return board.groups.find(group => sameName(group.name, cleaned));
+}
+
+/**
+ * Puts a pin in a group, or ungrouped (`undefined`), at this place among that section's other pins, or last when
+ * the place is past the end (PIN-1.3, PIN-2.3). A pin or group that isn't there leaves the board as it was.
+ */
+export function placePin(board: PinBoard, id: string, group: string | undefined, index: number): PinBoard {
+    const pin = board.pins.find(other => other.id === id);
+    if (!pin || (group !== undefined && !board.groups.some(other => other.id === group))) return board;
+    const others = board.pins.filter(other => other.id !== id);
+    const section = others.filter(other => other.group === group);
+    section.splice(Math.max(0, index), 0, inGroup(pin, group));
+    const pins = sections(board.groups).flatMap(each =>
+        each === group ? section : others.filter(other => other.group === each)
+    );
+    return { ...board, pins };
+}
+
+/** Moves a pin a place earlier (-1) or later (1) within its group (PIN-2.3); at either end it stays. */
+export function movePin(board: PinBoard, id: string, by: -1 | 1): PinBoard {
+    const pin = board.pins.find(other => other.id === id);
+    if (!pin) return board;
+    const section = board.pins.filter(other => other.group === pin.group);
+    const to = section.indexOf(pin) + by;
+    return to < 0 || to >= section.length ? board : placePin(board, id, pin.group, to);
+}
+
+/**
+ * Adds a group at the end of the board, or takes the one of that name if there is one, and moves a pin into it,
+ * last, if one is given (PIN-1.3, PIN-2.4). An empty name leaves the board as it was.
+ */
+export function addGroup(board: PinBoard, name: string, pin?: string): PinBoard {
+    const cleaned = cleanGroupName(name);
+    if (cleaned === '') return board;
+    const existing = groupNamed(board, cleaned);
+    const group = existing ?? { id: newId(board.groups), name: cleaned };
+    const next = existing ? board : { ...board, groups: [...board.groups, group] };
+    return pin === undefined ? next : placePin(next, pin, group.id, Infinity);
+}
+
+/** Renames a group (PIN-2.4); an empty name, or another group's, leaves it as it was. */
+export function renameGroup(board: PinBoard, id: string, name: string): PinBoard {
+    const cleaned = cleanGroupName(name);
+    const taken = groupNamed(board, cleaned);
+    if (cleaned === '' || (taken && taken.id !== id)) return board;
+    return { ...board, groups: board.groups.map(group => (group.id === id ? { ...group, name: cleaned } : group)) };
+}
+
+/** Puts a group at this place among the others, its pins with it (PIN-2.3, PIN-2.4). */
+export function placeGroup(board: PinBoard, id: string, index: number): PinBoard {
+    const group = board.groups.find(other => other.id === id);
+    if (!group) return board;
+    const groups = board.groups.filter(other => other.id !== id);
+    groups.splice(Math.max(0, index), 0, group);
+    return { pins: inBoardOrder(board.pins, groups), groups };
+}
+
+/** Moves a group a place earlier (-1) or later (1); at either end it stays. */
+export function moveGroup(board: PinBoard, id: string, by: -1 | 1): PinBoard {
+    const to = board.groups.findIndex(group => group.id === id) + by;
+    return to < 0 || to >= board.groups.length ? board : placeGroup(board, id, to);
+}
+
+/** Deletes a group with its pins, or moves them, in their order, to the end of the ungrouped ones (PIN-2.4). */
+export function deleteGroup(board: PinBoard, id: string, pins: 'delete' | 'ungroup'): PinBoard {
+    const groups = board.groups.filter(group => group.id !== id);
+    const kept =
+        pins === 'delete'
+            ? board.pins.filter(pin => pin.group !== id)
+            : board.pins.map(pin => (pin.group === id ? inGroup(pin, undefined) : pin));
+    return { pins: inBoardOrder(kept, groups), groups };
 }
 
 /** A pin's path, without its query: what PIN-3.1 matches a list's items by. */

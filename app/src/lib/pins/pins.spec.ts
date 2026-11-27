@@ -3,7 +3,24 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_SETTINGS, type Settings } from '#lib/settings/settings.ts';
 import { NO_CUSTOM_TUNINGS } from '#lib/settings/tunings.ts';
 import { readScaleCard, type Card } from '#lib/url/routes.ts';
-import { MAX_PIN_LABEL, pinIdentity, pinTarget, pinTile, readPinBoard, type Pinnable } from './pins';
+import {
+    MAX_GROUP_NAME,
+    MAX_PIN_LABEL,
+    NO_PINS,
+    addGroup,
+    deleteGroup,
+    moveGroup,
+    movePin,
+    pinIdentity,
+    pinTarget,
+    pinTile,
+    placeGroup,
+    placePin,
+    readPinBoard,
+    renameGroup,
+    type PinBoard,
+    type Pinnable
+} from './pins';
 
 function scale(root: string, type: string): Pinnable {
     const card: Card | undefined = readScaleCard(root, type);
@@ -45,6 +62,145 @@ describe('the pins record', () => {
     it('PIN-1.3 cuts a long label', () => {
         const board = readPinBoard({ pins: [{ id: 'a', url: '/scales', label: 'x'.repeat(100) }] });
         expect(board.pins[0]?.label).toHaveLength(MAX_PIN_LABEL);
+    });
+});
+
+describe("the board's groups", () => {
+    // Ungrouped A and B, then Practice with C and D, then Gig with E.
+    const board: PinBoard = readPinBoard({
+        groups: [
+            { id: 'practice', name: 'Practice' },
+            { id: 'gig', name: 'Gig' }
+        ],
+        pins: [
+            { id: 'e', url: '/scales/E/major', label: 'E', group: 'gig' },
+            { id: 'c', url: '/scales/C/major', label: 'C', group: 'practice' },
+            { id: 'a', url: '/scales/A/major', label: 'A' },
+            { id: 'd', url: '/scales/D/major', label: 'D', group: 'practice' },
+            { id: 'b', url: '/scales/B/major', label: 'B' }
+        ]
+    });
+
+    /** The board as its sections, ungrouped (`-`) first, each with its pins' labels. */
+    const layout = (each: PinBoard) =>
+        [undefined, ...each.groups.map(group => group.id)].map(section => [
+            section ?? '-',
+            each.pins
+                .filter(pin => pin.group === section)
+                .map(pin => pin.label)
+                .join('')
+        ]);
+    const order = (each: PinBoard) => each.pins.map(pin => pin.label).join('');
+
+    it("PIN-2.1 keeps the ungrouped pins first, then each group's in the groups' order", () => {
+        expect(order(board)).toBe('ABCDE');
+        expect(layout(board)).toEqual([
+            ['-', 'AB'],
+            ['practice', 'CD'],
+            ['gig', 'E']
+        ]);
+    });
+
+    it('PIN-2.4 keeps each group with an id and a name no group before it has', () => {
+        const read = readPinBoard({
+            groups: [
+                { id: 'a', name: '  Practice  ' },
+                { id: 'b', name: 'PRACTICE' },
+                { id: 'a', name: 'Same id' },
+                { id: 'c', name: '   ' },
+                { id: '', name: 'No id' },
+                { id: 'd', name: 'x'.repeat(100) },
+                'nonsense'
+            ],
+            pins: [{ id: 'p', url: '/scales', label: 'Scales', group: 'b' }]
+        });
+
+        expect(read.groups.map(group => group.id)).toEqual(['a', 'd']);
+        expect(read.groups[0]?.name).toBe('Practice');
+        expect(read.groups[1]?.name).toHaveLength(MAX_GROUP_NAME);
+        // A pin whose group wasn't kept is ungrouped.
+        expect(read.pins[0]).toEqual({ id: 'p', url: '/scales', label: 'Scales' });
+    });
+
+    it('PIN-1.3 puts a pin in a group, last, or ungrouped', () => {
+        expect(layout(placePin(board, 'a', 'gig', Infinity))).toEqual([
+            ['-', 'B'],
+            ['practice', 'CD'],
+            ['gig', 'EA']
+        ]);
+        expect(layout(placePin(board, 'c', undefined, Infinity))).toEqual([
+            ['-', 'ABC'],
+            ['practice', 'D'],
+            ['gig', 'E']
+        ]);
+        expect(placePin(board, 'a', 'nowhere', 0)).toBe(board);
+        expect(placePin(board, 'z', 'gig', 0)).toBe(board);
+    });
+
+    it('PIN-2.3 drops a pin at a place in any group', () => {
+        expect(layout(placePin(board, 'e', 'practice', 1))).toEqual([
+            ['-', 'AB'],
+            ['practice', 'CED'],
+            ['gig', '']
+        ]);
+        expect(layout(placePin(board, 'a', undefined, 1))).toEqual([
+            ['-', 'BA'],
+            ['practice', 'CD'],
+            ['gig', 'E']
+        ]);
+        expect(order(placePin(board, 'b', undefined, -3))).toBe('BACDE');
+    });
+
+    it('PIN-2.3 moves a pin up and down within its group, staying put at either end', () => {
+        expect(order(movePin(board, 'd', -1))).toBe('ABDCE');
+        expect(order(movePin(board, 'c', 1))).toBe('ABDCE');
+        expect(movePin(board, 'c', -1)).toBe(board);
+        expect(movePin(board, 'b', 1)).toBe(board);
+        expect(movePin(board, 'e', 1)).toBe(board);
+    });
+
+    it('PIN-1.3 and PIN-2.4 add a group from a pin, or take the one of that name', () => {
+        const added = addGroup(board, '  Bass ', 'a');
+        expect(added.groups.map(group => group.name)).toEqual(['Practice', 'Gig', 'Bass']);
+        expect(layout(added).at(-1)?.[1]).toBe('A');
+
+        const taken = addGroup(board, 'gig', 'a');
+        expect(taken.groups).toEqual(board.groups);
+        expect(layout(taken)).toEqual([
+            ['-', 'B'],
+            ['practice', 'CD'],
+            ['gig', 'EA']
+        ]);
+
+        expect(addGroup(board, '   ', 'a')).toBe(board);
+        expect(addGroup(NO_PINS, 'Empty').groups.map(group => group.name)).toEqual(['Empty']);
+    });
+
+    it("PIN-2.4 renames a group, but not to nothing or another group's name", () => {
+        expect(renameGroup(board, 'gig', ' Saturday ').groups[1]?.name).toBe('Saturday');
+        expect(renameGroup(board, 'gig', 'GIG').groups[1]?.name).toBe('GIG');
+        expect(renameGroup(board, 'gig', 'practice')).toBe(board);
+        expect(renameGroup(board, 'gig', '  ')).toBe(board);
+    });
+
+    it('PIN-2.3 and PIN-2.4 move and drop a group with its pins', () => {
+        expect(order(moveGroup(board, 'gig', -1))).toBe('ABECD');
+        expect(order(moveGroup(board, 'practice', 1))).toBe('ABECD');
+        expect(moveGroup(board, 'practice', -1)).toBe(board);
+        expect(moveGroup(board, 'gig', 1)).toBe(board);
+        expect(placeGroup(board, 'gig', 0).groups.map(group => group.id)).toEqual(['gig', 'practice']);
+        expect(placeGroup(board, 'practice', 5).groups.map(group => group.id)).toEqual(['gig', 'practice']);
+    });
+
+    it('PIN-2.4 deletes a group with its pins, or moves them to the end of the ungrouped ones', () => {
+        expect(layout(deleteGroup(board, 'practice', 'ungroup'))).toEqual([
+            ['-', 'ABCD'],
+            ['gig', 'E']
+        ]);
+        expect(layout(deleteGroup(board, 'practice', 'delete'))).toEqual([
+            ['-', 'AB'],
+            ['gig', 'E']
+        ]);
     });
 });
 
