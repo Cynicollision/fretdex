@@ -140,3 +140,19 @@ test('APP-2.3 clears the override when the sheet changes the instrument, tuning 
     await expect(banner).toContainText('Guitar · Standard · Capo 1');
     await expect.poll(() => where(page)).toBe('/scales/D/dorian');
 });
+
+test("APP-1.5 keeps a view's instrument and tuning on its links to other cards", async ({ page }) => {
+    const banner = page.getByRole('banner');
+    await page.goto('/scales?inst=bass&tuning=drop-d');
+    await expect(banner).toContainText('Bass · Drop D · this card');
+    await page.getByRole('link', { name: 'C Dorian', exact: true }).click();
+    await expect(heading(page)).toHaveText('C Dorian');
+    await expect.poll(() => where(page)).toBe('/scales/C/dorian?inst=bass&tuning=drop-d');
+
+    // The brightness row and the Modes overview link keep it too.
+    await page.getByRole('link', { name: 'Lydian', exact: true }).click();
+    await expect.poll(() => where(page)).toBe('/scales/C/lydian?inst=bass&tuning=drop-d');
+    await page.getByRole('link', { name: /modes of G major/u }).click();
+    await expect(heading(page)).toHaveText('Modes of G major');
+    await expect(banner).toContainText('Bass · Drop D · this card');
+});

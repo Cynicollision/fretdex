@@ -106,6 +106,8 @@
 
     .row {
         display: flex;
+        /* With large system text, the context drops below ☰ Fretdex rather than push ▾ off screen (APP-6.5). */
+        flex-wrap: wrap;
         align-items: center;
         max-width: 40rem;
         margin: 0 auto;
@@ -141,8 +143,9 @@
     }
 
     .context {
-        flex: 1;
-        min-width: 0;
+        /* As narrow as its longest word, so it stays beside ☰ Fretdex until that won't fit. */
+        flex: 1 1 0;
+        min-width: min-content;
         display: grid;
         grid-template-columns: 1fr auto;
         grid-template-areas: 'key change' 'details change';

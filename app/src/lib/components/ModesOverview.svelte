@@ -35,7 +35,7 @@
     import { tuningName } from '#lib/settings/tunings.ts';
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { readOverride, viewContext } from '#lib/url/context.ts';
-    import { cardHref } from '#lib/url/href.ts';
+    import { cardHref, cardLink } from '#lib/url/href.ts';
     import { replaceCard, setViewOption } from '#lib/url/navigate.ts';
     import { cardPath, cardTitle, readViewOptions, withViewOption, writeQuery, type Card } from '#lib/url/routes.ts';
     import { page } from '$app/state';
@@ -106,7 +106,7 @@
             <p>
                 {noteLabel(key)} major needs a double sharp or flat; it's usually written as {noteLabel(simpler)} major.
             </p>
-            <a class="link" href={cardHref({ kind: 'modes', root: simpler })}>
+            <a class="link" href={cardLink({ kind: 'modes', root: simpler }, override)}>
                 Open {cardTitle({ kind: 'modes', root: simpler })}
             </a>
         </div>
@@ -306,7 +306,8 @@
     /* The major scale's steps, the mode's seven lit: read down the page, the lit slices step right (MODE-1.14). */
     .strip {
         display: grid;
-        grid-template-columns: repeat(13, 1fr);
+        /* Thirteen steps that share the width, however narrow, rather than push the row off screen. */
+        grid-template-columns: repeat(13, minmax(0, 1fr));
         gap: 2px;
     }
 

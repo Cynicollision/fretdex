@@ -10,7 +10,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 | APP-1.2 | Getting to any card should take a few taps and no thought: a pin on the home board opens its card in one, and the menu, a module's list and one of its items open any other. Simple, obvious navigation is the aim, not a number of taps (owner, 2026-11-27). | Implemented |
 | APP-1.3 | Every card shall have a back control that returns to where the user came from (the browser's history), and the browser's and phone's own back shall do the same. A card opened with nothing in the app to go back to (from a link or a shortcut) goes back to its module's list. | Implemented |
 | APP-1.4 | The context bar (APP-2) shall be at the top of every screen, and search one tap away on every screen (SRCH-1.1). | Partial |
-| APP-1.5 | A cross-link between modules (a chord in a key, a mode's parent scale) shall open that card with the same instrument and tuning. | Planned |
+| APP-1.5 | A cross-link between modules (a chord in a key, a mode's parent scale) shall open that card with the same instrument and tuning. | Implemented |
 
 ## APP-2 The context bar sets the key and instrument once
 
@@ -46,29 +46,29 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 | ID | Requirement | Status |
 |---|---|---|
-| APP-5.1 | Every tap target shall be at least 44 by 44 CSS pixels. | Planned |
-| APP-5.2 | No action shall need hover, a right-click or a keyboard; every gesture (swipe between voicings) shall also have a visible button. | Planned |
-| APP-5.3 | Text and note labels on diagrams shall be readable at arm's length: body text at least 16px and diagram labels at least 14px at the default size. | Partial |
-| APP-5.4 | Every screen and feature shall be usable with the phone held upright. Turning the phone may show more, never less: in landscape the fretboard shows the whole fret range across the full width (DIAG-1.10). Decided 2026-11-25 (APP-Q2). | Planned |
+| APP-5.1 | Every tap target shall be at least 44 by 44 CSS pixels. | Implemented |
+| APP-5.2 | No action shall need hover, a right-click or a keyboard; every gesture (swipe between voicings) shall also have a visible button. | Implemented |
+| APP-5.3 | Text and note labels on diagrams shall be readable at arm's length: body text at least 16px and diagram labels at least 14px at the default size. | Implemented |
+| APP-5.4 | Every screen and feature shall be usable with the phone held upright. Turning the phone may show more, never less: in landscape the fretboard shows the whole fret range across the full width (DIAG-1.10). Decided 2026-11-25 (APP-Q2). | Implemented |
 | APP-5.5 | While **Keep screen awake** is on (CTX-1.10, on by default), the screen shall not dim or lock while the app is open, where the browser supports a wake lock. | Implemented |
-| APP-5.6 | No screen shall scroll sideways at any width from 320px. | Planned |
+| APP-5.6 | No screen shall scroll sideways at any width from 320px. | Implemented |
 
 ## APP-6 It's themeable and accessible
 
 | ID | Requirement | Status |
 |---|---|---|
 | APP-6.1 | The app shall offer **Dark** (default), **Light** and **High contrast** themes (CTX-1.8). | Implemented |
-| APP-6.2 | Text shall meet WCAG AA contrast in Dark and Light, and AAA in High contrast. | Partial |
-| APP-6.3 | Meaning shall never rest on color alone: a root or highlighted degree also differs in shape or label. | Planned |
+| APP-6.2 | Text shall meet WCAG AA contrast in Dark and Light, and AAA in High contrast. | Implemented |
+| APP-6.3 | Meaning shall never rest on color alone: a root or highlighted degree also differs in shape or label. | Implemented |
 | APP-6.4 | Every diagram shall have a text alternative listing what it shows ("A minor seven flat five: A, C, Eb, G; frets x 0 1 0 1 x"). | Partial |
-| APP-6.5 | The app shall work with the system's text size and reduced-motion settings. | Planned |
+| APP-6.5 | The app shall work with the system's text size and reduced-motion settings. | Implemented |
 
 ## APP-7 It's fast
 
 | ID | Requirement | Status |
 |---|---|---|
-| APP-7.1 | A card shall render within 100 ms of a tap on a mid-range phone, once the app is loaded. | Planned |
-| APP-7.2 | The first load, everything precached included, shall be at most 2 MB transferred. | Planned |
+| APP-7.1 | A card shall render within 100 ms of a tap on a mid-range phone, once the app is loaded. | Implemented |
+| APP-7.2 | The first load, everything precached included, shall be at most 2 MB transferred. | Implemented |
 
 ## APP-8 It runs where the owner plays
 
@@ -81,6 +81,6 @@ Behavior that applies across the whole app: how the user moves around, the conte
 
 - **APP-1.1:** the context bar has ☰ Fretdex and the menu; Search joins it in M03. The modules and tools later milestones build are in the menu and Home's grid in their places, marked as coming later.
 - **APP-1.4:** the context bar is at the top of every screen; search comes in M03.
+- **APP-1.5:** every cross-link of M01 keeps the view's override (`cardLink`); chords, keys and progressions add theirs with their modules.
 - **APP-3.1:** every route of M01 opens from its URL with its options and override, and the Scales list takes its root (`root`); the chord, triad and progression options come with their modules (M02, M03).
-- **APP-5.3, APP-6.2:** the three themes' colours and the type scale are design tokens, and a unit test checks every text pair's contrast, but most of the screens and diagrams that use them come with M01's later tasks.
 - **APP-6.4:** the fretboard, its compact form, the Modes overview's necks and the keyboard have text alternatives; the chord box (M02), circle and staff (M03) will need theirs.
