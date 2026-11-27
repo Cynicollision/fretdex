@@ -1,6 +1,10 @@
-<!-- A list of cards, each a link to its card with an optional note beside its name: the module lists until their own. -->
+<!--
+    A list of cards, each a link to its card with an optional note beside its name: the module lists until their own.
+    The links keep the list's instrument, tuning and capo override (APP-1.5).
+-->
 <script lang="ts">
-    import { cardHref } from '#lib/url/href.ts';
+    import type { ContextOverride } from '#lib/url/context.ts';
+    import { cardLink } from '#lib/url/href.ts';
     import { cardPath, cardTitle, type Card } from '#lib/url/routes.ts';
 
     interface Item {
@@ -10,15 +14,16 @@
 
     interface Props {
         items: readonly Item[];
+        override?: ContextOverride;
     }
 
-    let { items }: Props = $props();
+    let { items, override = {} }: Props = $props();
 </script>
 
 <ul>
     {#each items as { card, aside } (cardPath(card))}
         <li>
-            <a href={cardHref(card)}>
+            <a href={cardLink(card, override)}>
                 {cardTitle(card)}
                 {#if aside}<span class="aside">{aside}</span>{/if}
             </a>

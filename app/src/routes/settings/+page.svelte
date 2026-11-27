@@ -145,6 +145,8 @@
 <style>
     main {
         display: grid;
+        /* One column, never wider than the screen, however large the system text (APP-5.6, APP-6.5). */
+        grid-template-columns: minmax(0, 1fr);
         gap: 28px;
         max-width: 40rem;
         margin: 0 auto;
@@ -155,6 +157,7 @@
 
     section {
         display: grid;
+        grid-template-columns: minmax(0, 1fr);
         gap: 20px;
     }
 

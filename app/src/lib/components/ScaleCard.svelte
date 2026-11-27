@@ -46,7 +46,7 @@
     import { tuningName } from '#lib/settings/tunings.ts';
     import { customTunings } from '#lib/settings/tunings.svelte.ts';
     import { readOverride, viewContext } from '#lib/url/context.ts';
-    import { cardHref } from '#lib/url/href.ts';
+    import { cardLink } from '#lib/url/href.ts';
     import { replaceCard, setViewOption } from '#lib/url/navigate.ts';
     import {
         cardModule,
@@ -68,7 +68,9 @@
     let { card }: Props = $props();
 
     const options = $derived(readViewOptions(card.kind, page.url.searchParams));
-    const view = $derived(viewContext(settings.current, readOverride(page.url.searchParams, settings.current)));
+    // The card's override, kept on its links to other cards (APP-1.5).
+    const override = $derived(readOverride(page.url.searchParams, settings.current));
+    const view = $derived(viewContext(settings.current, override));
 
     const type = $derived(card.scale);
     const set = $derived(spellScale(card.root, type));
@@ -237,7 +239,9 @@
                     root: simpler
                 })}.
             </p>
-            <a class="link" href={cardHref({ ...card, root: simpler })}>Open {cardTitle({ ...card, root: simpler })}</a>
+            <a class="link" href={cardLink({ ...card, root: simpler }, override)}>
+                Open {cardTitle({ ...card, root: simpler })}
+            </a>
         </div>
     {:else if doubles}
         <p class="note">
@@ -358,7 +362,10 @@
                 <ol class="brightness">
                     {#each row as other (other.scale.id)}
                         <li>
-                            <a href={cardHref(other)} aria-current={other.scale.id === type.id ? 'page' : undefined}>
+                            <a
+                                href={cardLink(other, override)}
+                                aria-current={other.scale.id === type.id ? 'page' : undefined}
+                            >
                                 {other.scale.name}
                             </a>
                         </li>
@@ -366,7 +373,7 @@
                 </ol>
             </nav>
             <p class="muted">Brightest to darkest.</p>
-            <a class="link" href={cardHref({ kind: 'modes', root: modesKey })}>
+            <a class="link" href={cardLink({ kind: 'modes', root: modesKey }, override)}>
                 The seven modes of {noteLabel(modesKey)} major
             </a>
             <h3>Chords</h3>

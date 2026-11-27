@@ -17,7 +17,7 @@
     import { replaceQuery } from '#lib/url/navigate.ts';
     import { readListRoot, writeListQuery } from '#lib/url/routes.ts';
     import { page } from '$app/state';
-    import { cardHref } from '#lib/url/href.ts';
+    import { cardLink } from '#lib/url/href.ts';
     import { onMount } from 'svelte';
 
     // The query is read once the page has hydrated: the list is prerendered, with no query (architecture's Routes).
@@ -26,6 +26,8 @@
         mounted = true;
     });
     const root = $derived(mounted ? readListRoot(page.url.searchParams) : undefined);
+    // The list's override, kept on its links (APP-1.5).
+    const override = $derived(mounted ? readOverride(page.url.searchParams, settings.current) : {});
     const list = $derived(scaleList(root, settings.current.key, settings.current.accidentals));
     const pinned = $derived(pinnedCards(list, new Set(pins.current.pins.map(pin => pinPath(pin.url)))));
     const rootOptions = PICKER_ROOTS.map(root => ({
@@ -41,10 +43,7 @@
             key !== null && PICKER_ROOTS[pitchClass]?.spellings.some(spelling => spelling === key.root)
                 ? undefined
                 : spellPitchClass(pitchClass, settings.current.accidentals);
-        void replaceQuery(
-            page.url,
-            writeListQuery('/scales', root, readOverride(page.url.searchParams, settings.current))
-        );
+        void replaceQuery(page.url, writeListQuery('/scales', root, override));
     }
 </script>
 
@@ -66,23 +65,23 @@
     {#if pinned.length > 0}
         <section aria-labelledby="group-pinned">
             <h2 id="group-pinned">Pinned</h2>
-            <CardList items={pinned.map(card => ({ card }))} />
+            <CardList items={pinned.map(card => ({ card }))} {override} />
         </section>
     {/if}
     {#if list.keyCard}
         <section aria-labelledby="group-key">
             <h2 id="group-key">Current key</h2>
-            <CardList items={[{ card: list.keyCard }]} />
+            <CardList items={[{ card: list.keyCard }]} {override} />
         </section>
     {/if}
     {#each list.groups as group (group.id)}
         <section aria-labelledby="group-{group.id}">
             <h2 id="group-{group.id}">{group.name}</h2>
-            <CardList items={group.cards.map(card => ({ card }))} />
+            <CardList items={group.cards.map(card => ({ card }))} {override} />
             {#if group.id === 'modes'}
                 {@const ionian = group.cards.find(card => card.scale.id === 'ionian')}
                 {#if ionian}
-                    <a class="link" href={cardHref({ kind: 'modes', root: ionian.root })}>
+                    <a class="link" href={cardLink({ kind: 'modes', root: ionian.root }, override)}>
                         The seven modes of {noteLabel(ionian.root)} major
                     </a>
                 {/if}

@@ -35,7 +35,7 @@ TypeScript stays on 6.x until `svelte-check` and `typescript-eslint` support 7 (
 
 ## Trying a change in the app
 
-For anything the screen shows, try the change in the running app as well as its tests, on a phone-sized viewport. Claude uses the desktop app's built-in browser: `preview_start` with the `app` configuration in `.claude/launch.json` starts the dev server. Once it's merged and deployed ([deployment.md](deployment.md)), try it on the owner's phone too.
+For anything the screen shows, try the change in the running app as well as its tests, on a phone-sized viewport. Claude uses the desktop app's built-in browser: `preview_start` with the `app` configuration in `.claude/launch.json` starts the dev server, and the `preview` configuration serves the last build (`npm run build` first), for checking what ships, such as its size or speed. Once it's merged and deployed ([deployment.md](deployment.md)), try it on the owner's phone too.
 
 ## Fonts and icons
 
