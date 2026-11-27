@@ -1,5 +1,6 @@
 <!--
-    Settings (CTX-1): how diagrams are drawn, the theme, the screen, the tempo, and the saved tunings (CTX-2.7). The
+    Settings (CTX-1): how diagrams are drawn, the theme, the screen, the tempo, the saved tunings (CTX-2.7), and backup
+    (PIN-5). The
     key, instrument, tuning and capo are set from the context bar's sheet (APP-2).
 -->
 <script lang="ts">
@@ -12,6 +13,7 @@
     import { settings } from '#lib/settings/store.svelte.ts';
     import { shownPersistence, type Persistence } from '#lib/storage/persist.ts';
     import { onMount } from 'svelte';
+    import Backup from './Backup.svelte';
     import SavedTunings from './SavedTunings.svelte';
 
     const current = $derived(settings.current);
@@ -129,8 +131,13 @@
     </section>
 
     <section>
+        <h2>Backup</h2>
+        <Backup />
+    </section>
+
+    <section>
         <h2>Storage</h2>
-        <p>Settings and saved tunings are kept on this device only.</p>
+        <p>Pins, settings and saved tunings are kept on this device only.</p>
         {#if stored}<p class="muted">{STORAGE_TEXT[stored]}</p>{/if}
     </section>
 </main>
