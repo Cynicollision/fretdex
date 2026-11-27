@@ -265,6 +265,15 @@ describe("a pin's tile", () => {
         }
     });
 
+    it('PIN-2.2 names a pinned bass box with its size, as Home has no Positions row', () => {
+        expect(pinTile('/scales/G/major?oct1=1', bass, NO_CUSTOM_TUNINGS).detail).toBe(
+            '1 octave · Box 1 · from the E string'
+        );
+        expect(pinTile('/scales/G/major?oct2=1', bass, NO_CUSTOM_TUNINGS).detail).toBe(
+            '2 octaves · Box 1 · from the E string'
+        );
+    });
+
     it('PIN-2.2 draws the full neck as an octave from the capo', () => {
         const tile = pinTile('/scales/A/minor-pentatonic?capo=2', DEFAULT_SETTINGS, NO_CUSTOM_TUNINGS);
 

@@ -40,12 +40,16 @@ describe('positionName', () => {
 
     it('SCL-4.1 names bass boxes by their number up the neck and their root string', () => {
         expect(names(BASS, 'G', 'major', 'bass').map(group => [group.kind, ...group.names])).toEqual([
-            ['octave', 'Box 1 · from the E string · frets 2–5', 'Box 2 · from the A string · frets 9–12'],
-            ['two-octaves', 'Box 1 · from the E string · frets 2–12']
+            [
+                'octave',
+                '1 octave · Box 1 · from the E string · frets 2–5',
+                '1 octave · Box 2 · from the A string · frets 9–12'
+            ],
+            ['two-octaves', '2 octaves · Box 1 · from the E string · frets 2–12']
         ]);
         expect(names(BASS, 'D', 'major', 'bass')[0]?.names).toEqual([
-            'Box 1 · from the A string · frets 4–7',
-            'Box 2 · from the E string · frets 9–12'
+            '1 octave · Box 1 · from the A string · frets 4–7',
+            '1 octave · Box 2 · from the E string · frets 9–12'
         ]);
     });
 });
