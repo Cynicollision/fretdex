@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { storedSettings } from './stored.ts';
 
 /** The path and query the page is on. */
 function where(page: Page): string {
@@ -100,9 +101,13 @@ test("CTX-2.5 opens a screen on what's stored, never the defaults and then a red
     await sheet.getByText('E', { exact: true }).click();
     await sheet.getByRole('button', { name: 'Done' }).click();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Modes of G major');
+    // The key is saved after it's shown; a reload before the save commits would lose it.
+    await expect.poll(() => storedSettings(page)).toMatchObject({ key: { root: 'E', mode: 'minor' } });
 
     // A fresh load of the prerendered `/modes` once showed C major before the stored key's.
     await page.reload();
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Modes of G major');
-    expect(await page.evaluate(() => (window as unknown as { seen: string[] }).seen)).toEqual(['Modes of G major']);
+    // The heading's text is there while the screen is still hidden, so wait for a frame that showed it.
+    await expect
+        .poll(() => page.evaluate(() => (window as unknown as { seen: string[] }).seen))
+        .toEqual(['Modes of G major']);
 });
