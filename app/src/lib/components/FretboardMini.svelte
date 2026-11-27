@@ -1,9 +1,17 @@
 <!--
-    A fretboard's compact form for a pin tile (DIAG-5.1), 150 by 72: hairline frets and strings, the nut when the open
-    strings are in range, and dots without labels, the root a square.
+    A fretboard's compact form for a pin tile (DIAG-5.1), 150 by 72, narrower where the tile is: hairline frets and
+    strings, the nut when the open strings are in range, and dots without labels, the root a square. It draws the
+    scale's notes in the range, or a position's own (`cells`).
 -->
 <script lang="ts">
-    import { mapScale, stringIndex, type FretRange, type NoteName, type NoteSet } from '@fretdex/fretkit';
+    import {
+        mapScale,
+        stringIndex,
+        type FretRange,
+        type FretboardCell,
+        type NoteName,
+        type NoteSet
+    } from '@fretdex/fretkit';
     import type { Handedness } from '#lib/settings/settings.ts';
 
     interface Props {
@@ -12,11 +20,13 @@
         range: FretRange;
         capo?: number;
         handedness: Handedness;
+        /** The notes to draw, such as a position's (SCL-3); every note of `set` in `range` without them. */
+        cells?: readonly FretboardCell[];
         /** What it shows, read out in place of the drawing (APP-6.4). */
         title: string;
     }
 
-    let { tuning, set, range, capo = 0, handedness, title }: Props = $props();
+    let { tuning, set, range, capo = 0, handedness, cells: only, title }: Props = $props();
 
     const WIDTH = 150;
     const HEIGHT = 72;
@@ -25,7 +35,7 @@
     const slots = $derived(range.to - range.from + 1);
     const slot = $derived((WIDTH - 2 * PAD) / slots);
     const gap = $derived((HEIGHT - 2 * PAD - 8) / Math.max(1, stringCount - 1));
-    const cells = $derived(mapScale(tuning, set, range, capo));
+    const cells = $derived(only ?? mapScale(tuning, set, range, capo));
 
     function mx(x: number): number {
         return handedness === 'left' ? WIDTH - x : x;
@@ -69,6 +79,9 @@
 <style>
     .mini {
         display: block;
+        width: 100%;
+        max-width: 150px;
+        height: auto;
     }
 
     .neck {

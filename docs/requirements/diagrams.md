@@ -52,4 +52,4 @@ The hero visuals: the fretboard and the chord box for guitar and bass, with a sm
 ## Known gaps
 
 - **DIAG-3.1:** the keyboard marks the notes, enlarges when tapped and plays its keys, on the scale cards, the modes' included.
-- **DIAG-5.1:** the fretboard has its compact form (`FretboardMini.svelte`); the chord box's comes in M02, and the pin tiles that show them in M01 T12.
+- **DIAG-5.1:** the fretboard has its compact form (`FretboardMini.svelte`), on Home's pin tiles; the chord box's comes in M02.

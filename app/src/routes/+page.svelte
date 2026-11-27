@@ -1,12 +1,11 @@
 <!--
-    A placeholder until the home board (PIN-2) arrives in M01 T12: the modules, so any card is two taps away
-    (APP-1.2), and a preview of what the settings do.
+    Home (APP-1.1): the pin board (PIN-2), or how to pin when there's nothing pinned (PIN-2.5), then the modules and
+    tools, so any card is two taps away (APP-1.2).
 -->
 <script lang="ts">
     import ModuleGrid from '#lib/components/ModuleGrid.svelte';
-    import { settings } from '#lib/settings/store.svelte.ts';
-    import { customTunings } from '#lib/settings/tunings.svelte.ts';
-    import ContextPreview from './ContextPreview.svelte';
+    import PinBoard from '#lib/components/PinBoard.svelte';
+    import { pins } from '#lib/pins/store.svelte.ts';
 </script>
 
 <svelte:head>
@@ -15,16 +14,27 @@
 
 <main>
     <h1>Fretdex</h1>
-    <p>A reference for guitar and bass: scales and modes in every key, from C to F♯ and B♭.</p>
-    <p class="muted">Under construction.</p>
+    <!-- Nothing until the pins have loaded, so a board never flashes empty. -->
+    {#if pins.loaded}
+        <section aria-labelledby="pins-heading">
+            <h2 id="pins-heading">Pins</h2>
+            {#if pins.current.pins.length > 0}
+                <PinBoard />
+            {:else}
+                <p class="empty">
+                    Nothing pinned yet. Open a scale from Scales below and tap <strong>☆ Pin</strong> beside its name to keep
+                    it here, just as it is, a tap away.
+                </p>
+            {/if}
+        </section>
+    {/if}
     <ModuleGrid />
-    <ContextPreview settings={settings.current} saved={customTunings.current} />
 </main>
 
 <style>
     main {
         display: grid;
-        gap: 12px;
+        gap: 16px;
         max-width: 40rem;
         margin: 0 auto;
         padding-block: 24px;
@@ -32,11 +42,17 @@
         padding-right: max(16px, env(safe-area-inset-right, 0px));
     }
 
-    p {
-        margin: 0;
+    section {
+        display: grid;
+        gap: 8px;
     }
 
-    .muted {
+    .empty {
+        margin: 0;
         color: var(--muted);
+    }
+
+    .empty strong {
+        color: var(--text);
     }
 </style>

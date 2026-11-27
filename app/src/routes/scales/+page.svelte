@@ -1,14 +1,17 @@
 <!--
-    Scales (SCL-1.1): a root picker, then every scale in its group on that root, with the current key's own scale
-    first when the list is on the key's root (SCL-1.2). The root is the query's (`?root=Eb`), else the key's, else C
-    (CTX-2.8).
+    Scales (SCL-1.1): a root picker, then every scale in its group on that root, with the pinned ones first (PIN-3.1)
+    and the current key's own scale first when the list is on the key's root (SCL-1.2). The root is the query's
+    (`?root=Eb`), else the key's, else C (CTX-2.8). A list on a chosen root can be pinned (PIN-1.1).
 -->
 <script lang="ts">
     import { PICKER_ROOTS, noteLabel, spellPitchClass } from '@fretdex/fretkit';
     import CardList from '#lib/components/CardList.svelte';
     import Choice from '#lib/components/Choice.svelte';
+    import PinButton from '#lib/components/PinButton.svelte';
+    import { pinPath } from '#lib/pins/pins.ts';
+    import { pins } from '#lib/pins/store.svelte.ts';
     import Screen from '#lib/components/Screen.svelte';
-    import { scaleList } from '#lib/scales/list.ts';
+    import { pinnedCards, scaleList } from '#lib/scales/list.ts';
     import { settings } from '#lib/settings/store.svelte.ts';
     import { readOverride } from '#lib/url/context.ts';
     import { replaceQuery } from '#lib/url/navigate.ts';
@@ -24,6 +27,7 @@
     });
     const root = $derived(mounted ? readListRoot(page.url.searchParams) : undefined);
     const list = $derived(scaleList(root, settings.current.key, settings.current.accidentals));
+    const pinned = $derived(pinnedCards(list, new Set(pins.current.pins.map(pin => pinPath(pin.url)))));
     const rootOptions = PICKER_ROOTS.map(root => ({
         value: String(root.pitchClass),
         label: root.spellings.map(noteLabel).join('/')
@@ -45,6 +49,12 @@
 </script>
 
 <Screen title="Scales" back="/">
+    {#snippet actions()}
+        <!-- The list on the key's root, or C, is on Home already; a chosen root can be pinned (PIN-1.1). -->
+        {#if root !== undefined}
+            <PinButton view={{ kind: 'list', list: '/scales', root }} />
+        {/if}
+    {/snippet}
     <Choice
         legend="Root"
         name="scales-root"
@@ -53,6 +63,12 @@
         columns={4}
         onchange={setRoot}
     />
+    {#if pinned.length > 0}
+        <section aria-labelledby="group-pinned">
+            <h2 id="group-pinned">Pinned</h2>
+            <CardList items={pinned.map(card => ({ card }))} />
+        </section>
+    {/if}
     {#if list.keyCard}
         <section aria-labelledby="group-key">
             <h2 id="group-key">Current key</h2>

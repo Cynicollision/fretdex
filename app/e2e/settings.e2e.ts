@@ -32,5 +32,6 @@ test('settings survive a relaunch, and the theme colours the page and its bars (
 
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'contrast');
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', /^#000(000)?$/);
-    await expect(page.getByText('Note names')).toBeVisible();
+    await page.goto('/settings');
+    await expect(page.getByLabel('Note names', { exact: true })).toBeChecked();
 });

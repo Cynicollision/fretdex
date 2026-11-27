@@ -8,7 +8,7 @@ import {
 } from '@fretdex/fretkit';
 import { modeScale } from '#lib/settings/key.ts';
 import type { CurrentKey } from '#lib/settings/settings.ts';
-import type { ScaleCardRef } from '#lib/url/routes.ts';
+import { cardPath, type ScaleCardRef } from '#lib/url/routes.ts';
 
 /** The Scales list's groups, in order (SCL-1.1). */
 export const SCALE_GROUPS: readonly { readonly id: ScaleGroup; readonly name: string }[] = [
@@ -53,4 +53,19 @@ export function scaleList(root: NoteName | undefined, key: CurrentKey | null, ac
             cards: SCALE_TYPES.filter(type => type.group === group.id).map(card)
         }))
     };
+}
+
+/**
+ * The list's scales that are pinned, in the list's order, to show first under **Pinned** (PIN-3.1): matched by the
+ * card's path, whatever the pin's options. They stay in their groups too, as the key's own scale does.
+ */
+export function pinnedCards(list: ScaleList, pinnedPaths: ReadonlySet<string>): ScaleCardRef[] {
+    const cards = [...(list.keyCard ? [list.keyCard] : []), ...list.groups.flatMap(group => group.cards)];
+    const seen = new Set<string>();
+    return cards.filter(card => {
+        const path = cardPath(card);
+        if (!pinnedPaths.has(path) || seen.has(path)) return false;
+        seen.add(path);
+        return true;
+    });
 }
