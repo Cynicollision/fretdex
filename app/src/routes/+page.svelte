@@ -18,7 +18,7 @@
     {#if pins.loaded}
         <section aria-labelledby="pins-heading">
             <h2 id="pins-heading">Pins</h2>
-            {#if pins.current.pins.length > 0}
+            {#if pins.current.pins.length > 0 || pins.current.groups.length > 0}
                 <PinBoard />
             {:else}
                 <p class="empty">

@@ -10,7 +10,7 @@ Screen: **Home** (`/`), and **Settings** (`/settings`) for export and import.
 |---|---|---|
 | PIN-1.1 | Every card and every filtered list shall have a **Pin** button that saves its current URL (APP-3.1), with the card's title as the label. The Modes overview (MODE-1) has none: its seven necks don't fit a tile, and it's one tap from Home anyway (owner, 2026-11-26). | Implemented |
 | PIN-1.2 | A pinned card's button shall show it's pinned; tapping it again offers **Unpin** and **Pin again** (to save a second view of the same card, such as another position). Unpin takes the pin of the view as it is, or else every pin of the card; Pin again is offered when the view as it is isn't pinned. | Implemented |
-| PIN-1.3 | The user can rename a pin and choose its group. | Partial |
+| PIN-1.3 | The user can rename a pin and choose its group, from its tile's menu: Ungrouped, each group, or **New group…**, which names a group and moves the pin into it (owner, 2026-11-26). | Implemented |
 | PIN-1.4 | A pin shall keep the URL's instrument, tuning and capo overrides, and add the current instrument, tuning and capo when they aren't the defaults, so it opens as it was pinned (APP-3.3). | Implemented |
 | PIN-1.5 | When pinning a card that has a root or key, the user can choose **Follow current key**: the pin then leaves the root or key out of its URL and opens in whatever the current key is, or the card's default with none (a ii–V–I in the song's key). | Planned |
 
@@ -18,10 +18,10 @@ Screen: **Home** (`/`), and **Settings** (`/settings`) for export and import.
 
 | ID | Requirement | Status |
 |---|---|---|
-| PIN-2.1 | Home shall show the pins as a grid of tiles, in the user's order, under their group headings, with ungrouped pins first. | Partial |
+| PIN-2.1 | Home shall show the pins as a grid of tiles, in the user's order, under their group headings, with ungrouped pins first. | Implemented |
 | PIN-2.2 | Each tile shall show the pin's label and a live mini render of its diagram (DIAG-5), drawn from the URL, so it reflects the current theme and handedness. | Implemented |
-| PIN-2.3 | The user can reorder pins and groups by dragging, and also with move up and down in each tile's menu (APP-5.2). | Partial |
-| PIN-2.4 | The user can add, rename, reorder and delete groups ("Gig: Saturday", "Practice", "Bass"); deleting a group asks whether to delete its pins or move them to ungrouped. | Planned |
+| PIN-2.3 | The user can reorder pins and groups by dragging, started by long-pressing a tile or a group's heading, so a tap still opens a tile and a swipe still scrolls (owner, 2026-11-26); a pin dragged into another group joins it. They can also move each up and down from its menu, a pin within its group (APP-5.2). | Implemented |
+| PIN-2.4 | The user can add, rename, reorder and delete groups ("Gig: Saturday", "Practice", "Bass"); a group is added from a pin's menu (PIN-1.3), and renamed, moved and deleted from its heading's menu. No two groups share a name, ignoring case. Deleting a group asks whether to delete its pins or move them to ungrouped. A group emptied by moving its pins out stays, saying it's empty, until deleted (owner, 2026-11-26). | Implemented |
 | PIN-2.5 | With no pins, Home shall say how to pin and link to each module. | Implemented |
 | PIN-2.6 | A pinned list's tile shall show the list's title and filter as text, without a diagram. | Implemented |
 | PIN-2.7 | There shall be no limit on pins, and the board shall stay usable with at least 100. | Implemented |
@@ -55,6 +55,5 @@ Screen: **Home** (`/`), and **Settings** (`/settings`) for export and import.
 
 ## Known gaps
 
-- **PIN-1.3, PIN-2.1, PIN-2.3:** a pin is renamed, and moved up and down, from its tile's menu; groups and dragging come in M01 T12b.
 - **PIN-1.5:** waits for the backlog's question on whether to keep a global current key (owner, 2026-11-26).
 - **PIN-6.1:** settings, custom tunings and pins are stored, on the device only; recents (M01 T12c) and hidden voicings (M02) come later.
