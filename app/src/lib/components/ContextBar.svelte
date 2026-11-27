@@ -1,5 +1,6 @@
 <!--
-    The context bar at the top of every screen (APP-1.4, APP-2.1): ☰, which opens the menu (APP-1.1), then the current key, the
+    The context bar at the top of every screen (APP-1.4, APP-2.1): ☰ and the app's name, its title on every screen and
+    the button that opens the menu (APP-1.1), then the current key, the
     instrument, the tuning's name and the capo when one is set (CTX-3.1). On a card it leaves out the key, which never
     changes what a card shows (CTX-2.8), so it can't be read as the card's name (owner, 2026-11-25). A tap on those
     opens the sheet that changes them. On a card whose URL overrides the
@@ -56,7 +57,8 @@
             <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-            <span class="visually-hidden">Menu</span>
+            <span class="name">Fretdex</span>
+            <span class="visually-hidden">menu</span>
         </button>
         <button
             type="button"
@@ -107,17 +109,16 @@
         align-items: center;
         max-width: 40rem;
         margin: 0 auto;
-        padding-left: env(safe-area-inset-left, 0px);
         padding-right: max(16px, env(safe-area-inset-right, 0px));
     }
 
     .menu {
         flex: none;
-        display: grid;
-        place-items: center;
-        width: 52px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
         min-height: 56px;
-        padding: 0;
+        padding: 0 12px 0 max(12px, env(safe-area-inset-left, 0px));
         border: 0;
         border-right: 1px solid var(--line);
         background: none;
@@ -134,6 +135,11 @@
         stroke-linecap: round;
     }
 
+    .name {
+        font-size: var(--text-m);
+        font-weight: 700;
+    }
+
     .context {
         flex: 1;
         min-width: 0;
@@ -141,9 +147,9 @@
         grid-template-columns: 1fr auto;
         grid-template-areas: 'key change' 'details change';
         align-items: center;
-        column-gap: 12px;
+        column-gap: 8px;
         min-height: 56px;
-        padding: 6px 12px 6px 16px;
+        padding: 6px 8px 6px 12px;
         border: 0;
         background: none;
         color: var(--text);

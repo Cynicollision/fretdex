@@ -223,7 +223,7 @@ describe('the menu', () => {
     it('APP-1.1 opens from ☰ with Home, the modules and tools in order, and Settings', async () => {
         await render(ContextBar);
 
-        await page.getByRole('button', { name: 'Menu' }).click();
+        await page.getByRole('button', { name: 'Fretdex menu' }).click();
 
         await expect.element(menu()).toBeVisible();
         const links = menu().getByRole('link');
@@ -253,7 +253,7 @@ describe('the menu', () => {
         ]);
         expect(rows('Tools')).toEqual(['Identify Coming later', 'Tuner Coming later', 'Metronome Coming later']);
 
-        await menu().getByRole('button', { name: 'Done' }).click();
+        await menu().getByRole('button', { name: 'Close' }).click();
         await expect.element(menu()).not.toBeInTheDocument();
     });
 });

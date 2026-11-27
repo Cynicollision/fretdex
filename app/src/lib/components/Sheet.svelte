@@ -1,6 +1,7 @@
 <!--
     A small bottom sheet (a modal `<dialog>`) with a heading and Done, closed by Done, Escape or a tap outside it, or
-    by its owner setting `open` false: a pin's choices (PIN-1.2) and a tile's menu (PIN-2.3).
+    by its owner setting `open` false: a pin's choices (PIN-1.2) and a tile's menu (PIN-2.3). A sheet that only
+    leads elsewhere, as the menu does, has ✕ in place of Done, as there's nothing to be done with.
 -->
 <script lang="ts">
     import type { Snippet } from 'svelte';
@@ -9,10 +10,12 @@
         open: boolean;
         title: string;
         onclose: () => void;
+        /** ✕ (named Close) in place of Done. */
+        closeIcon?: boolean;
         children: Snippet;
     }
 
-    let { open, title, onclose, children }: Props = $props();
+    let { open, title, onclose, closeIcon = false, children }: Props = $props();
 
     let dialog: HTMLDialogElement | undefined = $state();
     const id = $props.id();
@@ -58,7 +61,13 @@
         <div class="sheet">
             <header>
                 <h2 id="{id}-title">{title}</h2>
-                <button type="button" class="done" onclick={close}>Done</button>
+                {#if closeIcon}
+                    <button type="button" class="done icon" aria-label="Close" onclick={close}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+                    </button>
+                {:else}
+                    <button type="button" class="done" onclick={close}>Done</button>
+                {/if}
             </header>
             {@render children()}
         </div>
@@ -116,5 +125,22 @@
         font-size: var(--text-m);
         font-weight: 600;
         cursor: pointer;
+    }
+
+    .icon {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+    }
+
+    .icon svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.25;
+        stroke-linecap: round;
     }
 </style>
