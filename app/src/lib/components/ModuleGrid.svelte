@@ -1,6 +1,7 @@
 <!--
-    The modules and tools (APP-1.1), each a tile that opens its list. Those a later milestone builds are shown in
-    their places, dimmed and marked as coming.
+    The modules and tools as tiles, on Home while nothing is pinned (PIN-2.5); the menu lists them on every screen
+    (APP-1.1). Each opens its list. Those a later milestone builds are shown in their places, dimmed and marked as
+    coming.
 -->
 <script lang="ts">
     import { MODULES, TOOLS, type ModuleEntry } from '#lib/url/routes.ts';

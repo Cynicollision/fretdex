@@ -2,7 +2,7 @@
 
 Fretdex is a personal, ad-free, offline-capable reference for guitar and bass: chords, scales and positions, modes, keys and progressions in one place, with pins for what the owner reaches for most. It is a lookup tool for a working player, not a course.
 
-Today the owner has no app or site for this. Most of the reference lives in their head, backed by comprehensive books such as the *Keyboard & Guitar Grimoire*, which don't sit on a music stand or answer "this, in F#, in Drop D" in two taps. Fretdex puts that reference on the phone. It's built for one person first, the owner, and published as a static site anyone can install.
+Today the owner has no app or site for this. Most of the reference lives in their head, backed by comprehensive books such as the *Keyboard & Guitar Grimoire*, which don't sit on a music stand or answer "this, in F#, in Drop D" at a glance. Fretdex puts that reference on the phone. It's built for one person first, the owner, and published as a static site anyone can install.
 
 Written from the [concept brief](concept-brief.md) of 2026-11-23.
 
@@ -13,7 +13,7 @@ A player who already knows what they're looking for and wants it now: on a phone
 ## Goals
 
 1. **Every reference in one place, in every key.** What today is memory and a shelf of reference books, on the phone.
-2. **Fast on a phone on a music stand:** two taps from the home board to any diagram.
+2. **Fast on a phone on a music stand:** navigation simple and obvious enough that any diagram is a few taps away, with no thought about where it is. The aim is the ease of getting around, not a count of taps.
 3. **Pin anything** to a home board.
 4. **Hear what's on screen.**
 5. **Static hosting** on the owner's personal site, at `fretdex.seannormoyle.net`, working offline once installed.

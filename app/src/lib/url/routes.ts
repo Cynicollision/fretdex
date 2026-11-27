@@ -17,14 +17,14 @@ export type ListPath = '/scales' | '/modes';
 /** A screen a back control can fall back to: Home or a module's list. */
 export type ScreenPath = '/' | ListPath;
 
-/** A module or tool in Home's grid (APP-1.1), with its list's path once it's built. */
+/** A module or tool in the menu and Home's grid (APP-1.1), with its list's path once it's built. */
 export interface ModuleEntry {
     readonly name: string;
     /** Absent for a module a later milestone builds. */
     readonly path?: ListPath;
 }
 
-/** The six modules (APP-1.1), in the grid's order. */
+/** The six modules (APP-1.1), in the menu's and the grid's order. */
 export const MODULES: readonly ModuleEntry[] = [
     { name: 'Chords' },
     { name: 'Scales', path: '/scales' },

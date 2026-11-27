@@ -209,4 +209,51 @@ describe('the context bar', () => {
 
         await expect.element(sheet()).not.toBeInTheDocument();
     });
+
+    it('APP-1.1 leaves Settings to the menu', async () => {
+        await openSheet();
+
+        await expect.element(sheet().getByRole('link')).not.toBeInTheDocument();
+    });
+});
+
+describe('the menu', () => {
+    const menu = () => page.getByRole('dialog', { name: 'Menu' });
+
+    it('APP-1.1 opens from ☰ with Home, the modules and tools in order, and Settings', async () => {
+        await render(ContextBar);
+
+        await page.getByRole('button', { name: 'Menu' }).click();
+
+        await expect.element(menu()).toBeVisible();
+        const links = menu().getByRole('link');
+        await expect
+            .poll(() => links.all().map(link => link.element().textContent.trim()))
+            .toEqual(['Home', 'Scales', 'Modes', 'Settings']);
+        expect(links.all().map(link => link.element().getAttribute('href'))).toEqual([
+            '/',
+            '/scales',
+            '/modes',
+            '/settings'
+        ]);
+        // The modules and tools keep their places, those not built yet marked as coming.
+        const rows = (name: string) =>
+            menu()
+                .getByRole('region', { name })
+                .getByRole('listitem')
+                .all()
+                .map(row => row.element().textContent.replace(/\s+/gu, ' ').trim());
+        expect(rows('Modules')).toEqual([
+            'Chords Coming later',
+            'Scales',
+            'Triads Coming later',
+            'Modes',
+            'Keys Coming later',
+            'Progressions Coming later'
+        ]);
+        expect(rows('Tools')).toEqual(['Identify Coming later', 'Tuner Coming later', 'Metronome Coming later']);
+
+        await menu().getByRole('button', { name: 'Done' }).click();
+        await expect.element(menu()).not.toBeInTheDocument();
+    });
 });
