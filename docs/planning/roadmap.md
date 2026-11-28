@@ -5,11 +5,11 @@ The milestones, one line each. Each milestone ends in a release (M01 is v0.1.0);
 | Milestone | Release | What it adds | Status |
 |---|---|---|---|
 | [M01 Foundation and scales](milestones/M01-foundation-and-scales.md) | v0.1.0 | The repository, deploys and offline install; context and settings with the capo; scales and modes; pins and the home board; tap-to-play and scale runs | In progress |
-| M02 Chords and triads | v0.2.0 | The voicing dataset and voicing search, chord boxes, chords and inversions, Identify, triads and string sets, strummed audio | Not planned yet |
+| [M02 Chords and triads](milestones/M02-chords-and-triads.md) | v0.2.0 | The key leaves the context bar; the voicing dataset and voicing search, chord boxes, chords and inversions, Identify, triads and string sets, strummed audio | Planned |
 | M03 Version one | v1.0.0 | Keys and the circle, progressions and their loop, the click and count-in, search with recents, and a two-week trial that includes a rehearsal or gig | Not planned yet |
 | M04 Tuner and metronome | v1.1.0 | The tuner (TUN) and the metronome (MET) | Not planned yet |
 
-Each milestone being built has a file in [milestones/](milestones/), numbered in order (`M01-foundation-and-scales.md`) and named by milestone, not version. It holds the plan, the tasks and what was learned building it. The next milestone's file is written when the one before it closes; until then, anything known about it is a section in [backlog.md](backlog.md).
+Each milestone being built has a file in [milestones/](milestones/), numbered in order (`M01-foundation-and-scales.md`) and named by milestone, not version. It holds the plan, the tasks and what was learned building it. The next milestone's file is written in a planning session, at the latest when the one before it closes; until then, anything known about it is a section in [backlog.md](backlog.md).
 
 ## How a milestone file works
 

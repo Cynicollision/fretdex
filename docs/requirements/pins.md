@@ -12,7 +12,7 @@ Screen: **Home** (`/`), and **Settings** (`/settings`) for export and import.
 | PIN-1.2 | A pinned card's button shall show it's pinned; tapping it again offers **Unpin** and **Pin again** (to save a second view of the same card, such as another position). Unpin takes the pin of the view as it is, or else every pin of the card; Pin again is offered when the view as it is isn't pinned. | Implemented |
 | PIN-1.3 | The user can rename a pin and choose its group, from its tile's menu: Ungrouped, each group, or **New group…**, which names a group and moves the pin into it (owner, 2026-11-26). | Implemented |
 | PIN-1.4 | A pin shall keep the URL's instrument, tuning and capo overrides, and add the current instrument, tuning and capo when they aren't the defaults, so it opens as it was pinned (APP-3.3). | Implemented |
-| PIN-1.5 | When pinning a card that has a root or key, the user can choose **Follow current key**: the pin then leaves the root or key out of its URL and opens in whatever the current key is, or the card's default with none (a ii–V–I in the song's key). | Planned |
+| PIN-1.5 | When pinning a card that has a root or key, the user can choose **Follow current key**: the pin then leaves the root or key out of its URL and opens in whatever the current key is, or the card's default with none (a ii–V–I in the song's key). Retired 2026-11-28: there is no global current key to follow, as a key-relative view keeps its key in its URL (M02 decision 1), and a pin is its URL. | Retired |
 
 ## PIN-2 The home board shows the pins
 
@@ -55,7 +55,6 @@ Screen: **Home** (`/`), and **Settings** (`/settings`) for export and import.
 
 ## Known gaps
 
-- **PIN-1.5:** waits for the backlog's question on whether to keep a global current key (owner, 2026-11-26).
 - **PIN-4:** recents come with search in M03, as that's where they show (owner, 2026-11-27).
 - **PIN-5.1:** hidden voicings join the file when they're stored (M02).
 - **PIN-6.1:** settings, custom tunings and pins are stored, on the device only; hidden voicings (M02) and recents (M03) come later.

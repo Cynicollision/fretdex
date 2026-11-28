@@ -20,7 +20,7 @@ Read the doc that fits the task before starting:
 Where the workflow's pieces live:
 
 - **Backlog**: [docs/planning/backlog.md](docs/planning/backlog.md); its introduction says what each section is for and how an item is written
-- **Milestones**: [docs/planning/milestones/](docs/planning/milestones/); the current one is the one [the roadmap](docs/planning/roadmap.md) marks planned or in progress, and the roadmap says how a milestone file works
+- **Milestones**: [docs/planning/milestones/](docs/planning/milestones/); the current one is the earliest [the roadmap](docs/planning/roadmap.md) marks in progress, or else planned, and the roadmap says how a milestone file works
 - **Specs**: [docs/requirements/](docs/requirements/README.md), with each domain's open questions, checked against [docs/vision.md](docs/vision.md)'s principles
 - **Checks**: [docs/development.md](docs/development.md#before-opening-a-pr), "Before opening a PR": format, lint, type check, unit tests and smoke tests, all from the root; CI runs the same
 - **Upkeep**: none yet

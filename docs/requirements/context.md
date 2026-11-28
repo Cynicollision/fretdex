@@ -30,7 +30,7 @@ One context drives every view, so the whole app re-centers on the song being pla
 | CTX-2.6 | With a mode as the current key (D Dorian), key-relative views shall use that mode's diatonic chords and numerals (SCL-5.3), and where a key card would open, the mode's scale card shall (KEY-2.8). The key picker shall show major and minor first, with the other modes one tap away. | Partial |
 | CTX-2.7 | The user can save up to 10 custom tunings per instrument by name; they're listed with the built-in tunings, and renamed, edited and deleted on Settings. | Implemented |
 | CTX-2.8 | A card's URL shall always decide what the card shows: the current key never re-centers an open card, so pins and links show the same thing whatever the key. The current key decides only which items lists show or put first, the root a list opens a card on, and the key that progressions, keys and the circle open in (CTX-2.3). | Partial |
-| CTX-2.9 | When a card's root differs from the current key's, the card shall offer a one-tap **Show in E minor** that opens the same card on the key's root. | Planned |
+| CTX-2.9 | When a card's root differs from the current key's, the card shall offer a one-tap **Show in E minor** that opens the same card on the key's root. Retired 2026-11-28: there is no global current key for a card to differ from (M02 decision 1). | Retired |
 
 ## CTX-3 The user can play with a capo
 
@@ -48,7 +48,6 @@ With a capo, the app treats it as the nut: chords are named and drawn as the sha
 
 - **CTX-2.2, CTX-3.2:** chord cards come in M02.
 - **CTX-2.3, CTX-2.8:** the Scales list opens on the current key's root with its scale first; chords, progressions, keys and the circle follow it with their modules (M02, M03).
-- **CTX-2.9:** waits for the backlog's question on whether to keep a global current key, which could retire it (owner, 2026-11-27, T13c).
 - **CTX-3.3:** key-relative views come with chords and keys (M02, M03).
 - **CTX-2.6:** the context bar's key picker shows major and minor first, with the other modes one tap away, but there are no key-relative views to follow a mode yet (M03).
 - **CTX-3.1:** the context bar shows the capo and fretboards draw it (DIAG-1.9); chord boxes come in M02.
