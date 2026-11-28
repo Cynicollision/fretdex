@@ -59,4 +59,3 @@ Tap to hear anything on screen, synthesized in the browser with no sample files:
 - **AUD-1.4:** where Safari has `navigator.audioSession` (16.4 and later) the app asks for playback audio, and on older iPhones it plays a silent media element; neither has been checked on the owner's iPhone with the switch on silent yet.
 - **AUD-1.3:** the engine plays a run marked `under` beneath the rest, but nothing uses it until the metronome (M04).
 - **AUD-1.6:** scale runs play at the tempo setting; the metronome that shares it comes in M04.
-- **AUD-7.1:** the voices wait for the owner to judge them on the phone (M01 T8's *Done when*).

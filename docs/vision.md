@@ -31,7 +31,7 @@ A player who already knows what they're looking for and wants it now: on a phone
 Every requirement and design decision is checked against these. When two pull against each other, the earlier one usually wins.
 
 1. **Compute, don't enter.** A theory engine generates scales, modes, keys, progressions and fretboard positions for any root and tuning. Hand-curated data is limited to guitar chord voicings, where taste matters.
-2. **One context, everywhere.** A global "current key" and display settings carry across every view, so the whole app re-centers on the song being played.
+2. **One context, everywhere.** The instrument, tuning, capo and display settings carry across every view. A view that depends on a key keeps it in its URL, and its key picker opens on the last key picked, so re-centering on a song takes one choice.
 3. **Every view is a URL.** Each card's full state lives in its route and query string. Pins, back navigation and deep links all fall out of that.
 4. **Guitar first, piano second.** Fretboard and chord boxes are the hero visuals; piano is a small companion that taps to enlarge.
 5. **Phone first, stand-friendly, upright.** Every screen works with the phone held upright; turning it may show more, such as the whole neck, but is never needed. A screen that would need turning is discussed with the owner before it's built. Large tap targets, no hover-only interactions, readable at arm's length, dark by default.
@@ -45,4 +45,4 @@ It's built in three milestones, each released and used on the phone along the wa
 
 ## Later, not never
 
-Things the design leaves room for without building them in v1: 5-string bass and 7-string guitar (a tuning is just a list of strings), sampled instruments, saving your own progressions, other position systems, and reusing `fretkit` and the audio package in the owner's synth-toy projects.
+Things the design leaves room for without building them in v1: 5-string bass and 7-string guitar (a tuning is just a list of strings), saving your own progressions, other position systems, and reusing `fretkit` and the audio package in the owner's synth-toy projects.

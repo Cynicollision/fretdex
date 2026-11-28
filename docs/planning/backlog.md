@@ -5,7 +5,7 @@ Work outside the milestone being built. The milestones in order are in the [road
 Each section says what happens to its items next:
 
 - **Inbox**: found but not sorted yet. Follow-up work noticed during other work, and anything a review turns up, lands here. Only the owner moves an item out.
-- **A milestone not planned yet** (M02 ...): what's known so far about it, until a planning session writes its file.
+- **A milestone not planned yet** (M03 ...): what's known so far about it, until a planning session writes its file.
 - **Anytime**: self-contained work with a clear end that needs no decision first, small enough for a PR of its own between milestone tasks.
 - **Parked**: waiting on something. Each item says what, as **Revisit when**.
 - **Ideas**: not committed to.
@@ -16,16 +16,7 @@ An item is one bullet: a bold title, what's wrong or wanted, and where (file and
 
 ## Inbox
 
-- **Licence notices in the built app.** The production build minifies Svelte's and SvelteKit's code into `app/build/_app/` without their MIT copyright notices, which the licence asks to travel with the code, and the same will go for Tonal.js and the chord dataset. Something should ship them, such as a generated third-party licences file in the build or a credits screen that shows `CREDITS.md`'s notices. (noticed in M01 T1)
-- **Keep a global current key, or pick the key in each module?** Vision principle 2 has one current key re-centering every module, but it never changes an open card (CTX-2.8), and its uses are lists and key-relative views: the Scales list's root (SCL-1.2), the Modes overview (MODE-1.10), chords in the key (CHD-1.3, CHD-2.3, CHD-2.5), keys, the circle and progressions (KEY-1.1, PROG-1.2, PROG-2.1), capo shapes (CTX-3.3), pins that follow the key (PIN-1.5) and **Show in E minor** (CTX-2.9). The owner asked whether a key picked inside Progressions (and the like) would do instead, dropping it from the context bar (`ContextBar.svelte`) and the sheet. Decide before M02's planning, as chords lean on it; PIN-1.5 (owner, 2026-11-26, T12a) and CTX-2.9 (owner, 2026-11-27, T13c) wait for it too. (PR 18, owner's feedback on the context bar)
-- **A tap before a prerendered list hydrates is lost.** The Scales list smoke test (`SCL-1.1 lists every scale on the root picked` in `app/e2e/scales.e2e.ts`) failed once on Android: the root picker's tap left the URL at `/scales`, and 30 reruns passed. A tap on `Choice` in a prerendered page (`app/src/routes/scales/+page.svelte`, `/modes`) before hydration changes the radio but runs no handler, which a slow phone could hit too. Either the test waits for hydration or the lists read the checked radio once mounted. (noticed in PR 20)
-- **One bottom sheet.** `Sheet.svelte` is a small bottom sheet with the context sheet's look and its close-on-backdrop handling, which `ContextSheet.svelte` still has its own copy of; the context sheet could be built on it, its heading changing for the tuning editor. (noticed in T12a)
-
----
-
-## M02 Chords and triads
-
-- **Triads as a module, or part of the chord card.** Triads stays a module for now (TRI), but may not earn its place once chords exist: its shapes could be a view on the chord card for the four triad qualities, next to inversions (CHD-5). Decide in M02's planning, from how the chord card turns out. (owner, 2026-11-25, when Intervals and Arpeggios were retired)
+Nothing yet.
 
 ---
 
@@ -43,7 +34,6 @@ Nothing yet.
 
 ## Parked
 
-- **Sampled instruments**, if the synth voices aren't good enough: a few MB added to the offline cache. **Revisit when** M01's audio task (T8) has judged the voices.
 - **Curated voicings for alternate tunings**, starting with the tunings the owner plays most (CHD-3.5). **Revisit when** M02's voicing dataset exists.
 - **More instruments.** 5-string bass (B E A D G) and 7-string guitar: tunings with more strings (THY-3.2), and positions and voicings that use them. **Revisit when** planning the milestones after version 1.
 - **Your own progressions**, saved like pins. **Revisit when** planning the milestones after version 1.
