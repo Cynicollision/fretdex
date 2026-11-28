@@ -428,6 +428,31 @@ describe('Fretboard', () => {
         await expect.poll(frets).toBe('9-14');
     });
 
+    it("AUD-3.2 moves the stretch the least that shows a run's playing note", async () => {
+        cleanup();
+        await page.viewport(UPRIGHT, 800);
+        const props = {
+            tuning: STANDARD,
+            set: scale('C', 'major'),
+            range: { from: 0, to: 15 },
+            labels: 'notes' as const,
+            handedness: 'right' as const,
+            title: 'C major'
+        };
+        const view = await render(Fretboard, { ...props, playing: { string: 5, fret: 3 } });
+        const frets = () => document.querySelector('.fretboard svg')?.getAttribute('data-frets');
+
+        expect(frets()).toBe('0-6');
+        await view.rerender({ ...props, playing: { string: 1, fret: 8 } });
+        await expect.poll(frets).toBe('3-8');
+        expect(dot(1, 8)?.classList.contains('playing')).toBe(true);
+        // A note already shown leaves the stretch where it is; one below moves it down, open strings included.
+        await view.rerender({ ...props, playing: { string: 2, fret: 5 } });
+        expect(frets()).toBe('3-8');
+        await view.rerender({ ...props, playing: { string: 3, fret: 0 } });
+        await expect.poll(frets).toBe('0-6');
+    });
+
     it('DIAG-1.10 starts upright at the capo', async () => {
         await show({ width: UPRIGHT, capo: 9, set: scale('A', 'major') });
 

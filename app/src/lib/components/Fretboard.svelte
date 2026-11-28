@@ -3,7 +3,8 @@
     the whole fret range at the tap target, it shows it all; otherwise, as on a phone held upright, it shows a stretch
     of up to six frets that Lower and Higher move a fret at a time, over a strip of the whole neck that a tap or a drag
     moves it along (DIAG-1.10). Given a position, its notes are at full strength and the rest dimmed (DIAG-1.3), and
-    upright it shows the position's frets, with Lower and Higher only when they don't fit.
+    upright it shows the position's frets, with Lower and Higher only when they don't fit. The stretch follows a scale
+    run's playing note.
 -->
 <script lang="ts">
     import {
@@ -36,6 +37,7 @@
         type TappedFret
     } from '#lib/diagrams/fretboard.ts';
     import type { Handedness, Labels } from '#lib/settings/settings.ts';
+    import { untrack } from 'svelte';
 
     interface Focus {
         readonly from: number;
@@ -180,6 +182,18 @@
         const note = cell?.note ?? spellMidi(midi, spellPitchClass(pitchClass(midi), accidentals));
         ontap({ string, fret: space.fret, midi, note, ...(cell ? { cell } : {}) });
     }
+
+    // A run's note off the stretch moves the stretch the least that shows it, so the run never plays off screen
+    // (AUD-3.2); going up and back down, it ends where it began.
+    $effect(() => {
+        const fret = playing?.fret;
+        if (fret === undefined) return;
+        untrack(() => {
+            if (whole || (fret >= shown.from && fret <= shown.to)) return;
+            const next = fret > shown.to ? fret - length + 1 : fret;
+            chosen = { among, start: Math.min(Math.max(next, starts.first), starts.last) };
+        });
+    });
 
     function move(by: number) {
         chosen = { among, start: Math.min(Math.max(start + by, starts.first), starts.last) };

@@ -18,7 +18,7 @@ Screens: **Scales** (`/scales`) and the scale card (`/scales/[root]/[scale]`, op
 |---|---|---|
 | SCL-2.1 | The card shall show the scale's notes spelled (THY-1.1), its intervals and its formula in steps (`W W H W W W H`). | Implemented |
 | SCL-2.2 | The card shall show every note of the scale across the fret range (CTX-1.7) on the current tuning (DIAG-1). | Implemented |
-| SCL-2.3 | The user can highlight one or more degrees (for example 1, 3 and 5, or the characteristic note) with the rest dimmed, kept in the URL as their numbers in order (`deg=135`). | Implemented |
+| SCL-2.3 | The user can highlight one or more degrees (for example 1, 3 and 5, or the characteristic note) with the rest dimmed, kept in the URL as their numbers in order (`deg=135`). The row is headed **Highlight**, with **Clear** at the end of that line while any are highlighted, and the degrees on a line below (owner, 2026-11-28). | Implemented |
 | SCL-2.4 | The card shall show the scale on a small keyboard (DIAG-3). | Implemented |
 | SCL-2.5 | The user can switch label mode on the card (`labels`), overriding the global one for that card only. | Implemented |
 | SCL-2.6 | Where the scale needs a double sharp or flat however its root is spelled (C# altered has D𝄪 and F𝄪, Db altered E𝄫 and B𝄫; E altered has F𝄪), the card shall say why in a line: the notes are named by their intervals from the root (`1 b2 #2 3 #4 b6 b7`), and on this root that takes doubles either way (THY-2.5). | Implemented |

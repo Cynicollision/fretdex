@@ -5,8 +5,8 @@ import { KEYBOARD_FROM, KEYBOARD_TO } from '#lib/diagrams/keyboard.ts';
 /** A note of a scale run (AUD-3): where it's played on the neck, and the key lit for it on the keyboard. */
 export interface RunNote {
     readonly cell: FretboardCell;
-    /** The keyboard's key for it, moved by whole octaves into the keyboard's two (AUD-3.2). */
-    readonly key: number;
+    /** The keyboard's key for it, the run moved by whole octaves onto its two; none where it falls off them (AUD-3.2). */
+    readonly key: number | undefined;
 }
 
 /** Each note of a run is an eighth note (AUD-3.1), half a beat. */
@@ -40,14 +40,14 @@ function lowestFirst(cells: readonly FretboardCell[]): FretboardCell[] {
 }
 
 /**
- * A run's track (AUD-3.1): its notes ascending, then descending back to the first without playing the top one twice,
- * one an eighth note, played once. Each note's key on the keyboard keeps the run's shape: the lowest note lands in the
- * keyboard's lower octave, and a note above its top is lit an octave down (AUD-3.2).
+ * A run's track (AUD-3.1): its notes ascending, then the same notes descending, so the top one sounds twice and the
+ * way down mirrors the way up; one an eighth note, played once. On the keyboard the run keeps its shape, moved by
+ * whole octaves to light as many of its notes as fit, its lowest note in the lower octave where that fits as many; a
+ * note still off the keyboard lights no key, rather than one in the wrong octave (AUD-3.2).
  */
 export function runTrack(ascending: readonly FretboardCell[]): Track<RunNote> {
-    const lowest = ascending[0]?.midi ?? KEYBOARD_FROM;
-    const shift = 12 * Math.ceil((KEYBOARD_FROM - lowest) / 12);
-    const notes = [...ascending, ...ascending.slice(0, -1).reverse()];
+    const shift = keyboardShift(ascending.map(cell => cell.midi));
+    const notes = [...ascending, ...[...ascending].reverse()];
     return {
         events: notes.map((cell, i) => ({ beat: i * NOTE_BEATS, event: { cell, key: onKeyboard(cell.midi + shift) } })),
         length: notes.length * NOTE_BEATS,
@@ -55,9 +55,13 @@ export function runTrack(ascending: readonly FretboardCell[]): Track<RunNote> {
     };
 }
 
-function onKeyboard(midi: number): number {
-    let key = midi;
-    while (key > KEYBOARD_TO) key -= 12;
-    while (key < KEYBOARD_FROM) key += 12;
-    return key;
+/** The whole octaves that move a run, lowest note first, onto the keyboard with the most of its notes on it. */
+function keyboardShift(pitches: readonly number[]): number {
+    const lifted = 12 * Math.ceil((KEYBOARD_FROM - (pitches[0] ?? KEYBOARD_FROM)) / 12);
+    const fitting = (shift: number) => pitches.filter(midi => onKeyboard(midi + shift) !== undefined).length;
+    return fitting(lifted - 12) > fitting(lifted) ? lifted - 12 : lifted;
+}
+
+function onKeyboard(midi: number): number | undefined {
+    return midi >= KEYBOARD_FROM && midi <= KEYBOARD_TO ? midi : undefined;
 }

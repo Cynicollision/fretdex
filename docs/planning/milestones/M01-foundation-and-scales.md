@@ -108,6 +108,7 @@ From the concept brief (2026-11-23) and the planning session of 2026-11-24; each
       - CTX-2.9's **Show in E minor** waits for the backlog's question on a global current key, as PIN-1.5 does (owner, 2026-11-27). The owner's report of screens briefly drawing C before their settings load is in the backlog's Inbox.
       - **T13d must check on the phone: AUD-1.4's silent switch, the voices (AUD-7.1), a card on a fresh load from Pages, offline in airplane mode, and a touch drag on the neck strip (T13b); and mark APP-8.1 once the trial has run on the phone.**
   - [ ] **T13d — Trial and release.** The rest of T13: the trial (the Question), the fixes it leads to, the phone checks T13c lists, and the release. Ticks T13.
+    - *Changed while doing it:* The owner's first notes from the installed app on a Pixel 10 (2026-11-28), fixed without adding anything to the screen for a run that goes past what's shown: a run plays its top note twice, 8 up and 8 down (AUD-3.1); upright, the neck's stretch follows the playing note, as a 3-per-string pattern or a two-octave bass box is wider than a stretch and its run played off screen; and a note off the keyboard's two octaves lights no key, where it was lit an octave down (AUD-3.2). The Highlight row puts **Clear** at the end of its label's line, the degrees below (SCL-2.3), and the Modes overview's step strip lights its steps in the note colour rather than the accent (MODE-1.14).
 
 ## Definition of done
 
