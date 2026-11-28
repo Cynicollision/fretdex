@@ -35,17 +35,19 @@ describe('readCredits', () => {
         ]);
     });
 
-    it("APP-1.6 finds every library's licence file that CREDITS.md names", () => {
+    it('APP-1.6 finds every licence file CREDITS.md names, and one for every library', () => {
         const credits = readCredits(readFileSync(`${ROOT}CREDITS.md`, 'utf8'));
         const libraries = credits.filter(credit => credit.version !== undefined);
         expect(libraries.length).toBeGreaterThan(0);
         for (const credit of credits) {
             expect(credit.source, credit.name).toMatch(/^https:\/\//);
             expect(credit.licence, credit.name).not.toBe('');
+            if (credit.licenceFile !== undefined) {
+                expect(existsSync(`${ROOT}${credit.licenceFile}`), credit.licenceFile).toBe(true);
+            }
         }
         for (const library of libraries) {
             expect(library.licenceFile, library.name).toBeDefined();
-            expect(existsSync(`${ROOT}${library.licenceFile}`), library.licenceFile).toBe(true);
         }
     });
 });

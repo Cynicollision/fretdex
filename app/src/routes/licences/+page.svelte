@@ -48,6 +48,11 @@
     }
 
     a {
+        display: inline-flex;
+        align-items: center;
+        min-height: var(--tap);
+        max-width: 100%;
+        justify-self: start;
         color: var(--accent);
         overflow-wrap: anywhere;
     }

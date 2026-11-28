@@ -1,10 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 
-test('the page links the manifest, which names the app and its icons (APP-4.1)', async ({ page, request }) => {
-    await page.goto('/');
-
+test('every page links the manifest, which names the app and its icons (APP-4.1)', async ({ page, request }) => {
+    // A card is below the root, so a link relative to the page would name a file that isn't there.
+    await page.goto('/scales/G/dorian');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('G Dorian');
     const href = await page.locator('link[rel="manifest"]').getAttribute('href');
-    expect(href).toBeTruthy();
+    expect(href).toBe('/manifest.webmanifest');
     const manifest = (await (await request.get(new URL(href ?? '', page.url()).href)).json()) as {
         name: string;
         start_url: string;
@@ -60,7 +61,9 @@ test('after the first load every route opens from its URL with no network (APP-4
         ['/modes/Bb', 'Modes of B♭ major'],
         ['/scales/F%23/lydian', 'F♯ Lydian'],
         ['/scales/C/bebop', 'Not found'],
-        ['/licences/', 'Credits and licences']
+        ['/licences/', 'Credits and licences'],
+        ['/licences/?inst=bass', 'Credits and licences'],
+        ['/scales?root=Eb', 'Scales']
     ] as const) {
         await page.goto(path);
         await expect(page.getByRole('heading', { level: 1 }), path).toHaveText(heading);
@@ -71,4 +74,6 @@ test('after the first load every route opens from its URL with no network (APP-4
     await page.getByRole('link', { name: 'Credits and licences' }).click();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Credits and licences');
     await expect(page.getByText('Permission is hereby granted').first()).toBeVisible();
+    // The data tells the app the route takes a trailing slash, so the address is the page's own.
+    await expect(page).toHaveURL(/\/licences\/$/);
 });

@@ -47,10 +47,11 @@ export default defineConfig({
                         'client/**/*.{js,css,html,svg,png,ico,webmanifest,json,woff2}',
                         'prerendered/**/*.{html,json}'
                     ],
-                    // A screen's prerendered data (`__data.json`) is fetched with SvelteKit's own query
-                    // (`x-sveltekit-invalidated`, `x-sveltekit-trailing-slash`), which the precached copy hasn't got;
-                    // ignored, with Workbox's defaults, so Credits and licences opens offline (APP-1.6, APP-4.2).
-                    ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^x-sveltekit-/]
+                    // Every precached file is static and never varies by its query, so any query is ignored when
+                    // looking one up: a prerendered screen opened with one (`/scales?root=Eb`, `/licences/?inst=bass`)
+                    // is the precached page, and its data (`__data.json`), which SvelteKit fetches with the page's query
+                    // and its own (`x-sveltekit-invalidated`), is the precached copy (APP-4.2).
+                    ignoreURLParametersMatching: [/.*/]
                 }
             }
         )
