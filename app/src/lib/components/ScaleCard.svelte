@@ -331,25 +331,30 @@
         </button>
     </div>
 
+    <!-- The label with Clear at its end, so Clear appearing moves nothing, and the degrees on a row of their own. -->
     <div class="highlight" role="group" aria-labelledby="highlight-label">
-        <span id="highlight-label">Highlight</span>
-        {#each set.codes as code, i (code)}
-            <button type="button" aria-pressed={highlighted.includes(i + 1)} onclick={() => toggle(i + 1)}>
-                {intervalLabel(code)}
-            </button>
-        {/each}
-        {#if highlighted.length > 0}
-            <button
-                type="button"
-                class="clear"
-                onclick={() => setViewOption(page.url, card.kind, settings.current, 'deg', undefined)}
-            >
-                Clear
-            </button>
-        {/if}
+        <div class="highlight-head">
+            <span id="highlight-label">Highlight</span>
+            {#if highlighted.length > 0}
+                <button
+                    type="button"
+                    class="clear"
+                    onclick={() => setViewOption(page.url, card.kind, settings.current, 'deg', undefined)}
+                >
+                    Clear
+                </button>
+            {/if}
+        </div>
+        <div class="degrees">
+            {#each set.codes as code, i (code)}
+                <button type="button" aria-pressed={highlighted.includes(i + 1)} onclick={() => toggle(i + 1)}>
+                    {intervalLabel(code)}
+                </button>
+            {/each}
+        </div>
     </div>
 
-    <Keyboard {set} {labels} {title} {...lit ? { playing: lit.key } : {}} ontap={playKey} />
+    <Keyboard {set} {labels} {title} {...lit?.key !== undefined ? { playing: lit.key } : {}} ontap={playKey} />
 
     {#if mode && characteristic}
         <section class="mode" aria-labelledby="mode-heading">
@@ -522,15 +527,25 @@
     }
 
     .highlight {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
+        display: grid;
+        gap: 4px;
     }
 
-    .highlight span {
+    .highlight-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: var(--tap);
+    }
+
+    .highlight-head span {
         font-weight: 600;
-        margin-right: 4px;
+    }
+
+    .degrees {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     button {

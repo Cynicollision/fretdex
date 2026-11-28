@@ -320,9 +320,10 @@
         opacity: 0.6;
     }
 
+    /* In the neck's note colour, leaving the accent to the root on the neck below. */
     .step.lit {
-        background: var(--accent);
-        color: var(--accent-ink);
+        background: var(--note);
+        color: var(--note-ink);
         font-weight: 700;
         opacity: 1;
     }

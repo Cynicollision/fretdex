@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { runNotes, runTrack } from './run';
 
 const STANDARD = ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'];
+const BASS = ['E1', 'A1', 'D2', 'G2'];
 const NECK = { from: 0, to: 15 };
 
 function scale(root: NoteName, id: string) {
@@ -51,7 +52,7 @@ describe('runNotes', () => {
 });
 
 describe('runTrack', () => {
-    it('AUD-3.1 goes up then back down in eighth notes, not playing the top twice', () => {
+    it('AUD-3.1 goes up then back down in eighth notes, the top played twice so the way down mirrors the way up', () => {
         const notes = runNotes(mapScale(STANDARD, scale('C', 'major'), NECK));
         const track = runTrack(notes);
         expect(track.loop).toBe(false);
@@ -64,6 +65,7 @@ describe('runTrack', () => {
             'A3',
             'B3',
             'C4',
+            'C4',
             'B3',
             'A3',
             'G3',
@@ -73,7 +75,7 @@ describe('runTrack', () => {
             'C3'
         ]);
         expect(track.events.map(event => event.beat).slice(0, 3)).toEqual([0, 0.5, 1]);
-        expect(track.length).toBe(7.5);
+        expect(track.length).toBe(8);
     });
 
     it("AUD-3.2 lights each note's key, the run's lowest note in the keyboard's lower octave", () => {
@@ -83,12 +85,26 @@ describe('runTrack', () => {
         expect(keys.slice(0, 8)).toEqual([52, 54, 56, 57, 59, 61, 63, 64]);
     });
 
-    it('AUD-3.2 lights a note above the keyboard an octave down', () => {
+    it('AUD-3.2 lights no key for a note off the keyboard, rather than one in the wrong octave', () => {
+        // D Dorian's two-octave box on bass runs D2 to D4, a key more than the keyboard's two octaves from C.
+        const set = scale('D', 'dorian');
+        const box = scalePositions(BASS, set, 'bass').find(group => group.kind === 'two-octaves')?.positions[0];
+        if (!box) throw new Error('No box');
+        const track = runTrack(runNotes([], box));
+        const lit = track.events.map(event => [event.event.cell.midi, event.event.key]);
+        // Lit an octave up from D3 to B4; the top C and D, above the keyboard, light nothing, each way.
+        for (const [midi, key] of lit) if (key !== undefined) expect(key - (midi ?? 0)).toBe(12);
+        expect(lit.filter(([, key]) => key === undefined).map(([midi]) => midi)).toEqual([60, 62, 62, 60]);
+    });
+
+    it('AUD-3.2 moves a run down an octave when more of it fits that way', () => {
+        // E major's first 3-per-string pattern runs from E2 up past two octaves: lit from E3, its top falls off.
         const set = scale('E', 'major');
         const pattern = scalePositions(STANDARD, set, 'guitar').find(group => group.kind === 'nps')?.positions[0];
         if (!pattern) throw new Error('No pattern');
         const keys = runTrack(runNotes([], pattern)).events.map(event => event.event.key);
-        expect(Math.max(...keys)).toBeLessThanOrEqual(71);
-        expect(Math.min(...keys)).toBeGreaterThanOrEqual(48);
+        const shown = keys.filter(key => key !== undefined);
+        expect(Math.max(...shown)).toBeLessThanOrEqual(71);
+        expect(Math.min(...shown)).toBeGreaterThanOrEqual(48);
     });
 });
