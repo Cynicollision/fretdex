@@ -46,7 +46,12 @@ export default defineConfig({
                     globPatterns: [
                         'client/**/*.{js,css,html,svg,png,ico,webmanifest,json,woff2}',
                         'prerendered/**/*.{html,json}'
-                    ]
+                    ],
+                    // Every precached file is static and never varies by its query, so any query is ignored when
+                    // looking one up: a prerendered screen opened with one (`/scales?root=Eb`, `/licences/?inst=bass`)
+                    // is the precached page, and its data (`__data.json`), which SvelteKit fetches with the page's query
+                    // and its own (`x-sveltekit-invalidated`), is the precached copy (APP-4.2).
+                    ignoreURLParametersMatching: [/.*/]
                 }
             }
         )

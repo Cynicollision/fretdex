@@ -1,6 +1,6 @@
 # Credits
 
-Every third-party library, dataset, font, sound and image that ships in Fretdex, with its source and licence. Add a row in the same PR that brings it in, and keep any notice its licence asks for where the licence says (MIT asks for its copyright notice to travel with the code or data).
+Every third-party library, dataset, font, sound and image that ships in Fretdex, with its source and licence. Add a row in the same PR that brings it in, and keep any notice its licence asks for where the licence says (MIT asks for its copyright notice to travel with the code or data). The app's **Credits and licences** screen (`app/src/routes/licences/`) is built from these tables when the site is built: each row, and the full text of the licence file its Licence column names in parentheses, such as Tonal.js's `node_modules/tonal/LICENSE`. A library's row must name its file, or a test fails (`app/src/lib/about/credits.spec.ts`).
 
 Development-only tools (test runners, linters, build plugins) that don't ship in the built app aren't listed; `package-lock.json` has them.
 

@@ -72,8 +72,10 @@
         if (isInstalled()) void requestPersistence();
     });
 
-    // The manifest's link tag, made by the PWA plugin from vite.config.ts. Empty in the dev server, which has no service worker.
-    const manifestLink = pwaInfo?.webManifest.linkTag ?? '';
+    // The manifest's address, from the PWA plugin's vite.config.ts options; none in the dev server, which has no service
+    // worker. The plugin writes it relative to the page (`./manifest.webmanifest`), which on a card (`/scales/G/dorian`,
+    // drawn from the fallback page) names a file that isn't there, so it's made absolute.
+    const manifestHref = pwaInfo ? '/' + pwaInfo.webManifest.href.replace(/^\.?\//, '') : undefined;
 
     // Registers the service worker that precaches the build (APP-4.2). With autoUpdate, a new version found when the
     // app opens installs, takes over and reloads the page (APP-4.3).
@@ -86,8 +88,9 @@
 </script>
 
 <svelte:head>
-    <!-- eslint-disable-next-line svelte/no-at-html-tags -- the plugin's own link tag, fixed at build time -->
-    {@html manifestLink}
+    {#if manifestHref}
+        <link rel="manifest" href={manifestHref} />
+    {/if}
 </svelte:head>
 
 <!-- The menu, and the current key, instrument, tuning and capo, on every screen (APP-1.1, APP-1.4, APP-2). -->
