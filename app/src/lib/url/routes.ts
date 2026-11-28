@@ -14,8 +14,8 @@ import { readOverride, writeOverride, type ContextOverride, type QueryParams } f
 /** A module's list, so far. */
 export type ListPath = '/scales' | '/modes';
 
-/** A screen a back control can fall back to: Home or a module's list. */
-export type ScreenPath = '/' | ListPath;
+/** A screen a back control can fall back to: Home, a module's list, or About, from Credits and licences. */
+export type ScreenPath = '/' | ListPath | '/about';
 
 /** A module or tool in the menu and Home's grid (APP-1.1), with its list's path once it's built. */
 export interface ModuleEntry {

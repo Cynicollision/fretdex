@@ -46,7 +46,11 @@ export default defineConfig({
                     globPatterns: [
                         'client/**/*.{js,css,html,svg,png,ico,webmanifest,json,woff2}',
                         'prerendered/**/*.{html,json}'
-                    ]
+                    ],
+                    // A screen's prerendered data (`__data.json`) is fetched with SvelteKit's own query
+                    // (`x-sveltekit-invalidated`, `x-sveltekit-trailing-slash`), which the precached copy hasn't got;
+                    // ignored, with Workbox's defaults, so Credits and licences opens offline (APP-1.6, APP-4.2).
+                    ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^x-sveltekit-/]
                 }
             }
         )

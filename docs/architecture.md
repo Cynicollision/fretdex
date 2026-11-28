@@ -82,6 +82,7 @@ Paths name the thing; query parameters hold view options. Global settings stay o
 | `/progressions`, `/progressions/[slug]` | `/progressions/ii-v-i` | `key`, `bpm` |
 | `/settings` | Settings, export and import | — |
 | `/about` | What Fretdex is, and a link to its repository | — |
+| `/licences/` | Credits and licences, from `CREDITS.md` | — |
 | `/tuner` (M04) | Tuner | — |
 | `/metronome` (M04) | `/metronome?bpm=132&sig=6-8` | `bpm`, `sig`, `sub` |
 
@@ -113,7 +114,7 @@ IndexedDB, through `idb-keyval` (`idbStore` in `app/src/lib/storage/idb.ts`: a `
 
 ## Offline and install
 
-The service worker precaches the whole build (app, voicing dataset, icons, fonts), so after the first load the app needs no network. When the app opens with a network and a new version has been deployed, the new service worker installs in the background, takes over and reloads the app (`registerType: 'autoUpdate'`), so a launch picks up the new version within seconds. The root layout (`src/routes/+layout.svelte`) registers the service worker and adds the manifest's link. A navigation the service worker hasn't precached, such as any card, gets the fallback page, `404.html`, which is precached too (`kit.adapterFallback` and `spa` in `app/vite.config.ts`), so every route opens offline. The manifest gives the app its name, icon and theme colors. The app is served from the root of its own subdomain, so it needs no base path and the service worker's scope is the whole origin.
+The service worker precaches the whole build (app, voicing dataset, icons, fonts), so after the first load the app needs no network. When the app opens with a network and a new version has been deployed, the new service worker installs in the background, takes over and reloads the app (`registerType: 'autoUpdate'`), so a launch picks up the new version within seconds. The root layout (`src/routes/+layout.svelte`) registers the service worker and adds the manifest's link. A navigation the service worker hasn't precached, such as any card, gets the fallback page, `404.html`, which is precached too (`kit.adapterFallback` and `spa` in `app/vite.config.ts`), so every route opens offline. A prerendered screen with data, such as Credits and licences, has its `__data.json` precached too, and the service worker ignores the query SvelteKit fetches it with (`ignoreURLParametersMatching`). The manifest gives the app its name, icon and theme colors. The app is served from the root of its own subdomain, so it needs no base path and the service worker's scope is the whole origin.
 
 ## Styling
 

@@ -9,7 +9,8 @@ const ROUTES: readonly [path: string, heading: string][] = [
     ['/scales/Fs/dorian', 'F♯ Dorian'],
     ['/scales/Eb/locrian', 'E♭ Locrian'],
     ['/settings', 'Settings'],
-    ['/about', 'About']
+    ['/about', 'About'],
+    ['/licences/', 'Credits and licences']
 ];
 
 function heading(page: Page) {

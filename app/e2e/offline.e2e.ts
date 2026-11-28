@@ -59,9 +59,16 @@ test('after the first load every route opens from its URL with no network (APP-4
         ['/modes', 'Modes of C major'],
         ['/modes/Bb', 'Modes of B♭ major'],
         ['/scales/F%23/lydian', 'F♯ Lydian'],
-        ['/scales/C/bebop', 'Not found']
+        ['/scales/C/bebop', 'Not found'],
+        ['/licences/', 'Credits and licences']
     ] as const) {
         await page.goto(path);
         await expect(page.getByRole('heading', { level: 1 }), path).toHaveText(heading);
     }
+
+    // A link to a prerendered screen with data, which the app fetches with a query of its own (APP-1.6).
+    await page.goto('/about');
+    await page.getByRole('link', { name: 'Credits and licences' }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Credits and licences');
+    await expect(page.getByText('Permission is hereby granted').first()).toBeVisible();
 });

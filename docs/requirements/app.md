@@ -11,7 +11,7 @@ Behavior that applies across the whole app: how the user moves around, the conte
 | APP-1.3 | Every card shall have a back control that returns to where the user came from (the browser's history), and the browser's and phone's own back shall do the same. A card opened with nothing in the app to go back to (from a link or a shortcut) goes back to its module's list. | Implemented |
 | APP-1.4 | The context bar (APP-2) shall be at the top of every screen, and search one tap away on every screen (SRCH-1.1). | Partial |
 | APP-1.5 | A cross-link between modules (a chord in a key, a mode's parent scale) shall open that card with the same instrument and tuning. | Implemented |
-| APP-1.6 | **About** shall say, for a visitor who arrives with no other context, what Fretdex is and what it can do so far, that it installs and works offline, that it has no account or tracking and keeps everything on the device, and that it's open source under the MIT licence, with a link to its repository on GitHub, where its code, plans and credits are. It names no one (owner, 2026-11-27). | Implemented |
+| APP-1.6 | **About** shall say in a few lines, for a visitor who arrives with no other context, what Fretdex is, and that it's open source under the MIT licence, with a link to its repository on GitHub for the rest; it names no one (owner, 2026-11-27, shortened 2026-11-28). It shall link to **Credits and licences** (`/licences/`), which lists every library and font that ships, from `CREDITS.md`, with the full licence text of each that asks for its notice to travel with the code, so the installed app carries them (owner, 2026-11-28). | Implemented |
 
 ## APP-2 The context bar sets the key and instrument once
 
